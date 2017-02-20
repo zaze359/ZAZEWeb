@@ -18,6 +18,7 @@ public class HelloController {
     @RequestMapping(value = "hi", method = RequestMethod.GET)
     public String sayHi(ModelMap modelMap) {
         modelMap.addAttribute("name", "zaze");
+
         modelMap.addAttribute("msg", "this is zaze's test code!");
         // 返回对应的get
         return "hello";
