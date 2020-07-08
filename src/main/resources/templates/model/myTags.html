@@ -1,0 +1,213 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<base href="<%=basePath%>">
+
+<title>My JSP 'myTags.html' starting page</title>
+<jsp:include page="../../inc.html"></jsp:include>
+<script type="text/javascript">
+	var addTagForm;
+	var updateTagForm;
+	var tagDatagrid;
+	$(function() {
+		tagDatagrid = $('#tagDatagrid').datagrid({
+			url : 'tag_getMyTags.action',
+			title : '我收藏的网址',
+			iconCls : 'icon-sum',//图标 
+			nowrap : true, //false自动折行
+			striped : true,
+			border : true,
+			collapsible : false,//是否可折叠的 
+			idFiled : 'id',
+			height:'auto',
+			width: 'auto',
+			remoteSort : false,
+			singleSelect : false,//是否单选 
+			pagination : true,//分页控件 
+			pageSize : 10,
+			pageList : [ 5, 10, 20, 30 ],
+			rownumbers : true,//行号 
+			frozenColumns : [ [ {
+				field : 'id',
+				checkbox : true
+			} ] ],
+			columns : [ [ {
+				field : 'tagName',
+				title : '标签名',
+				width : 300
+			}, {
+				field : 'networkNum',
+				title : '拥有网址数',
+				width : 300
+			} ] ],
+			toolbar : [ {
+				text : '添加',
+				iconCls : 'icon-add',
+				handler : function() {
+					addTag();
+				}
+			}, '-', {
+				text : '编辑',
+				iconCls : 'icon-edit',
+				handler : function() {
+					updateTag();
+				}
+			}, '-', {
+				text : '删除',
+				iconCls : 'icon-cancel',
+				handler : function() {
+					console.info('delete');
+					delTag();
+				}
+			} ],
+			success : function(date) {
+				console.info(date);
+			}
+		});
+		$('#addTag').dialog({
+			title : '添加新标签',
+			closable : true,
+			closed : true,
+			modal : true,
+			buttons : [ {
+				text : '添加',
+				handler : function() {
+					addTagForm.submit();
+				}
+			} ]
+		});
+		addTagForm = $('#addTagForm').form({
+			url : 'tag_addTags',
+			success : function(data) {
+				var d = $.parseJSON(data);
+				console.info(d);
+				$('#addTag').dialog('close');
+				tagDatagrid.datagrid('reload');
+				$.messager.show({
+					title : '提示信息',
+					msg : "添加成功",
+					timeout : 5000,
+					showType : 'slide'
+				});
+			}
+		});
+
+		$('#updateTag').dialog({
+			title : '更新标签',
+			closable : true,
+			closed : true,
+			modal : true,
+			buttons : [ {
+				text : '保存更新',
+				handler : function() {
+					updateTagForm.submit();
+				}
+			} ]
+		});
+		updateTagForm = $('#updateTagForm').form({
+			url : 'tag_updateTags',
+			success : function(data) {
+				var d = $.parseJSON(data);
+				console.info(d);
+				$('#updateTag').dialog('close');
+				tagDatagrid.datagrid('reload');
+				$.messager.show({
+					title : '提示信息',
+					msg : "保存成功",
+					timeout : 5000,
+					showType : 'slide'
+				});
+			}
+		});
+	});
+
+	function addTag() {
+		$('#addTag').dialog('open');
+	};
+	function updateTag() {
+		var p = tagDatagrid.datagrid('getChecked');
+		console.info(p);
+		if (p == null) {
+			$.messager.alert('提示', '<font>请选择一项!<font>', 'info');
+		} else if (p.length == 1) {
+			$('#updateTagName').attr('value', p[0].tagName);
+			$('#updateTagId').attr('value', p[0].id);
+			$('#updateTag').dialog('open');
+		} else {
+			$.messager.alert('提示', '<font>不支持批量编辑!<font>', 'warning');
+		}
+	};
+
+	function delTag() {
+		var rows = tagDatagrid.datagrid('getChecked');
+		var ids = [];
+		if (rows.length > 0) {
+			$.messager.confirm('请确认', '您要删除当前标签及相关网址？', function(r) {
+				if (r) {
+					for ( var i = 0; i < rows.length; i++) {
+						ids.push(rows[i].id);
+					}
+					$.ajax({
+						url : 'tag_delTags.action',
+						data : {
+							ids : ids.join(',')
+						},
+						dataType : 'json',
+						success : function(d) {
+							tagDatagrid.datagrid('reload');
+							tagDatagrid.datagrid('unselectAll');
+							$.messager.show({
+								title : '提示',
+								msg : d.msg
+							});
+						}
+					});
+				}
+			});
+		} else {
+			$.messager.alert('提示', '请勾选要删除的记录！', 'error');
+		}
+	};
+</script>
+</head>
+
+<body data-option="fit: true">
+	<div id="tagDatagrid"></div>
+	<div id="addTag" class="easyui-dialog"
+		style="width: 300px; height: 100px;">
+		<form id="addTagForm" method="post">
+			<table>
+				<tr>
+					<td>标签名:</td>
+					<td><input type="text" name="tagName" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div id="updateTag" class="easyui-dialog"
+		style="width: 300px; height: 100px;">
+		<form id="updateTagForm" method="post">
+			<table>
+				<tr>
+					<td><input id="updateTagId" type="hidden" name="id" />
+					</td>
+				</tr>
+				<tr>
+					<td>标签：</td>
+					<td><input id="updateTagName" type="text" name="tagName" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

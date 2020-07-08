@@ -1,0 +1,83 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+
+<script type="text/javascript">
+	var loginDialog;
+	var loginForm;
+	$(function() {
+		loginDialog = $('#loginDialog').dialog({
+			closable : true,
+			title : '登录',
+			modal : true,
+			closed : true,
+			buttons : [ {
+				text : '注册',
+				handler : function() {
+					loginDialog.dialog('close');
+					registDialog.dialog('open');
+					rePwdDialog.dialog('close');
+				}
+			}, {
+				text : '登录',
+				handler : function() {
+					loginForm.submit();
+				}
+			} ],
+			onLoad : function() {
+			}
+		});
+
+		loginForm = $('#loginForm').form({
+			url : 'user_login.action',
+			success : function(data) {
+				var d = $.parseJSON(data);
+				if (d.success) {
+					loginDialog.dialog('close');
+					$('#loginMsg').empty();
+					var usermsg = "";
+					usermsg += '<div>欢迎 ' + d.obj.username + ' </div>';
+					$('#loginMsg').append(usermsg);
+					$('#rePwdDiv').show();
+					//显示导航功能 绑定双击 及右键 。
+					InitLeftMenu();
+					$.parser.parse($('#acc'));
+					tabClose();
+					tabCloseEven();
+
+					//右下角弹窗
+					$.messager.show({
+						title : '登录信息',
+						msg : d.msg,
+						timeout : 5000,
+						showType : 'slide'
+					});
+				} else {
+					$.messager.show({
+						title : '登录信息',
+						msg : d.msg,
+						timeout : 5000,
+						showType : 'slide'
+					});
+				}
+			}
+		});
+	});
+</script>
+<div id="loginDialog" class="easyui-dialog"
+	style="width:250px;height:210px;">
+	<form id="loginForm" method="post">
+		<div align="center">
+			<table>
+				<tr>
+					<td>用户名：</td>
+					<td><input type="text" name="username" />
+					</td>
+				</tr>
+				<tr>
+					<td>密&nbsp;&nbsp;码：</td>
+					<td><input type="password" name="password" />
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>

@@ -1,0 +1,51 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<script type="text/javascript">
+	var reviewDialog;
+	var reviewForm;
+	$(function(){
+		reviewDialog = $('#reviewDialog').dialog({
+			closable : true,
+			title : '点评',
+			modal : true,
+			closed : true,
+			buttons : [ {
+				text : '回复',
+				handler : function() {
+					reviewForm.submit();
+				}
+			}],
+			onClose : function(){
+				$('#reviewNetwork').empty();
+			}
+		});
+		reviewForm = $('#reviewForm').form({
+			url : 'comment_commentPage.action',
+			success : function(){
+				reviewDialog.dialog('close');
+				$.messager.show({
+					title : '提示信息',
+					msg : "评论成功！",
+					timeout : 5000,
+					showType : 'slide'
+				});
+			}
+		});
+	});
+</script>
+<div id="reviewDialog" class="easyui-dialog" >
+	<div style="widht:600px;height:250px;">
+		<form id="reviewForm"  method="post">
+			<table>
+				<tr><td><input id="reviewPageId" type="hidden" name="networkId" value=""/><td></tr>
+				<tr>
+					<td><div id="reviewUser" value=""></div></td>
+					<td><font face="微软雅黑" size="15px">&nbsp;评论：</font></td>
+					<td><div id="reviewNetwork" value=""></div></td>
+				</tr>
+				<tr>
+					<td colspan="3"><textarea cols="50" rows="10" style="resize:none;" name="intro"></textarea></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html >
+<head>
+	<title>收藏夹</title>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/js/nav.js"></script>
+	<link href="${pageContext.request.contextPath}/css/default.css" rel="stylesheet" type="text/css">
+	</link>
+	<link href="${pageContext.request.contextPath}/css/network.css" rel="stylesheet" type="text/css">
+	</link>
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/friend.css" type="text/css">
+	</link>
+	<script type="text/javascript">
+		var _menus = {
+			"menus": [{
+				"menuid": "1",
+				"icon": "icon-sys",
+				"menuname": "收藏首页",
+				"menus": [{
+					"menuid": "11",
+					"menuname": "我的收藏",
+					"icon": "icon-add",
+					"url": "./model/myPages.html"
+				}, {
+					"menuid": "12",
+					"menuname": "标签管理",
+					"icon": "icon-nav",
+					"url": "./model/myTags.html"
+				}]
+			}, {
+				"menuid": "2",
+				"icon": "icon-sys",
+				"menuname": "我的好友",
+				"menus": [{
+					"menuid": "21",
+					"menuname": "好友列表",
+					"icon": "icon-nav",
+					"url": "./model/myFriends.html"
+				}, {
+					"menuid": "22",
+					"menuname": "好友添加",
+					"icon": "icon-nav",
+					"url": "./model/addFriends.html"
+				}]
+			}, {
+				"menuid": "3",
+				"icon": "icon-sys",
+				"menuname": "我的设置",
+				"menus": [{
+					"menuid": "31",
+					"menuname": "个人信息",
+					"icon": "icon-nav",
+					"url": "./model/myMsg.html"
+				}, {
+					"menuid": "32",
+					"menuname": "个人资料修改",
+					"icon": "icon-nav",
+					"url": "./model/user_reMsg.html"
+				}]
+			}, {
+				"menuid": "4",
+				"icon": "icon-sys",
+				"menuname": "我的网评",
+				"menus": [{
+					"menuid": "41",
+					"menuname": "我发表的评论",
+					"icon": "icon-nav",
+					"url": "./model/myDiscuss.html"
+				}, {
+					"menuid": "42",
+					"menuname": "对我的评论",
+					"icon": "icon-nav",
+					"url": "./model/otherDiscuss.html"
+				}]
+			}]
+		};
+		$(function () {
+			$.ajax({
+				url: 'user_getMyInfo.action',
+				success: function (data) {
+					var d = $.parseJSON(data);
+					if (d != null) {
+						$('#loginMsg').empty();
+						var userMsg = "";
+						userMsg += '<div>欢迎 ' + d.username + ' </div>';
+						$('#loginMsg').append(userMsg);
+						$('#rePwdDiv').show();
+						//显示导航功能 绑定双击 及右键 。
+						InitLeftMenu();
+						$.parser.parse($('#acc'));
+						tabClose();
+						tabCloseEven();
+					}
+				}
+			});
+		});
+	</script>
+</head>
+
+<body id="layoutDiv" class="easyui-layout" data-options="fit:'true'">
+	<div data-options="region:'north'" style="height: 60px;overflow: hidden;" class="logo">
+		<include page="./layout/north.html"></include>
+	</div>
+	<div id="westDiv" data-options="region:'west'" style="width: 200px;overflow: hidden;">
+		<include page="./layout/west.html"></include>
+	</div>
+	<!-- 
+	<div data-options="region:'east',title:'日历',split:true,collapsed:true"
+		style="width: 200px;overflow: hidden;">
+		<include page="./layout/east.html"></include>
+	</div>
+	 -->
+	<div data-options="region:'south',border: 'false'" style="height: 20px;overflow: hidden;">
+		<include page="./layout/south.html"></include>
+	</div>
+	<div data-options="region:'center'">
+		<include page="./layout/center.html"></include>
+	</div>
+
+	<!-- 右键菜单 -->
+	<div id="mm" class="easyui-menu" style="width:150px;">
+		<div id="mm-tabclose">关闭</div>
+		<div id="mm-tabcloseall">全部关闭</div>
+		<div id="mm-tabcloseother">除此之外全部关闭</div>
+		<div class="menu-sep"></div>
+		<div id="mm-tabcloseright">当前页右侧全部关闭</div>
+		<div id="mm-tabcloseleft">当前页左侧全部关闭</div>
+		<div class="menu-sep"></div>
+		<div id="mm-exit">退出</div>
+	</div>
+	<include page="./model/login.html"></include>
+	<include page="./model/regist.html"></include>
+	<include page="./model/rePassword.html"></include>
+</body>
+</html>
