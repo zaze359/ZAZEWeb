@@ -6,6 +6,7 @@
     <title>Vue Js 2.x 学习</title>
     <!-- 开发环境版本，包含了有帮助的命令行警告 -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./A.js"></script>
     <!-- 生产环境版本，优化了尺寸和速度 -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
 </head>
@@ -143,21 +144,39 @@
 
     <script>
         // 定义一个名为 button-counter 的新组件
-        Vue.component('button-counter', {
-            data: function () {
-                return {
-                    count: 0
-                }
-            },
-            template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
-        })
-
-
+        // Vue.component('button-counter', {
+        //     data: function () {
+        //         return {
+        //             count: 0
+        //         }
+        //     },
+        //     template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+        // })
+        import ComponentA from './A.vue'
     </script>
     <div id="components-demo">
         <button-counter></button-counter>
     </div>
-    <script>new Vue({ el: '#components-demo' })</script>
+    <script>
+        new Vue({
+            el: '#components-demo',
+            components: {
+                "button-counter": ComponentA
+            }
+        })
+    </script>
+    <div id="m1">
+        <m1-layout></m1-layout>
+    </div>
+    <script>
+        import m1 from './m1.html'
+    
+        new Vue({
+                el: '#m1',
+                components: {
+                    "m1-layout": m1
+                }
+            })
+    </script>
 </body>
-
 </html>
