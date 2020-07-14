@@ -1,0 +1,69 @@
+<script type="text/javascript">
+	function login() {
+		$('#loginDialog').dialog('open');
+	};
+	function regist() {
+		$('#registDialog').dialog('open');
+	};
+	function rePwd() {
+		$('#rePwdDialog').dialog('open');
+	};
+	function exit() {
+		$.messager.confirm('温馨提示', '您确定要退出系统吗？', function (r) {
+			if (r) {
+				//location.href = "user_exit.action";
+				$.ajax({
+					url: 'user_exit.action',
+					success: function () {
+						location.href = "#";
+					}
+				});
+			}
+		});
+	};
+</script>
+<!-- <div style="float: left;font-size: 20px;">欢迎使用网络收藏夹</div> -->
+<!-- <div style="margin-right: 10px;float: right;">
+	<div id="loginMsg" style="float: left">
+		<a href="javascript:void(0);" onclick="login()">登录</a>
+		<a href="javascript:void(0);" onclick="regist()">注册</a>
+	</div>
+	<div id="exitDiv" style="float: right">
+		<a href="javascript:void(0);" onclick="exit()">&nbsp;安全退出</a>
+	</div>
+	<div id="rePwdDiv" style="display: none; float: right;">
+		<a href="javascript:void(0);" onclick="rePwd()">&nbsp;修改密码</a>
+	</div>
+</div> -->
+
+<nav class="navbar navbar-fixed-top ">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+				data-target="#my-navbar-collapse" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar">1</span>
+				<span class="icon-bar">2</span>
+				<span class="icon-bar">3</span>
+			</button>
+			<a class="navbar-brand" href="#">欢迎使用网络收藏夹</a>
+		</div>
+		<div class="collapse navbar-collapse" id="my-navbar-collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="javascript:void(0);" onclick="login()">登录</a></li>
+				<li><a href="javascript:void(0);" onclick="regist()">注册</a></li>
+				<li><a href="javascript:void(0);" onclick="rePwd()">修改密码</a></li>
+				<li><a href="javascript:void(0);" onclick="exit()">安全退出</a></li>
+
+				<li class="dropdown">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown">item3<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#home1">1</a></li>
+						<li><a href="#home2">2</a></li>
+						<li><a href="#home3">3</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>

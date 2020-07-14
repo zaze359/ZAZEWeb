@@ -1,14 +1,54 @@
 <!DOCTYPE html>
-<html >
-<head>
-	<title>收藏夹</title>
-	<script type="text/javascript" src="index/vendor/jquery-easyui-1.3.2/js/nav.js"></script>
-	<link href="index/vendor/jquery-easyui-1.3.2/css/default.css" rel="stylesheet" type="text/css">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="base :: common_header(~{::title},~{::link})">
+	<title>AAAAA</title>
+	<link rel="stylesheet" href="/css/default.css">
+	<!-- <link href="css/network.css" rel="stylesheet" type="text/css">
 	</link>
-	<link href="index/vendor/jquery-easyui-1.3.2/css/network.css" rel="stylesheet" type="text/css">
-	</link>
-	<link rel="stylesheet" href="index/vendor/jquery-easyui-1.3.2/css/friend.css" type="text/css">
-	</link>
+	<link rel="stylesheet" href="css/friend.css" type="text/css">
+	</link> -->
+</head>
+
+<body>
+	<div th:replace="layout/nav"></div>
+
+	<!-- <div data-options="region:'center'" style="border: #da3434 2px solid;">
+		<div id="tabs" class="easyui-tabs" data-options="fit:'true',border:'false'">
+			<div id="home" title="欢迎使用" style="padding:40px;">
+				<div style="width:380px;float:left; margin-right: 40px;">
+					<div th:insert="model/hotPages"></div>
+				</div>
+				<div style="width:380px;float:left;">
+					<div th:insert="model/newPages"></div>
+				</div>
+			</div>
+		</div>
+		<div th:insert="model/reviewDialog"></div>
+	</div>
+	<div id="westDiv" data-options="region:'west'" style="border: #222222 2px solid; width: 200px;overflow: hidden;">
+		<div th:insert="layout/west"></div>
+	</div>
+	<div data-options="region:'south',border: 'false'" style="border: #222222 2px solid;height: 20px;overflow: hidden;">
+		<div th:insert="layout/south"></div>
+	</div> -->
+
+	<!-- 右键菜单 -->
+	<!-- <div id="mm" class="easyui-menu" style="width:150px;">
+		<div id="mm-tabclose">关闭</div>
+		<div id="mm-tabcloseall">全部关闭</div>
+		<div id="mm-tabcloseother">除此之外全部关闭</div>
+		<div class="menu-sep"></div>
+		<div id="mm-tabcloseright">当前页右侧全部关闭</div>
+		<div id="mm-tabcloseleft">当前页左侧全部关闭</div>
+		<div class="menu-sep"></div>
+		<div id="mm-exit">退出</div>
+	</div>
+	<div th:insert="model/login" style="border: #222222 2px solid"></div>
+	<div th:insert="model/regist" style="border: #ce6969 2px solid"></div>
+	<div th:insert="model/rePassword" style="border: #2d8b51 2px solid"></div> -->
+
+	<script type="text/javascript" src="js/nav.js"></script>
 	<script type="text/javascript">
 		var _menus = {
 			"menus": [{
@@ -92,43 +132,8 @@
 					}
 				}
 			});
-		});
+		}); 
 	</script>
-</head>
-
-<body id="layoutDiv" class="easyui-layout" data-options="fit:'true'">
-	<div data-options="region:'north'" style="height: 60px;overflow: hidden;" class="logo">
-		<include page="./layout/north.html"></include>
-	</div>
-	<div id="westDiv" data-options="region:'west'" style="width: 200px;overflow: hidden;">
-		<include page="./layout/west.html"></include>
-	</div>
-	<!-- 
-	<div data-options="region:'east',title:'日历',split:true,collapsed:true"
-		style="width: 200px;overflow: hidden;">
-		<include page="./layout/east.html"></include>
-	</div>
-	 -->
-	<div data-options="region:'south',border: 'false'" style="height: 20px;overflow: hidden;">
-		<include page="./layout/south.html"></include>
-	</div>
-	<div data-options="region:'center'">
-		<include page="./layout/center.html"></include>
-	</div>
-
-	<!-- 右键菜单 -->
-	<div id="mm" class="easyui-menu" style="width:150px;">
-		<div id="mm-tabclose">关闭</div>
-		<div id="mm-tabcloseall">全部关闭</div>
-		<div id="mm-tabcloseother">除此之外全部关闭</div>
-		<div class="menu-sep"></div>
-		<div id="mm-tabcloseright">当前页右侧全部关闭</div>
-		<div id="mm-tabcloseleft">当前页左侧全部关闭</div>
-		<div class="menu-sep"></div>
-		<div id="mm-exit">退出</div>
-	</div>
-	<include page="./model/login.html"></include>
-	<include page="./model/regist.html"></include>
-	<include page="./model/rePassword.html"></include>
 </body>
+
 </html>
