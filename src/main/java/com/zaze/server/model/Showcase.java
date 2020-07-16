@@ -22,12 +22,12 @@ public class Showcase {
     private Long id;
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false, unique = true)
+    // @Column(nullable = false, unique = true)
     private String url;
     @Column
     private String info;
     @Column
-    private String tag;
+    private String tags;
     @Column
     private String imgUrl;
     @Column(nullable = false)
@@ -36,12 +36,12 @@ public class Showcase {
     public Showcase() {
     }
 
-    public Showcase(Long id, String title, String url, String info, String tag, String imgUrl, long time) {
+    public Showcase(Long id, String title, String url, String info, String tags, String imgUrl, long time) {
         this.id = id;
         this.title = title;
         this.url = url;
         this.info = info;
-        this.tag = tag;
+        this.tags = tags;
         this.imgUrl = imgUrl;
         this.time = time;
     }
@@ -78,14 +78,6 @@ public class Showcase {
         this.info = info;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
     public String getImgUrl() {
         return imgUrl;
     }
@@ -100,6 +92,14 @@ public class Showcase {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
 }
