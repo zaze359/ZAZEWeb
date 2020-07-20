@@ -15,12 +15,20 @@ public class ShowcaseServiceImpl implements ShowcaseService {
     private ShowcaseRepository showcaseRepository;
 
     @Override
+    public List<Showcase> getShowcaseList() {
+        return showcaseRepository.findAll();
+    }
+    
+    @Override
     public void saveShowcase(Showcase showcase) {
+        showcaseRepository.save(showcase);
     }
 
     @Override
     public List<Showcase> findByTagsLike(String tags) {
         return showcaseRepository.findByTagsLike(tags);
     }
+
+   
 
 }

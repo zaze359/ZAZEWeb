@@ -31,19 +31,23 @@ public class Showcase {
     @Column
     private String imgUrl;
     @Column(nullable = false)
-    private long time;
+    private long createTime;
+    @Column(nullable = false)
+    private long updateTime;
 
     public Showcase() {
     }
 
-    public Showcase(Long id, String title, String url, String info, String tags, String imgUrl, long time) {
+    public Showcase(Long id, String title, String url, String info, String tags, String imgUrl, long createTime,
+            long updateTime) {
         this.id = id;
         this.title = title;
         this.url = url;
         this.info = info;
         this.tags = tags;
         this.imgUrl = imgUrl;
-        this.time = time;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
     }
 
     public Long getId() {
@@ -78,22 +82,6 @@ public class Showcase {
         this.info = info;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
-    }
-
     public String getTags() {
         return tags;
     }
@@ -102,4 +90,27 @@ public class Showcase {
         this.tags = tags;
     }
 
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(long updateTime) {
+        this.updateTime = updateTime;
+    }
 }

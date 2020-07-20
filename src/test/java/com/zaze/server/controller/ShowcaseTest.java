@@ -1,5 +1,7 @@
 package com.zaze.server.controller;
 
+import com.zaze.server.web.ShowcaseController;
+
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,13 +16,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class HelloWorldTest {
+public class ShowcaseTest {
 
     private MockMvc mvc;
 
     @Before
     public void setUp() throws Exception {
-        mvc = MockMvcBuilders.standaloneSetup(new HelloWorldController()).build();
+        mvc = MockMvcBuilders.standaloneSetup(new ShowcaseController()).build();
     }
 
     @Test
