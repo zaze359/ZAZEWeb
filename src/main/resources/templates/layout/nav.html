@@ -1,4 +1,4 @@
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 	function login() {
 		$('#loginDialog').dialog('open');
 	};
@@ -21,21 +21,8 @@
 			}
 		});
 	};
-</script>
-<!-- <div style="float: left;font-size: 20px;">欢迎使用网络收藏夹</div> -->
-<!-- <div style="margin-right: 10px;float: right;">
-	<div id="loginMsg" style="float: left">
-		<a href="javascript:void(0);" onclick="login()">登录</a>
-		<a href="javascript:void(0);" onclick="regist()">注册</a>
-	</div>
-	<div id="exitDiv" style="float: right">
-		<a href="javascript:void(0);" onclick="exit()">&nbsp;安全退出</a>
-	</div>
-	<div id="rePwdDiv" style="display: none; float: right;">
-		<a href="javascript:void(0);" onclick="rePwd()">&nbsp;修改密码</a>
-	</div>
-</div> -->
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+</script> -->
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 	<a class="navbar-brand" href="#">欢迎使用</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarCollapse"
 		aria-controls="myNavbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,28 +30,22 @@
 	</button>
 	<div class="collapse navbar-collapse" id="myNavbarCollapse">
 		<ul class="navbar-nav ml-auto">
-			<!-- <li class="nav-item active">
-				<a class="nav-link" href="#">Link <span class="sr-only">(current)</span></a>
-			</li> -->
+			<li class="nav-item active">
+				<a class="nav-link" href="/admin">管理<span class="sr-only">(current)</span></a>
+			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="javascript:void(0);" onclick="login()">登录</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="javascript:void(0);" onclick="regist()">注册</a>
+				<a class="nav-link disabled" href="javascript:void(0);" onclick="regist()" tabindex="-1"
+					aria-disabled="true">注册</a>
 			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="javascript:void(0);" onclick="rePwd()">修改密码</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="javascript:void(0);" onclick="exit()">安全退出</a>
-			</li>
-			<li class="navbar-nav dropdown">
+			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
 					aria-expanded="false">Dropdown</a>
 				<div class="dropdown-menu" aria-labelledby="dropdown01">
-					<a class="dropdown-item" href="#">1</a>
-					<a class="dropdown-item" href="#">2</a>
-					<a class="dropdown-item" href="#">3</a>
+					<a class="dropdown-item" href="#">修改密码</a>
+					<a class="dropdown-item" href="#">安全退出</a>
 				</div>
 			</li>
 		</ul>
