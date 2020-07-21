@@ -48,8 +48,13 @@
 	<div th:insert="model/login" style="border: #222222 2px solid"></div>
 	<div th:insert="model/regist" style="border: #ce6969 2px solid"></div>
 	<div th:insert="model/rePassword" style="border: #2d8b51 2px solid"></div> -->
-
 	<script type="text/javascript" src="js/nav.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+		integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+		crossorigin="anonymous"></script>
+	<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="/vendor/bootstrap/dist/js/bootstrap.bundle.js"></script>
+
 	<script type="text/javascript">
 		var _menus = {
 			"menus": [{
@@ -114,26 +119,26 @@
 				}]
 			}]
 		};
-		$(function () {
-			$.ajax({
-				url: 'user_getMyInfo.action',
-				success: function (data) {
-					var d = $.parseJSON(data);
-					if (d != null) {
-						$('#loginMsg').empty();
-						var userMsg = "";
-						userMsg += '<div>欢迎 ' + d.username + ' </div>';
-						$('#loginMsg').append(userMsg);
-						$('#rePwdDiv').show();
-						//显示导航功能 绑定双击 及右键 。
-						InitLeftMenu();
-						$.parser.parse($('#acc'));
-						tabClose();
-						tabCloseEven();
-					}
-				}
-			});
-		}); 
+		// $(function () {
+		// 	$.ajax({
+		// 		url: 'user_getMyInfo.action',
+		// 		success: function (data) {
+		// 			var d = $.parseJSON(data);
+		// 			if (d != null) {
+		// 				$('#loginMsg').empty();
+		// 				var userMsg = "";
+		// 				userMsg += '<div>欢迎 ' + d.username + ' </div>';
+		// 				$('#loginMsg').append(userMsg);
+		// 				$('#rePwdDiv').show();
+		// 				//显示导航功能 绑定双击 及右键 。
+		// 				InitLeftMenu();
+		// 				$.parser.parse($('#acc'));
+		// 				tabClose();
+		// 				tabCloseEven();
+		// 			}
+		// 		}
+		// 	});
+		// }); 
 	</script>
 </body>
 

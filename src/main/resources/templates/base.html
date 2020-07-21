@@ -5,15 +5,29 @@
     <title th:replace="${title}">comm title</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="/vendor/jquery/dist/jquery-1.12.4.js"></script>
-    <script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.css" />
 
     <!-- <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/myapp.css}"> -->
     <!-- <link rel="shortcut icon" th:href="@{/images/favicon.ico}"> -->
     <!-- <script type="text/javascript" th:src="@{/js/myapp.js}"></script> -->
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
 
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
     <th:block th:replace="${links}" />
 </head>
 
