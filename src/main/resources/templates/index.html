@@ -5,6 +5,8 @@
 	<title>AAAAA</title>
 	<link rel="stylesheet" href="/css/default.css">
 	<link rel="stylesheet" href="/css/nav.css">
+	<!-- <link rel="stylesheet" href="/vendor/bootstrap-table/dist/bootstrap-table.min.css"> -->
+	<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.css">
 	<!-- <link href="css/network.css" rel="stylesheet" type="text/css">
 	</link>
 	<link rel="stylesheet" href="css/friend.css" type="text/css">
@@ -14,27 +16,106 @@
 <body>
 	<div th:replace="layout/nav"></div>
 
-	<!-- <div th:replace="layout/center"></div> -->
+	<main role="main">
+		<nav aria-label="Page navigation example">
+			<ul class="pagination">
+				<li class="page-item">
+					<a class="page-link" href="#" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				<li class="page-item"><a class="page-link" href="#">1</a></li>
+				<li class="page-item"><a class="page-link" href="#">2</a></li>
+				<li class="page-item"><a class="page-link" href="#">3</a></li>
+				<li class="page-item">
+					<a class="page-link" href="#" aria-label="Next">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+		<nav aria-label="...">
+			<ul class="pagination">
+				<li class="page-item disabled">
+					<span class="page-link">Previous</span>
+				</li>
+				<li class="page-item"><a class="page-link" href="#">1</a></li>
+				<li class="page-item active" aria-current="page">
+					<span class="page-link">
+						2
+						<span class="sr-only">(current)</span>
+					</span>
+				</li>
+				<li class="page-item"><a class="page-link" href="#">3</a></li>
+				<li class="page-item">
+					<a class="page-link" href="#">Next</a>
+				</li>
+			</ul>
+		</nav>
 
-	<!-- <div data-options="region:'center'" style="border: #da3434 2px solid;">
-		<div id="tabs" class="easyui-tabs" data-options="fit:'true',border:'false'">
-			<div id="home" title="欢迎使用" style="padding:40px;">
-				<div style="width:380px;float:left; margin-right: 40px;">
-					<div th:insert="model/hotPages"></div>
-				</div>
-				<div style="width:380px;float:left;">
-					<div th:insert="model/newPages"></div>
-				</div>
+		<form class="form-inline" action="">
+			<div class="form-group">
+				<label class="control-label" for="">has-success: </label>
+				<input type="text" class="form-control input-lg" placeholder="input-lg">
 			</div>
+			<div class="form-group has-success">
+				<label class="control-label" for="">has-success: </label>
+				<input type="text" class="form-control input-lg" placeholder="input-lg">
+			</div>
+			<div class="form-group has-error">
+				<label class="control-label" for="">has-error: </label>
+				<input type="text" class="form-control input-lg" placeholder="input-sm">
+			</div>
+			<div class="form-group has-warning">
+				<label class="control-label" for="">这是一个输入框: </label>
+				<select class="form-control" name="" id="1">
+					<option value="">北京</option>
+					<option value="">上海</option>
+					<option value="">广州</option>
+					<option value="">深圳</option>
+					<option value="">杭州</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="">这是一个输入框: </label>
+				<textarea class="form-control" name="" id="" cols="30" rows="10"></textarea>
+			</div>
+		</form>
+		<div class="table-responsive">
+			<table id="showcaseTable" class="table table-striped table-sm table-dark table-hover">
+			</table>
 		</div>
-		<div th:insert="model/reviewDialog"></div>
-	</div>
-	<div id="westDiv" data-options="region:'west'" style="border: #222222 2px solid; width: 200px;overflow: hidden;">
-		<div th:insert="layout/west"></div>
-	</div>
-	<div data-options="region:'south',border: 'false'" style="border: #222222 2px solid;height: 20px;overflow: hidden;">
-		<div th:insert="layout/south"></div>
-	</div> -->
+		<div class="table-responsive">
+			<table class="table table-striped table-sm table-dark table-hover" data-toggle="table"
+				data-url="/search?tags=News" data-pagination="true">
+				<thead>
+					<tr>
+						<th data-field="id">#</th>
+						<th data-field="title">标题</th>
+						<th data-field="url">链接</th>
+						<th data-field="info">描述</th>
+						<th data-field="imgUrl">图片</th>
+						<th data-field="tags">标签</th>
+						<th data-field="updateTime">更新时间</th>
+						<th data-field="createTime">创建时间</th>
+					</tr>
+				</thead>
+				<!-- <tbody>
+					<tr th:each="showcase, stat: ${showcases}">
+						<th scope="row" th:text="${stat.count}">1</th>
+						<td th:text="${showcase.title}">default title</td>
+						<td th:text="${showcase.url}">default url</td>
+						<td th:text="${showcase.info}">default info</td>
+						<td th:text="${showcase.imgUrl}">default</td>
+						<td th:text="${showcase.tags}">default</td>
+						<td th:text="${showcase.updateTime}">default</td>
+						<td th:text="${showcase.createTime}">default</td>
+						<td th:text="${#calendars.format(showcase.updateTime)}">default</td>
+					</tr>
+				</tbody> -->
+			</table>
+		</div>
+	</main>
 
 	<!-- 右键菜单 -->
 	<!-- <div id="mm" class="easyui-menu" style="width:150px;">
@@ -50,13 +131,23 @@
 	<div th:insert="model/login" style="border: #222222 2px solid"></div>
 	<div th:insert="model/regist" style="border: #ce6969 2px solid"></div>
 	<div th:insert="model/rePassword" style="border: #2d8b51 2px solid"></div> -->
-	<script type="text/javascript" src="js/nav.js"></script>
-	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-		integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-	</script>
-	<script src="/vendor/bootstrap/dist/js/bootstrap.bundle.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+		integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+		crossorigin="anonymous"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+		integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+		crossorigin="anonymous"></script>
+	<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.js"></script>
+	<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/locale/bootstrap-table-zh-CN.js"></script>
+	<!-- <script src="/vendor/bootstrap-table/dist/bootstrap-table.min.js"></script> -->
+	<!-- <script src="/vendor/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script> -->
+	<script type="text/javascript" src="js/index.js"></script>
 
-	<script type="text/javascript">
+	<script th:inline="javascript">
+		// var a = [[${ showcases }]];
+		// console.log("showcases" + a)
 		var _menus = {
 			"menus": [{
 				"menuid": "1",
@@ -120,6 +211,7 @@
 				}]
 			}]
 		};
+		console.log("_menus :" + _menus)
 		// $(function () {
 		// 	$.ajax({
 		// 		url: 'user_getMyInfo.action',
@@ -140,6 +232,61 @@
 		// 		}
 		// 	});
 		// }); 
+	</script>
+	<script type="text/javascript">
+		console.log("showcaseTable")
+		// console.log("showcases" + showcases)
+		$('#showcaseTable').bootstrapTable({
+			url: '/search',           //请求后台的URL（*）
+			method: 'get',                      //请求方式（*）
+			// toolbar: '#toolbar',                //工具按钮用哪个容器
+			striped: true,                      //是否显示行间隔色
+			cache: true,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   //是否显示分页（*）
+			sortable: true,                     //是否启用排序
+			sortOrder: "asc",                   //排序方式
+			queryParams: 'tags=News',         //传递参数（*）
+			sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+			pageNumber: 1,                       //初始化加载第一页，默认第一页
+			pageSize: 10,                       //每页的记录行数（*）
+			pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+			smartDisplay: true,
+			search: false,                      //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+			strictSearch: true,
+			showColumns: true,                 //是否显示所有的列
+			showRefresh: true,                 //是否显示刷新按钮
+			minimumCountColumns: 2,             //最少允许的列数
+			clickToSelect: true,                //是否启用点击选中行
+			height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+			uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+			showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+			cardView: true,                    //是否显示详细视图
+			detailView: false,                   //是否显示父子表
+			columns: [
+				{
+					field: 'title',
+					title: '标题',
+				}, {
+					field: 'url',
+					title: '链接',
+				}, {
+					field: 'info',
+					title: '描述',
+				}, {
+					field: 'imgUrl',
+					title: '图片',
+				}, {
+					field: 'tags',
+					title: '标签',
+				}, {
+					field: 'updateTime',
+					title: '更新时间',
+				}, {
+					field: 'createTime',
+					title: '创建时间',
+				}
+			],
+		});
 	</script>
 </body>
 

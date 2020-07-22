@@ -14,13 +14,13 @@ public class IndexControl {
     ShowcaseService showcaseService;
 
     @RequestMapping("/")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("showcases", showcaseService.getShowcaseList());
         return "index";
     }
 
-    @RequestMapping("/admin")
-    public String admin(Model model) {
-        model.addAttribute("showcases", showcaseService.getShowcaseList());
-        return "admin/admin";
+    @RequestMapping("/center")
+    public String center() {
+        return "layout/center";
     }
 }
