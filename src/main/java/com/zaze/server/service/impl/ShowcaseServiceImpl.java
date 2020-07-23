@@ -39,6 +39,18 @@ public class ShowcaseServiceImpl implements ShowcaseService {
                 tags, "https://avatars1.githubusercontent.com/u/2918581?s=200&v=4", System.currentTimeMillis(),
                 System.currentTimeMillis());
         list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
+        list.add(showcase);
         return list;
     }
 }

@@ -17,7 +17,7 @@
 </head>
 
 <body>
-<table id="myTable" class="table table-striped table-sm table-dark table-hover">
+<table id="showcaseTable" class="table table-striped table-sm table-dark table-hover">
     <thead>
     <tr>
     </tr>
@@ -33,7 +33,7 @@
 <script type="text/javascript">
     console.log("myTable")
     // console.log("showcases" + showcases)
-    $('#showcaseTable').bootstrapTable({
+    $('#myTable').bootstrapTable({
         url: '/search',           //请求后台的URL（*）
         method: 'get',                      //请求方式（*）
         // toolbar: '#toolbar',                //工具按钮用哪个容器
