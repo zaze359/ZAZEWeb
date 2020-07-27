@@ -9,7 +9,7 @@ public interface ShowcaseService {
 
     void saveShowcase(Showcase showcase);
 
-    void deleteShowcases(long[] ids);
+    void deleteShowcases(List<Long> ids);
 
     List<Showcase> getShowcaseList();
 

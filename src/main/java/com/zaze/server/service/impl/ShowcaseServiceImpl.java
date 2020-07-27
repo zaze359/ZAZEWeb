@@ -22,7 +22,7 @@ public class ShowcaseServiceImpl implements ShowcaseService {
     }
 
     @Override
-    public void deleteShowcases(long[] ids) {
+    public void deleteShowcases(List<Long> ids) {
         showcaseRepository.deleteByIds(ids);
     }
 

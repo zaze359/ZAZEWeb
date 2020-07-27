@@ -1,5 +1,6 @@
 package com.zaze.server.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
-public class ShowcaseController {
+public class ShowcaseController extends BaseController {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource
@@ -55,7 +56,13 @@ public class ShowcaseController {
 
     @RequestMapping(value = "/showcase/delete", method = RequestMethod.DELETE)
     @LoggerManage(description = "批量删除showcase")
-    void deleteShowcases(@RequestParam(value = "ids") long[] ids) {
+    Response deleteShowcases(@RequestParam(value = "ids") String idStr) {
+        String[] idStrArray = idStr.split(",");
+        List<Long> ids = new ArrayList<>();
+        for (String str : idStrArray) {
+            ids.add(Long.parseLong(str));
+        }
         showcaseService.deleteShowcases(ids);
+        return result();
     }
 }

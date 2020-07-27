@@ -203,7 +203,9 @@ crossorigin="anonymous"></script> -->
             async: false,
             type: 'DELETE',
             dataType: 'json',
-            data: '',
+            data: {
+                ids: selections.join(',')
+            },
             url: '/showcase/delete',
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 console.log(XMLHttpRequest);
