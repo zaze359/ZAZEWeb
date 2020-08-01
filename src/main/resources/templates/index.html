@@ -13,124 +13,182 @@
     <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.css">
     <link rel="stylesheet" href="/css/default.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    <!--    <link rel="stylesheet" href="/css/dashboard.css">-->
 </head>
 
 <body>
-<div th:replace="layout/nav"></div>
-<main role="main">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    <nav aria-label="...">
-        <ul class="pagination">
-            <li class="page-item disabled">
-                <span class="page-link">Previous</span>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item active" aria-current="page">
-                    <span class="page-link">
-                        2
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow">
+        <a class="navbar-brand" href="#">欢迎使用</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarCollapse"
+                aria-controls="myNavbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="myNavbarCollapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="https://examples.bootstrap-table.com/#welcome.html" target="_blank">
+                        Bootstrap Table
                         <span class="sr-only">(current)</span>
-                    </span>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/search(tags='aaa')}">登录</a>
+                </li>
+                <!--                <li class="nav-item">-->
+                <!--                    <a class="nav-link disabled" href="javascript:void(0);" onclick="regist()" tabindex="-1"-->
+                <!--                       aria-disabled="true">注册-->
+                <!--                    </a>-->
+                <!--                </li>-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                        <a class="dropdown-item" href="#">修改密码</a>
+                        <a class="dropdown-item" href="#">安全退出</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
     </nav>
-    <form class="form-inline" action="">
-        <div class="form-group">
-            <label class="control-label" for="">has-success:
-                <input type="text" class="form-control input-lg" placeholder="input-lg">
-            </label>
+</header>
+<!--<nav aria-label="Page navigation example">-->
+<!--    <ul class="pagination">-->
+<!--        <li class="page-item">-->
+<!--            <a class="page-link" href="#" aria-label="Previous">-->
+<!--                <span aria-hidden="true">&laquo;</span>-->
+<!--            </a>-->
+<!--        </li>-->
+
+<!--        <li class="page-item"><a class="page-link" href="#">1</a></li>-->
+<!--        <li class="page-item"><a class="page-link" href="#">2</a></li>-->
+<!--        <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+<!--        <li class="page-item">-->
+<!--            <a class="page-link" href="#" aria-label="Next">-->
+<!--                <span aria-hidden="true">&raquo;</span>-->
+<!--            </a>-->
+<!--        </li>-->
+<!--    </ul>-->
+<!--</nav>-->
+<!--<nav aria-label="...">-->
+<!--    <ul class="pagination">-->
+<!--        <li class="page-item disabled">-->
+<!--            <span class="page-link">Previous</span>-->
+<!--        </li>-->
+<!--        <li class="page-item"><a class="page-link" href="#">1</a></li>-->
+<!--        <li class="page-item active" aria-current="page">-->
+<!--                    <span class="page-link">-->
+<!--                        2-->
+<!--                        <span class="sr-only">(current)</span>-->
+<!--                    </span>-->
+<!--        </li>-->
+<!--        <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+<!--        <li class="page-item">-->
+<!--            <a class="page-link" href="#">Next</a>-->
+<!--        </li>-->
+<!--    </ul>-->
+<!--</nav>-->
+<div class="container-fluid">
+    <main role="main">
+        <!--            <form class="form-inline" action="">-->
+        <!--                <div class="form-group">-->
+        <!--                    <label class="control-label" for="">has-success:-->
+        <!--                        <input type="text" class="form-control input-lg" placeholder="input-lg">-->
+        <!--                    </label>-->
+        <!--                </div>-->
+        <!--                <div class="form-group has-success">-->
+        <!--                    <label class="control-label" for="">has-success: </label>-->
+        <!--                    <label>-->
+        <!--                        <input type="text" class="form-control input-lg" placeholder="input-lg">-->
+        <!--                    </label>-->
+        <!--                </div>-->
+        <!--                <div class="form-group has-error">-->
+        <!--                    <label class="control-label" for="">has-error: </label>-->
+        <!--                    <label>-->
+        <!--                        <input type="text" class="form-control input-lg" placeholder="input-sm">-->
+        <!--                    </label>-->
+        <!--                </div>-->
+        <!--                <div class="form-group has-warning">-->
+        <!--                    <label class="control-label" for="">这是一个输入框: </label>-->
+        <!--                    <label for="1"></label>-->
+        <!--                    <select class="form-control" name="" id="1">-->
+        <!--                        <option value="">北京</option>-->
+        <!--                        <option value="">上海</option>-->
+        <!--                        <option value="">广州</option>-->
+        <!--                        <option value="">深圳</option>-->
+        <!--                        <option value="">杭州</option>-->
+        <!--                    </select>-->
+        <!--                </div>-->
+        <!--                <div class="form-group">-->
+        <!--                    <label for="">这是一个输入框: </label>-->
+        <!--                    <textarea class="form-control" name="" id="" cols="30" rows="10"></textarea>-->
+        <!--                </div>-->
+        <!--            </form>-->
+
+        <div id="toolbar">
+            <button id="add" class="btn btn-outline-success" type="button"
+                    data-toggle="modal" data-target="#addShowcaseModal">
+                <i class="fa fa-plus"></i> 新增
+            </button>
+            <div class="modal fade" id="addShowcaseModal" tabindex="-1" role="dialog"
+                 aria-labelledby="addShowcaseModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <form class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addShowcaseModalLabel">Add Showcase</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="addShowcaseFormGroup" class="form-group">
+                                ...
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <button id="remove" class="btn btn-outline-danger" onclick="delShowcases()" disabled>
+                <i class="fa fa-trash"></i> 删除
+            </button>
+            <button id="edit" class="btn btn-outline-primary" type="button"
+                    data-toggle="modal" data-target="#addShowcaseModal" disabled>
+                <i class="fa fa-pencil-alt"></i> 编辑
+            </button>
         </div>
-        <div class="form-group has-success">
-            <label class="control-label" for="">has-success: </label>
-            <label>
-                <input type="text" class="form-control input-lg" placeholder="input-lg">
-            </label>
+
+        <div class="table-responsive">
+            <table id="showcaseTable" class="table table-sm table-light table-hover"
+                   data-toggle="table"
+                   data-toolbar="#toolbar"
+                   data-search="true"
+                   data-show-toggle="true"
+                   data-show-refresh="true"
+                   data-show-columns="true"
+                   data-show-columns-toggle-all="true"
+                   data-id-field="id"
+                   data-detail-view="true"
+                   data-detail-formatter="detailFormatter"
+                   data-show-pagination-switch="true"
+                   data-side-pagination="server"
+                   data-pagination="true"
+                   data-page-list="[10, 25, 50, 100, all]">
+            </table>
         </div>
-        <div class="form-group has-error">
-            <label class="control-label" for="">has-error: </label>
-            <label>
-                <input type="text" class="form-control input-lg" placeholder="input-sm">
-            </label>
-        </div>
-        <div class="form-group has-warning">
-            <label class="control-label" for="">这是一个输入框: </label>
-            <label for="1"></label>
-            <select class="form-control" name="" id="1">
-                <option value="">北京</option>
-                <option value="">上海</option>
-                <option value="">广州</option>
-                <option value="">深圳</option>
-                <option value="">杭州</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="">这是一个输入框: </label>
-            <textarea class="form-control" name="" id="" cols="30" rows="10"></textarea>
-        </div>
-    </form>
-    <div id="toolbar">
-        <button id="add" class="btn btn-outline-primary">
-            <i class="fa fa-plus"></i> 新增
-        </button>
-        <button id="remove" class="btn btn-outline-danger" disabled>
-            <i class="fa fa-trash"></i> 删除
-        </button>
-        <button id="edit" class="btn btn-outline-primary" disabled>
-            <i class="fa fa-pencil-alt"></i> 编辑
-        </button>
-    </div>
-    <div class="table-responsive">
-        <table id="showcaseTable" class="table table-sm table-light table-hover"
-               data-toggle="table"
-               data-toolbar="#toolbar"
-               data-search="true"
-               data-show-toggle="true"
-               data-show-refresh="true"
-               data-show-columns="true"
-               data-show-columns-toggle-all="true"
-               data-id-field="id"
-               data-detail-view="true"
-               data-detail-formatter="detailFormatter"
-               data-show-pagination-switch="true"
-               data-side-pagination="server"
-               data-pagination="true"
-               data-page-list="[10, 25, 50, 100, all]">
-            <!--            <thead>-->
-            <!--            <tr>-->
-            <!--                <th data-field="state" data-checkbox="true">#</th>-->
-            <!--                <th data-field="id">#</th>-->
-            <!--                <th data-field="title">标题</th>-->
-            <!--                <th data-field="url">链接</th>-->
-            <!--                <th data-field="info">描述</th>-->
-            <!--                <th data-field="imgUrl">图片</th>-->
-            <!--                <th data-field="tags">标签</th>-->
-            <!--                <th data-field="updateTime" data-formatter="">更新时间</th>-->
-            <!--                <th data-field="createTime">创建时间</th>-->
-            <!--            </tr>-->
-            <!--            </thead>-->
-        </table>
-    </div>
-</main>
+    </main>
+</div>
+
 
 <!-- 右键菜单 -->
 <!-- <div id="mm" class="easyui-menu" style="width:150px;">
@@ -162,13 +220,16 @@ crossorigin="anonymous"></script> -->
     src="https://unpkg.com/bootstrap-table@1.17.1/dist/extensions/export/bootstrap-table-export.js"></script> -->
 <!-- <script src="/vendor/bootstrap-table/dist/bootstrap-table.min.js"></script> -->
 <!-- <script src="/vendor/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script> -->
-<script type="text/javascript" src="js/index.js"></script>
+
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>-->
+<script type="text/javascript" src="/js/index.js"></script>
 <script type="text/javascript">
+
     let selections = []
     let $showcaseTable = $('#showcaseTable');
     let $remove = $('#remove');
-    let $add = $('#add');
-    let $dit = $('#edit');
+    let $edit = $('#edit');
 
     function getIdSelections() {
         return $.map($showcaseTable.bootstrapTable('getSelections'), function (row) {
@@ -176,29 +237,20 @@ crossorigin="anonymous"></script> -->
         })
     }
 
-    function queryParams(params) {
-        params.tags = "News"
-        return params
-    }
-
-    function responseHandler(res) {
-        console.log("responseHandler" + res)
-        $.each(res.rows, function (i, row) {
-            row.state = $.inArray(row.id, selections) !== -1
-        })
-        return res
-    }
-
     function detailFormatter(index, row) {
-        let html = []
+        let html = [];
         $.each(row, function (key, value) {
             html.push('<p><b>' + key + ':</b> ' + value + '</p>')
-        })
-        return html.join('')
+        });
+        return html.join('');
+    }
+
+    function addShowcase() {
+        console.log("selections" + selections);
     }
 
     function delShowcases() {
-        console.log("selections" + selections)
+        console.log("selections" + selections);
         $.ajax({
             async: false,
             type: 'DELETE',
@@ -231,10 +283,12 @@ crossorigin="anonymous"></script> -->
                 return params
             },
             responseHandler: function (res) {
-                console.log(res)
+                console.log("responseHandler" + res)
+                $.each(res.rows, function (i, row) {
+                    row.state = $.inArray(row.id, selections) !== -1
+                })
                 return res
             },
-            height: 400,
             columns: [
                 {
                     field: 'state',
@@ -272,23 +326,83 @@ crossorigin="anonymous"></script> -->
 
         $showcaseTable.on('check.bs.table uncheck.bs.table ' +
             'check-all.bs.table uncheck-all.bs.table', function () {
-            console.log($showcaseTable.bootstrapTable('getSelections').length)
-            $remove.prop('disabled', !$showcaseTable.bootstrapTable('getSelections').length)
+            console.log($showcaseTable.bootstrapTable('getSelections').length);
+            let selectionSize = $showcaseTable.bootstrapTable('getSelections').length;
+            $remove.prop('disabled', !selectionSize);
+            $edit.prop('disabled', selectionSize !== 1);
             // save your data, here just save the current page
-            selections = getIdSelections()
+            selections = getIdSelections();
             // push or splice the selections if you want to save all data selections
-        })
+        });
         $showcaseTable.on('all.bs.table', function (e, name, args) {
-            console.log(name, args)
-        })
-        $remove.click(function () {
-            delShowcases()
-        })
+            console.log(name, args);
+        });
+    }
+
+    function initShowcaseModal() {
+        let labels = [
+            {
+                "prepend": "标题",
+                "label": "title",
+                "placeholder": "Title",
+                "type": "text"
+            }, {
+                "prepend": "链接",
+                "label": "url",
+                "placeholder": "需要调整访问的地址,http://",
+                "type": "url"
+            }, {
+                "prepend": "信息",
+                "label": "info",
+                "placeholder": "简要说明",
+                "type": "text"
+            }, {
+                "prepend": "图片",
+                "label": "imgUrl",
+                "placeholder": "用于展示的图片, http://",
+                "type": "url"
+            }, {
+                "prepend": "标签",
+                "label": "tags",
+                "placeholder": "标签，多个时使用,隔开",
+                "type": "text"
+            }
+        ]
+        let $addShowcaseFormGroup = $('#addShowcaseFormGroup');
+        $addShowcaseFormGroup.empty()
+        let modeList = "";
+        $.each(labels, function (i, obj) {
+            modeList += '<div class="input-group';
+            if (i !== labels.length - 1) {
+                modeList += ' mb-3'
+            }
+            modeList += '"><div class="input-group-prepend">'
+                + '<span class="input-group-text">' + obj.prepend + '</span></div>'
+                + '<input type="text" aria-label="' + obj.label + '" placeholder="' + obj.placeholder + '" class="form-control"></div>'
+        });
+        $addShowcaseFormGroup.append(modeList)
+        // $('#addShowcaseForm').form({
+        //     url: '/showcase/add',
+        //     error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //         console.log(XMLHttpRequest);
+        //         console.log(textStatus);
+        //         console.log(errorThrown);
+        //     },
+        //     success: function (response) {
+        //         console.log(response);
+        //         $showcaseTable.bootstrapTable('remove', {
+        //             field: 'id',
+        //             values: selections
+        //         })
+        //         $remove.prop('disabled', true)
+        //     }
+        // })
     }
 
     $(function () {
-        initTable()
-    })
+        initShowcaseModal();
+        initTable();
+    });
 </script>
 <script th:inline="javascript">
     // var a = [[${ showcases }]];
@@ -356,7 +470,6 @@ crossorigin="anonymous"></script> -->
             }]
         }]
     };
-    console.log("_menus :" + _menus)
     // $(function () {
     // 	$.ajax({
     // 		url: 'user_getMyInfo.action',
@@ -377,6 +490,7 @@ crossorigin="anonymous"></script> -->
     // 		}
     // 	});
     // });
+
 </script>
 </body>
 
