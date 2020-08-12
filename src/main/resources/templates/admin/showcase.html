@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.css">
+    <script th:replace="common/head::static"></script>
+</head>
+<body>
+<div id="toolbar">
+    <button id="add" class="btn btn-outline-success" type="button"
+            data-toggle="modal" data-target="#addShowcaseModal">
+        <i class="fa fa-plus"></i> 新增
+    </button>
+    <div class="modal fade" id="addShowcaseModal" tabindex="-1" role="dialog"
+         aria-labelledby="addShowcaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <form class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addShowcaseModalLabel">Add Showcase</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="addShowcaseFormGroup" class="form-group">
+                        ...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <button id="remove" class="btn btn-outline-danger" onclick="delShowcases()" disabled>
+        <i class="fa fa-trash"></i> 删除
+    </button>
+    <button id="edit" class="btn btn-outline-primary" type="button"
+            data-toggle="modal" data-target="#addShowcaseModal" disabled>
+        <i class="fa fa-pencil-alt"></i> 编辑
+    </button>
+</div>
+
+<div class="table-responsive">
+    <table id="showcaseTable" class="table table-sm table-light table-hover"
+           data-toggle="table"
+           data-toolbar="#toolbar"
+           data-search="true"
+           data-show-toggle="true"
+           data-show-refresh="true"
+           data-show-columns="true"
+           data-show-columns-toggle-all="true"
+           data-id-field="id"
+           data-detail-view="true"
+           data-detail-formatter="detailFormatter"
+           data-show-pagination-switch="true"
+           data-side-pagination="server"
+           data-pagination="true"
+           data-page-list="[10, 25, 50, 100, all]">
+    </table>
+</div>
+
+<script type="text/javascript">
+    let selections = []
+    let $showcaseTable = $('#showcaseTable');
+    let $remove = $('#remove');
+    let $edit = $('#edit');
+
+    function getIdSelections() {
+        return $.map($showcaseTable.bootstrapTable('getSelections'), function (row) {
+            return row.id
+        })
+    }
+
+    function detailFormatter(index, row) {
+        let html = [];
+        $.each(row, function (key, value) {
+            html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+        });
+        return html.join('');
+    }
+
+    function addShowcase() {
+        console.log("selections" + selections);
+    }
+
+    function delShowcases() {
+        console.log("selections" + selections);
+        $.ajax({
+            async: false,
+            type: 'DELETE',
+            dataType: 'json',
+            data: {
+                ids: selections.join(',')
+            },
+            url: '/showcase/delete',
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log(XMLHttpRequest);
+                console.log(textStatus);
+                console.log(errorThrown);
+            },
+            success: function (response) {
+                console.log(response);
+                $showcaseTable.bootstrapTable('remove', {
+                    field: 'id',
+                    values: selections
+                })
+                $remove.prop('disabled', true)
+            }
+        });
+    }
+
+    function initTable() {
+        $showcaseTable.bootstrapTable('destroy').bootstrapTable({
+            url: '/showcase/search',
+            queryParams: function (params) {
+                params.tags = "News"
+                return params
+            },
+            responseHandler: function (res) {
+                console.log("responseHandler" + res)
+                $.each(res.rows, function (i, row) {
+                    row.state = $.inArray(row.id, selections) !== -1
+                })
+                return res
+            },
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: 'false'
+                }, {
+                    field: 'id',
+                    title: '#'
+                }, {
+                    field: 'title',
+                    title: '标题',
+                }, {
+                    field: 'url',
+                    title: '链接',
+                }, {
+                    field: 'info',
+                    title: '描述',
+                }, {
+                    field: 'imgUrl',
+                    title: '图片',
+                }, {
+                    field: 'tags',
+                    title: '标签',
+                }, {
+                    field: 'updateTime',
+                    title: '更新时间',
+                }, {
+                    field: 'createTime',
+                    title: '创建时间',
+                }
+            ],
+        });
+        // data-url="/search"
+        // data-query-params="queryParams"
+        // data-response-handler="responseHandler"
+
+        $showcaseTable.on('check.bs.table uncheck.bs.table ' +
+            'check-all.bs.table uncheck-all.bs.table', function () {
+            console.log($showcaseTable.bootstrapTable('getSelections').length);
+            let selectionSize = $showcaseTable.bootstrapTable('getSelections').length;
+            $remove.prop('disabled', !selectionSize);
+            $edit.prop('disabled', selectionSize !== 1);
+            // save your data, here just save the current page
+            selections = getIdSelections();
+            // push or splice the selections if you want to save all data selections
+        });
+        $showcaseTable.on('all.bs.table', function (e, name, args) {
+            console.log(name, args);
+        });
+    }
+
+    function initShowcaseModal() {
+        let labels = [
+            {
+                "prepend": "标题",
+                "label": "title",
+                "placeholder": "Title",
+                "type": "text"
+            }, {
+                "prepend": "链接",
+                "label": "url",
+                "placeholder": "需要调整访问的地址,http://",
+                "type": "url"
+            }, {
+                "prepend": "信息",
+                "label": "info",
+                "placeholder": "简要说明",
+                "type": "text"
+            }, {
+                "prepend": "图片",
+                "label": "imgUrl",
+                "placeholder": "用于展示的图片, http://",
+                "type": "url"
+            }, {
+                "prepend": "标签",
+                "label": "tags",
+                "placeholder": "标签，多个时使用,隔开",
+                "type": "text"
+            }
+        ]
+        let $addShowcaseFormGroup = $('#addShowcaseFormGroup');
+        $addShowcaseFormGroup.empty()
+        let modeList = "";
+        $.each(labels, function (i, obj) {
+            modeList += '<div class="input-group';
+            if (i !== labels.length - 1) {
+                modeList += ' mb-3'
+            }
+            modeList += '"><div class="input-group-prepend">'
+                + '<span class="input-group-text">' + obj.prepend + '</span></div>'
+                + '<input type="text" aria-label="' + obj.label + '" placeholder="' + obj.placeholder + '" class="form-control"></div>'
+        });
+        $addShowcaseFormGroup.append(modeList)
+        // $('#addShowcaseForm').form({
+        //     url: '/showcase/add',
+        //     error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //         console.log(XMLHttpRequest);
+        //         console.log(textStatus);
+        //         console.log(errorThrown);
+        //     },
+        //     success: function (response) {
+        //         console.log(response);
+        //         $showcaseTable.bootstrapTable('remove', {
+        //             field: 'id',
+        //             values: selections
+        //         })
+        //         $remove.prop('disabled', true)
+        //     }
+        // })
+    }
+
+    $(function () {
+        initShowcaseModal();
+        initTable();
+    });
+</script>
+
+<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/locale/bootstrap-table-zh-CN.js"></script>
+</body>
+</html>

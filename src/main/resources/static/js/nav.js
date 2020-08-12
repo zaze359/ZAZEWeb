@@ -63,18 +63,7 @@
 // 	//
 // 	tabClose();
 // }
-// function createFrame(url) {
-// 	var s = '<iframe scrolling="auto" frameborder="0"  src="' + url
-// 			+ '" style="width:100%;height:100%;"></iframe>';
-// 	return s;
-// }
-// /*
-// function createFrame(url) {
-// 	var s = '<div><jsp:include page="' + url
-// 			+ '"></jsp:include></div>';
-// 	return s;
-// }
-//  */
+
 // function tabClose() {
 // 	/* 双击关闭TAB选项卡 */
 // 	$(".tabs-inner").dblclick(function() {

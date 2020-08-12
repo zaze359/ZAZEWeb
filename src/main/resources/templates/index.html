@@ -3,24 +3,23 @@
 <!--<head th:replace="base :: common_header(~{::title},~{::link})">-->
 <head>
     <title>Test</title>
-    <meta charset="utf-8">
-    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Jekyll v4.0.1">
-    <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.css">
-    <link rel="stylesheet" href="/css/default.css">
+    <!--    <meta charset="utf-8">-->
+    <!--    &lt;!&ndash; <meta http-equiv="X-UA-Compatible" content="IE=edge"> &ndash;&gt;-->
+    <!--    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
+    <!--    <meta name="description" content="">-->
+    <!--    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">-->
+    <!--    <meta name="generator" content="Jekyll v4.0.1">-->
+    <!--    <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.css"/>-->
+    <!--    <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">-->
+    <!--    <link rel="stylesheet" href="/css/default.css">-->
     <link rel="stylesheet" href="/css/nav.css">
-    <!--    <link rel="stylesheet" href="/css/dashboard.css">-->
+    <script th:replace="common/head::static"></script>
 </head>
 
 <body>
 <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow">
-        <a class="navbar-brand" href="#">欢迎使用</a>
+        <a class="navbar-brand" href="/">欢迎使用</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarCollapse"
                 aria-controls="myNavbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -34,7 +33,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/search(tags='aaa')}">登录</a>
+                    <a class="nav-link" th:href="@{/admin}">Admin</a>
                 </li>
                 <!--                <li class="nav-item">-->
                 <!--                    <a class="nav-link disabled" href="javascript:void(0);" onclick="regist()" tabindex="-1"-->
@@ -59,133 +58,78 @@
         </div>
     </nav>
 </header>
-<!--<nav aria-label="Page navigation example">-->
-<!--    <ul class="pagination">-->
-<!--        <li class="page-item">-->
-<!--            <a class="page-link" href="#" aria-label="Previous">-->
-<!--                <span aria-hidden="true">&laquo;</span>-->
-<!--            </a>-->
-<!--        </li>-->
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
 
-<!--        <li class="page-item"><a class="page-link" href="#">1</a></li>-->
-<!--        <li class="page-item"><a class="page-link" href="#">2</a></li>-->
-<!--        <li class="page-item"><a class="page-link" href="#">3</a></li>-->
-<!--        <li class="page-item">-->
-<!--            <a class="page-link" href="#" aria-label="Next">-->
-<!--                <span aria-hidden="true">&raquo;</span>-->
-<!--            </a>-->
-<!--        </li>-->
-<!--    </ul>-->
-<!--</nav>-->
-<!--<nav aria-label="...">-->
-<!--    <ul class="pagination">-->
-<!--        <li class="page-item disabled">-->
-<!--            <span class="page-link">Previous</span>-->
-<!--        </li>-->
-<!--        <li class="page-item"><a class="page-link" href="#">1</a></li>-->
-<!--        <li class="page-item active" aria-current="page">-->
-<!--                    <span class="page-link">-->
-<!--                        2-->
-<!--                        <span class="sr-only">(current)</span>-->
-<!--                    </span>-->
-<!--        </li>-->
-<!--        <li class="page-item"><a class="page-link" href="#">3</a></li>-->
-<!--        <li class="page-item">-->
-<!--            <a class="page-link" href="#">Next</a>-->
-<!--        </li>-->
-<!--    </ul>-->
-<!--</nav>-->
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<nav aria-label="...">
+    <ul class="pagination">
+        <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item active" aria-current="page">
+                    <span class="page-link">
+                        2
+                        <span class="sr-only">(current)</span>
+                    </span>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
 <div class="container-fluid">
     <main role="main">
-        <!--            <form class="form-inline" action="">-->
-        <!--                <div class="form-group">-->
-        <!--                    <label class="control-label" for="">has-success:-->
-        <!--                        <input type="text" class="form-control input-lg" placeholder="input-lg">-->
-        <!--                    </label>-->
-        <!--                </div>-->
-        <!--                <div class="form-group has-success">-->
-        <!--                    <label class="control-label" for="">has-success: </label>-->
-        <!--                    <label>-->
-        <!--                        <input type="text" class="form-control input-lg" placeholder="input-lg">-->
-        <!--                    </label>-->
-        <!--                </div>-->
-        <!--                <div class="form-group has-error">-->
-        <!--                    <label class="control-label" for="">has-error: </label>-->
-        <!--                    <label>-->
-        <!--                        <input type="text" class="form-control input-lg" placeholder="input-sm">-->
-        <!--                    </label>-->
-        <!--                </div>-->
-        <!--                <div class="form-group has-warning">-->
-        <!--                    <label class="control-label" for="">这是一个输入框: </label>-->
-        <!--                    <label for="1"></label>-->
-        <!--                    <select class="form-control" name="" id="1">-->
-        <!--                        <option value="">北京</option>-->
-        <!--                        <option value="">上海</option>-->
-        <!--                        <option value="">广州</option>-->
-        <!--                        <option value="">深圳</option>-->
-        <!--                        <option value="">杭州</option>-->
-        <!--                    </select>-->
-        <!--                </div>-->
-        <!--                <div class="form-group">-->
-        <!--                    <label for="">这是一个输入框: </label>-->
-        <!--                    <textarea class="form-control" name="" id="" cols="30" rows="10"></textarea>-->
-        <!--                </div>-->
-        <!--            </form>-->
-
-        <div id="toolbar">
-            <button id="add" class="btn btn-outline-success" type="button"
-                    data-toggle="modal" data-target="#addShowcaseModal">
-                <i class="fa fa-plus"></i> 新增
-            </button>
-            <div class="modal fade" id="addShowcaseModal" tabindex="-1" role="dialog"
-                 aria-labelledby="addShowcaseModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                    <form class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addShowcaseModalLabel">Add Showcase</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="addShowcaseFormGroup" class="form-group">
-                                ...
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
-                    </form>
-                </div>
+        <form class="form-inline" action="">
+            <div class="form-group">
+                <label class="control-label" for="">has-success:
+                    <input type="text" class="form-control input-lg" placeholder="input-lg">
+                </label>
             </div>
-            <button id="remove" class="btn btn-outline-danger" onclick="delShowcases()" disabled>
-                <i class="fa fa-trash"></i> 删除
-            </button>
-            <button id="edit" class="btn btn-outline-primary" type="button"
-                    data-toggle="modal" data-target="#addShowcaseModal" disabled>
-                <i class="fa fa-pencil-alt"></i> 编辑
-            </button>
-        </div>
-
-        <div class="table-responsive">
-            <table id="showcaseTable" class="table table-sm table-light table-hover"
-                   data-toggle="table"
-                   data-toolbar="#toolbar"
-                   data-search="true"
-                   data-show-toggle="true"
-                   data-show-refresh="true"
-                   data-show-columns="true"
-                   data-show-columns-toggle-all="true"
-                   data-id-field="id"
-                   data-detail-view="true"
-                   data-detail-formatter="detailFormatter"
-                   data-show-pagination-switch="true"
-                   data-side-pagination="server"
-                   data-pagination="true"
-                   data-page-list="[10, 25, 50, 100, all]">
-            </table>
-        </div>
+            <div class="form-group has-success">
+                <label class="control-label" for="">has-success: </label>
+                <label>
+                    <input type="text" class="form-control input-lg" placeholder="input-lg">
+                </label>
+            </div>
+            <div class="form-group has-error">
+                <label class="control-label" for="">has-error: </label>
+                <label>
+                    <input type="text" class="form-control input-lg" placeholder="input-sm">
+                </label>
+            </div>
+            <div class="form-group has-warning">
+                <label class="control-label" for="">这是一个输入框: </label>
+                <label for="1"></label>
+                <select class="form-control" name="" id="1">
+                    <option value="">北京</option>
+                    <option value="">上海</option>
+                    <option value="">广州</option>
+                    <option value="">深圳</option>
+                    <option value="">杭州</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="">这是一个输入框: </label>
+                <textarea class="form-control" name="" id="" cols="30" rows="10"></textarea>
+            </div>
+        </form>
     </main>
 </div>
 
@@ -204,209 +148,13 @@
 <div th:insert="model/login" style="border: #222222 2px solid"></div>
 <div th:insert="model/regist" style="border: #ce6969 2px solid"></div>
 <div th:insert="model/rePassword" style="border: #2d8b51 2px solid"></div> -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-crossorigin="anonymous"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
-<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.js"></script>
-<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/locale/bootstrap-table-zh-CN.js"></script>
-<!--<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>-->
-<!--<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table-locale-all.js"></script>-->
-<!-- <script
-    src="https://unpkg.com/bootstrap-table@1.17.1/dist/extensions/export/bootstrap-table-export.js"></script> -->
-<!-- <script src="/vendor/bootstrap-table/dist/bootstrap-table.min.js"></script> -->
-<!-- <script src="/vendor/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script> -->
-
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>-->
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.js"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"-->
+<!--        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>-->
 <script type="text/javascript" src="/js/index.js"></script>
-<script type="text/javascript">
-
-    let selections = []
-    let $showcaseTable = $('#showcaseTable');
-    let $remove = $('#remove');
-    let $edit = $('#edit');
-
-    function getIdSelections() {
-        return $.map($showcaseTable.bootstrapTable('getSelections'), function (row) {
-            return row.id
-        })
-    }
-
-    function detailFormatter(index, row) {
-        let html = [];
-        $.each(row, function (key, value) {
-            html.push('<p><b>' + key + ':</b> ' + value + '</p>')
-        });
-        return html.join('');
-    }
-
-    function addShowcase() {
-        console.log("selections" + selections);
-    }
-
-    function delShowcases() {
-        console.log("selections" + selections);
-        $.ajax({
-            async: false,
-            type: 'DELETE',
-            dataType: 'json',
-            data: {
-                ids: selections.join(',')
-            },
-            url: '/showcase/delete',
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                console.log(XMLHttpRequest);
-                console.log(textStatus);
-                console.log(errorThrown);
-            },
-            success: function (response) {
-                console.log(response);
-                $showcaseTable.bootstrapTable('remove', {
-                    field: 'id',
-                    values: selections
-                })
-                $remove.prop('disabled', true)
-            }
-        });
-    }
-
-    function initTable() {
-        $showcaseTable.bootstrapTable('destroy').bootstrapTable({
-            url: '/showcase/search',
-            queryParams: function (params) {
-                params.tags = "News"
-                return params
-            },
-            responseHandler: function (res) {
-                console.log("responseHandler" + res)
-                $.each(res.rows, function (i, row) {
-                    row.state = $.inArray(row.id, selections) !== -1
-                })
-                return res
-            },
-            columns: [
-                {
-                    field: 'state',
-                    checkbox: 'false'
-                }, {
-                    field: 'id',
-                    title: '#'
-                }, {
-                    field: 'title',
-                    title: '标题',
-                }, {
-                    field: 'url',
-                    title: '链接',
-                }, {
-                    field: 'info',
-                    title: '描述',
-                }, {
-                    field: 'imgUrl',
-                    title: '图片',
-                }, {
-                    field: 'tags',
-                    title: '标签',
-                }, {
-                    field: 'updateTime',
-                    title: '更新时间',
-                }, {
-                    field: 'createTime',
-                    title: '创建时间',
-                }
-            ],
-        });
-        // data-url="/search"
-        // data-query-params="queryParams"
-        // data-response-handler="responseHandler"
-
-        $showcaseTable.on('check.bs.table uncheck.bs.table ' +
-            'check-all.bs.table uncheck-all.bs.table', function () {
-            console.log($showcaseTable.bootstrapTable('getSelections').length);
-            let selectionSize = $showcaseTable.bootstrapTable('getSelections').length;
-            $remove.prop('disabled', !selectionSize);
-            $edit.prop('disabled', selectionSize !== 1);
-            // save your data, here just save the current page
-            selections = getIdSelections();
-            // push or splice the selections if you want to save all data selections
-        });
-        $showcaseTable.on('all.bs.table', function (e, name, args) {
-            console.log(name, args);
-        });
-    }
-
-    function initShowcaseModal() {
-        let labels = [
-            {
-                "prepend": "标题",
-                "label": "title",
-                "placeholder": "Title",
-                "type": "text"
-            }, {
-                "prepend": "链接",
-                "label": "url",
-                "placeholder": "需要调整访问的地址,http://",
-                "type": "url"
-            }, {
-                "prepend": "信息",
-                "label": "info",
-                "placeholder": "简要说明",
-                "type": "text"
-            }, {
-                "prepend": "图片",
-                "label": "imgUrl",
-                "placeholder": "用于展示的图片, http://",
-                "type": "url"
-            }, {
-                "prepend": "标签",
-                "label": "tags",
-                "placeholder": "标签，多个时使用,隔开",
-                "type": "text"
-            }
-        ]
-        let $addShowcaseFormGroup = $('#addShowcaseFormGroup');
-        $addShowcaseFormGroup.empty()
-        let modeList = "";
-        $.each(labels, function (i, obj) {
-            modeList += '<div class="input-group';
-            if (i !== labels.length - 1) {
-                modeList += ' mb-3'
-            }
-            modeList += '"><div class="input-group-prepend">'
-                + '<span class="input-group-text">' + obj.prepend + '</span></div>'
-                + '<input type="text" aria-label="' + obj.label + '" placeholder="' + obj.placeholder + '" class="form-control"></div>'
-        });
-        $addShowcaseFormGroup.append(modeList)
-        // $('#addShowcaseForm').form({
-        //     url: '/showcase/add',
-        //     error: function (XMLHttpRequest, textStatus, errorThrown) {
-        //         console.log(XMLHttpRequest);
-        //         console.log(textStatus);
-        //         console.log(errorThrown);
-        //     },
-        //     success: function (response) {
-        //         console.log(response);
-        //         $showcaseTable.bootstrapTable('remove', {
-        //             field: 'id',
-        //             values: selections
-        //         })
-        //         $remove.prop('disabled', true)
-        //     }
-        // })
-    }
-
-    $(function () {
-        initShowcaseModal();
-        initTable();
-    });
-</script>
 <script th:inline="javascript">
-    // var a = [[${ showcases }]];
-    // console.log("showcases" + a)
     var _menus = {
         "menus": [{
             "menuid": "1",
