@@ -10,6 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface LoggerManage {
-
-	public String description();
+    String description();
 }
