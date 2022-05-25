@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/zaze359/ZAZEWeb#readme",
   "dependencies": {
-    "bootstrap-table": "^1.17.1",
+    "bootstrap-table": "^1.20.2",
     "vue": "^2.6.11",
     "vue-loader": "^15.9.3",
     "webpack": "^4.43.0"
