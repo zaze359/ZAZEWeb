@@ -1,0 +1,182 @@
+<html>
+<head>
+<base href="<%=basePath%>">
+<title>My JSP 'myFriends.html' starting page</title>
+<jsp:include page="../../inc.html"></jsp:include>
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/css/friend.css"
+	type="text/css"></link>
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/css/network.css"
+	type="text/css"></link>
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/css/default.css"
+	type="text/css"></link>
+<script type="text/javascript">
+	var friendList;
+	var friendPanel;
+	var fNetwork;
+	var fMsg;
+	var fnpage;
+	$(function() {
+		$
+				.ajax({
+					url : 'concern_getMyFriends.action',
+					success : function(data) {
+						var d = $.parseJSON(data);
+						friendList.empty();
+						for ( var i = 0; i < d.length; i++) {
+							var str = "";
+							str += "<div class=\"fDiv\"><img src=\"./images/default_user.jpg\"/>&nbsp;<a href=\"javascript:void(0);\" onclick=\"getFriendMsg('"
+									+ d[i].username
+									+ "', '1', '5')\">"
+									+ d[i].username
+									+ "</a></div><div>&nbsp;</div>";
+							friendList.append(str);
+						}
+						$('#fN').show().pagination({
+							showPageList : false,
+							showRefresh : false,
+							displayMsg : ""
+						});
+					}
+				});
+		friendPanel = $('#friendPanel');
+		friendList = $('#friendList');
+		fNetwork = $('#fNetwork');
+		fMsg = $('#fMsg');
+	});
+
+	function getFriendMsg(name, pageNum, pageSize) {
+		$
+				.ajax({
+					type : 'POST',
+					url : 'network_getOtherPages.action',
+					data : 'friendName=' + name + '&page=' + pageNum + '&rows='
+							+ pageSize,
+					success : function(data) {
+						var d = $.parseJSON(data);
+						console.info(d);
+						fNetwork.empty();
+						if (d.rows.length > 0) {
+							for ( var i = 0; i < d.rows.length; i++) {
+								var str = "";
+								str += '<div class="hot1"><img src="./images/page.png" /><a href="'+ d.rows[i].urls +'" target="_blank">'
+										+ d.rows[i].name + '</a></div>';
+								str += '<div class="hotFont">&nbsp;&nbsp;&nbsp;url:&nbsp;'
+										+ d.rows[i].urls + '<div>';
+								str += '<div><table><tr><td><font class="hotFont">&nbsp;&nbsp;收藏家:</font>'
+										+ d.rows[i].upName
+										+ '</td><td><font class="hotFont">收藏时间:</font>'
+										+ d.rows[i].upTime + '</td>';
+								str += "<td><a href=\"javascript:void(0)\" onclick=\"commentFriendPage('"
+										+ d.rows[i].id
+										+ "')\">点评</a></td><td><a href=\"javascript:void(0)\" onclick=\"collectFriendPage('"
+										+ d.rows[i].id + "')\">我也收藏</a>";
+								str += '</td></tr></table></div><div>&nbsp;</div>';
+								fNetwork.append(str);
+							}
+							fnpage = $('#fNpage').show().pagination({
+								total : d.total,
+								pageSize : 5,
+								showPageList : false,
+								showRefresh : false,
+								onSelectPage : function(pageNumber, pageSize) {
+									getFriendMsg(name, pageNumber, pageSize)
+								}
+							});
+						} else {
+							fNetwork.append("该好友至今未收藏任何网址.......");
+						}
+					}
+				});
+		$
+				.ajax({
+					type : 'POST',
+					url : 'user_getOtherInfo.action',
+					data : 'username=' + name,
+					success : function(data) {
+						var d = $.parseJSON(data);
+						console.info(d);
+						fMsg.empty();
+						if (d.intro == undefined) {
+							d.intro = "此好友什么都没留下........";
+						}
+						if (d.email == undefined) {
+							d.email = "未填";
+						}
+						if (d.mobile == undefined) {
+							d.mobile = "未填";
+						}
+						var str = "";
+						str += '<div class="fName">'
+								+ d.username
+								+ '</div><div><hr style="border:1px dotted  #95B8E7"/></div>';
+						str += '<div>个人简介:</div><div>'
+								+ d.intro
+								+ '</div><hr style="border:1px dotted  #95B8E7"/></div><div>邮箱:&nbsp;'
+								+ d.email
+								+ '</div><div><hr style="border:1px dotted  #95B8E7"/></div>';
+						str += '<div>电话:&nbsp;' + d.mobile + '</div><hr style="border:1px dotted  #95B8E7"/>';
+						str += "<div>&nbsp;</div><div class=\"delDiv\"><a href=\"javascript:void(0);\" onclick=\"delFriend('"+ d.username +"')\" class=\"easyui-linkbutton\ plain=\"true\" face=\"微软雅黑\">删除好友</a></div>";
+						fMsg.append(str);
+					}
+				});
+	};
+	function commentFriendPage(id) {
+		$('#reviewPageId').attr('value', id);
+		reviewDialog.dialog('open');
+	}
+	function collectFriendPage(id) {
+		console.info(id);
+	}
+	function delFriend(friendName){
+		$.messager.confirm('温馨提示', '你确定要删除该好友？', function(r){
+			if(r) {
+				$.ajax({
+					type : 'post',
+					url : 'concern_delFriend.action',
+					data : 'username=' + friendName,
+					success : function(data){
+						$.messager.show({
+							title : '消息',
+							msg : '成功删除',
+							timeout : 5000,
+							showType : 'slide'
+						});
+					}
+				});
+			}
+		});
+	}
+</script>
+</head>
+<body>
+	<div id="friendPanel" class="easyui-panel"
+		data-options="fit:'true',border: 'false'">
+		<div class="easyui-layout" data-options="fit:'true',border: 'false'"
+			style="margin : 2px;">
+			<div data-options="region:'west',split:true" style="width:145px;">
+				<div id="friendList" title="好友" class="easyui-panel"
+					data-options="fit: true,border: false" style="padding:5px;"></div>
+			</div>
+			<div data-options="region:'center'">
+				<div class="easyui-panel" title="好友收藏"
+					data-options="fit:true, border: false" style="padding:5px;">
+					<div id="fNetwork" style="height: 450px"></div>
+					<div id="fNpage" class="easyui-pagination"
+						style="border:1px solid #ddd;"></div>
+				</div>
+			</div>
+			<div data-options="region:'east',split:true" style="width:200px;">
+				<div class="easyui-panel" title="好友信息"
+					data-options="fit:true, border: false" style="padding:5px;">
+					<div id="fMsg"></div>
+				</div>
+			</div>
+			<div data-options="region:'south'" style="height:20px"></div>
+		</div>
+	</div>
+	<jsp:include page="reviewDialog.html"></jsp:include>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<script type="text/javascript">
+	var hotDiv;
+	var hotTop10;
+	$(function() {
+		$
+				.ajax({
+					url : 'network_getHotPages.action',
+					success : function(data) {
+						//hotDiv.panel('refresh');
+						var d = $.parseJSON(data);
+						hotTop10.empty();
+						for ( var i = 0; i < d.length; i++) {
+							var str = "";
+							str += '<div class="hot1"><img src="./images/page.png" /><a href="'+ d[i].urls +'" target="_blank">'
+									+ d[i].name
+									+ '</a><img src="./images/hot.gif"/></div>';
+							str += '<div class="hotFont">&nbsp;&nbsp;&nbsp;url:&nbsp;'
+									+ d[i].urls + '<div>';
+							str += '<div><table><tr><td><font class="hotFont">&nbsp;&nbsp;收藏家:</font>'
+									+ d[i].upName
+									+ '</td><td><font class="hotFont">收藏时间:</font>'
+									+ d[i].upTime + '</td>';
+							str += "<td><a href=\"javascript:void(0);\" onclick=\"commentHotPage('"
+									+ d[i].id
+									+ "')\">点评</a></td><td><a href=\"javascript:void(0);\" onclick=\"collectHotPage('"
+									+ d[i].id + "')\">我也收藏</a>";
+							str += '</td></tr></table></div><div>&nbsp;</div>';
+							hotTop10.append(str);
+						}
+					}
+				});
+		hotDiv = $('#hotDiv').panel({
+			title : '热门收藏Top10',
+			collapsible : true
+		});
+		hotTop10 = $('#hotTop10');
+	});
+
+	function commentHotPage(id) {
+		$.ajax({
+			url : 'user_getMyInfo.action',
+			success : function(data) {
+				var d = $.parseJSON(data);
+				if (d == null) {
+					loginDialog.dialog('open');
+					$.messager.show({
+						title : '提示',
+						msg : '请先登录!',
+						timeout : 5000,
+						showType : 'slide'
+					});
+				} else {
+					$('#reviewPageId').attr('value', id);
+					reviewDialog.dialog('open');
+				}
+			}
+		});
+	}
+	function collectHotPage(id) {
+		console.info("aaaaa");
+	}
+</script>
+<div id="hotDiv" class="easyui-panel">
+	<div id="hotTop10"></div>
+</div>

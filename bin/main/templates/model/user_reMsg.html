@@ -1,0 +1,66 @@
+<jsp:include page="../../inc.html"></jsp:include>
+<script type="text/javascript">
+	var user_reMsgForm;
+	$(function() {
+		$.ajax({
+			url : 'user_info.action',
+			success : function(data) {
+				var d = $.parseJSON(data);
+				$('#re_intro').attr("value", d.intro);
+				$('#re_name').attr("value", d.name);
+				$('#re_mobile').attr("value", d.mobile);
+				$('#re_email').attr("value", d.email);
+			}
+		});
+		user_reMsgForm = $('#user_reMsgForm').form({
+			url : 'user_reMsg.action',
+			success : function(data) {
+				$.messager.show({
+						title : '修改信息',
+						msg : "修改成功",
+						timeout : 5000,
+						showType : 'slide'
+				});
+			}
+		});
+	});
+	function msgSubmit() {
+		user_reMsgForm.submit();
+	}
+</script>
+<div id="user_reMsgDiv" data-options="fit: true">
+	<div>
+		<font size="5">修改个人资料</font>
+	</div>
+	<hr />
+	<form id="user_reMsgForm" method="post">
+		<div align="left" style="width: 100%;">
+			<table style="width: 500px;">
+				<tr>
+					<td>姓名：</td>
+					<td><input id="re_name" type="text" name="name" value="" /></td>
+				</tr>
+				<tr>
+					<td>电话：</td>
+					<td><input id="re_mobile" type="text" name="mobile" value="aa" />
+					</td>
+				</tr>
+				<tr>
+					<td>邮箱：</td>
+					<td><input id="re_email" type="text" name="email" value="" />
+					</td>
+					<td id="val_email"></td>
+				</tr>
+				<tr>
+					<td>个人说明：</td>
+					<td><textarea rows="3" cols="30" id="re_intro" name="intro"
+							value="" style="resize:none"></textarea></td>
+				</tr>
+				<tr>
+					<td align="left"><a class="easyui-linkbutton" data-options=""
+						onclick="msgSubmit();">确认修改</a>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>

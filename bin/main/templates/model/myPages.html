@@ -1,0 +1,245 @@
+<html>
+<head>
+<base href="<%=basePath%>">
+<title>My JSP 'networkMsg.html' starting page</title>
+<script type="text/javascript">
+	var addNwForm;
+	var updateNwForm;
+	var networkDatagrid;
+	$(function() {
+		networkDatagrid = $('#networkDg').datagrid({
+			url : 'network_getMyPages.action',
+			title : '我收藏的网址',
+			iconCls : 'icon-sum',//图标 
+			height : 'auto',
+			nowrap : true, //false自动折行
+			striped : true,
+			border : true,
+			collapsible : false,//是否可折叠的 
+			idFiled : 'id',
+			fit : true,//自动大小 
+			//sortName: 'code', //排序
+			//sortOrder: 'desc',
+			remoteSort : false,
+			singleSelect : false,//是否单选 
+			pagination : true,//分页控件 
+			pageSize : 10,
+			pageList : [ 5, 10, 20, 30 ],
+			rownumbers : true,//行号 
+			frozenColumns : [ [ {
+				field : 'id',
+				checkbox : true
+			} ] ],
+			columns : [ [ {
+				field : 'tagName',
+				title : '标签',
+				width : 100
+			/*
+			editor : {
+				type : 'validatebox',
+				oprions : {
+					required : true
+				}
+			}*/
+			}, {
+				field : 'name',
+				title : '站名',
+				width : 100
+			}, {
+				field : 'urls',
+				title : 'URL',
+				width : 250
+			}, {
+				field : 'upTime',
+				title : '收藏时间',
+				width : 200
+			}/*,{
+							field : 'updateTime',
+							title : '更新时间',
+							width : 200
+						}*/, {
+				field : 'clickNum',
+				title : '点击数',
+				width : 100,
+				align : 'right'
+			} ] ],
+			toolbar : [ {
+				text : '添加',
+				iconCls : 'icon-add',
+				handler : function() {
+					addNetwork();
+				}
+			}, '-', {
+				text : '编辑',
+				iconCls : 'icon-edit',
+				handler : function() {
+					updateNetwork();
+				}
+			}, '-', {
+				text : '删除',
+				iconCls : 'icon-cancel',
+				handler : function() {
+					console.info('delete');
+					delNetwork();
+				}
+			} ],
+			success : function(data){
+				console.info(data);
+			}
+			
+		});
+
+		$('#addNw').dialog({
+			title : '收藏新网址',
+			closable : true,
+			closed : true,
+			modal : true,
+			buttons : [ {
+				text : '收藏',
+				handler : function() {
+					addNwForm.submit();
+				}
+			} ]
+		});
+		addNwForm = $('#addNwForm').form({
+			url : 'network_addMyPages',
+			success : function(data) {
+				var d = $.parseJSON(data);
+				console.info(d);
+				$('#addNw').dialog('close');
+				networkDatagrid.datagrid('reload');
+				$.messager.show({
+					title : '提示信息',
+					msg : "添加成功",
+					timeout : 5000,
+					showType : 'slide'
+				});
+			}
+		});
+
+		$('#updateNw').dialog({
+			title : '更新网址',
+			closable : true,
+			closed : true,
+			modal : true,
+			buttons : [ {
+				text : '保存更新',
+				handler : function() {
+					updateNwForm.submit();
+				}
+			} ]
+		});
+		updateNwForm = $('#updateNwForm').form({
+			url : 'network_updateMyPages',
+			success : function(data) {
+				var d = $.parseJSON(data);
+				console.info(d);
+				$('#updateNw').dialog('close');
+				networkDatagrid.datagrid('reload');
+				$.messager.show({
+					title : '提示信息',
+					msg : "保存成功",
+					timeout : 5000,
+					showType : 'slide'
+				});
+			}
+		});
+	});
+
+	function addNetwork() {
+		$('#addNw').dialog('open');
+	};
+	function updateNetwork() {
+		var p = networkDatagrid.datagrid('getChecked');
+		console.info(p);
+		if (p.length == 0) {
+			$.messager.alert('提示','<font>请选择一项!<font>','info');
+		} else if(p.length == 1){
+			$('#updateNwId').attr('value', p[0].id);
+			$('#updateNwUrl').attr('value', p[0].urls);
+			$('#updateNwName').attr('value', p[0].name);
+			$('#updateNwTag').attr('value', p[0].tagName);
+			$('#updateNw').dialog('open');
+		} else {
+			$.messager.alert('提示','<font>不支持批量编辑!<font>','warning'); 
+		}
+	};
+	
+	function delNetwork() {
+		var rows = networkDatagrid.datagrid('getChecked');
+		var ids = [];
+		if (rows.length > 0) {
+			$.messager.confirm('请确认', '您要删除当前所选项目？', function(r) {
+				if (r) {
+					for ( var i = 0; i < rows.length; i++) {
+						ids.push(rows[i].id);
+					}
+					$.ajax({
+						url : 'network_delMyPages.action',
+						data : {
+							ids : ids.join(',')
+						},
+						dataType : 'json',
+						success : function() {
+							networkDatagrid.datagrid('reload');
+							networkDatagrid.datagrid('unselectAll');
+							$.messager.show({
+								title : '提示',
+								msg : '删除成功！'
+							});
+						}
+					});
+				}
+			});
+		} else {
+			$.messager.alert('提示', '请勾选要删除的记录！', 'error');
+		}
+	};
+</script>
+</head>
+
+<body data-option="fit: true">
+	<div id="networkDg"></div>
+	<div id="addNw" class="easyui-dialog"
+		style="width: 400px; height: 200px;">
+		<form id="addNwForm" method="post">
+			<table>
+				<tr>
+					<td>URL:</td>
+					<td><input type="text" name="urls" /></td>
+				</tr>
+				<tr>
+					<td>站名：</td>
+					<td><input type="text" name="name" /></td>
+				</tr>
+				<tr>
+					<td>标签：</td>
+					<td><input type="text" name="tagName" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div id="updateNw" class="easyui-dialog"
+		style="width: 400px; height: 200px;">
+		<form id="updateNwForm" method="post">
+			<table>
+				<tr>
+					<td><input id="updateNwId" type="hidden" name="id" /></td>
+				</tr>
+				<tr>
+					<td>URL:</td>
+					<td><input id="updateNwUrl" type="text" name="urls" /></td>
+				</tr>
+				<tr>
+					<td>站名：</td>
+					<td><input id="updateNwName" type="text" name="name" /></td>
+				</tr>
+				<tr>
+					<td>标签：</td>
+					<td><input id="updateNwTag" type="text" name="tagName" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

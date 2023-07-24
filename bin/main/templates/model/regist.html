@@ -1,0 +1,77 @@
+<script type="text/javascript">
+	var registDialog;
+	var regestForm;
+	$(function(){
+		registDialog = $('#registDialog').dialog({
+			closable : true,
+			closed : true,
+			modal : true,
+			title : '注册',
+			buttons : [{
+				text : '提交',
+				handler : function(){
+					if($('#password').attr('value') == $('#rePassword').attr('value')) {
+						$('#val_password').empty();
+						registForm.submit();
+					} else {
+						$('#val_password').empty();
+						var val_msg = "";
+						val_msg += '<font color="red">密码不一致</font>';
+						$('#val_password').append(val_msg);
+					}
+				}
+			}]
+		});
+		
+		registForm = $('#registForm').form({
+			url:'user_regist.action',
+			success:function(data){
+				var d = $.parseJSON(data);
+				if(d.success){
+					registDialog.dialog('close');
+					loginDialog.dialog('open');
+										//右下角弹窗
+					$.messager.show({
+						title : '注册信息',
+						msg : "注册成功!",
+						timeout : 5000,
+						showType : 'slide'
+					});
+				} else {
+					$.messager.show({
+						title : '注册信息',
+						msg : "用户已存在！",
+						timeout : 5000,
+						showType : 'slide'
+					});
+				}
+			}
+		});
+		/*
+		$('rePassword').focus(function(){
+		});*/
+	});
+</script>
+<div id="registDialog" class="easyui-dialog" style="width:400px;height:250px;">
+	<form id="registForm" method="post">
+		<div align="left">
+			<table>
+				<tr>
+					<td>用户名：</td>
+					<td><input type="text" name="username" /></td>
+					<td id="val_username"></td>
+				</tr>
+				<tr>
+					<td>密&nbsp;&nbsp;码：</td>
+					<td><input id="password" type="password" name="password" /></td>
+					<td id="val_password"></td>
+				</tr>
+				<tr>
+					<td>确认密码：</td>
+					<td><input id="rePassword" type="password" name="repassword" /></td>
+					<td id="val_repassword"></td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
