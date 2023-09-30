@@ -26,27 +26,13 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-//    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-//    implementation("org.springframework.boot:spring-boot-starter-web")
-
-//    implementation("org.apache.commons:commons-pool2")
-
+    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     implementation(project(":core:common"))
     implementation(project(":core:database"))
-
 }
 
-tasks.getByName<Test>("test") {
+tasks.test {
     useJUnitPlatform()
 }
-
-//tasks.bootJar {
-//    enabled = false
-//}
-//tasks.jar {
-//    enabled = true
-//}

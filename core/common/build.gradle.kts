@@ -19,6 +19,8 @@ dependencies {
 
     // spring boot 基础依赖
     api("org.springframework.boot:spring-boot-starter-web")
+//    api("org.springframework.boot:spring-boot-starter-json")
+    api("com.google.code.gson:gson:2.8.6")
 
     api("org.aspectj:aspectjweaver:1.9.19")
 

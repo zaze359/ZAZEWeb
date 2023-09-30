@@ -17,7 +17,6 @@ public class Response<T> {
         this.data = data;
     }
 
-
     public Response(int code, T data, String msg) {
         this.code = code;
         this.data = data;

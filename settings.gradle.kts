@@ -6,11 +6,9 @@
 
 rootProject.name = "zaze-server"
 
-include("core:database")
+include(":core:database")
 include(":core:common")
-
-include("feature:showcase")
-include("core:model")
-findProject(":core:model")?.name = "model"
-include("feature:application")
-findProject(":feature:application")?.name = "application"
+//include(":core:model")
+include(":feature:showcase")
+include(":feature:application")
+include(":feature:ad")

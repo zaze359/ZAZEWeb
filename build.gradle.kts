@@ -23,13 +23,19 @@ configurations {
 
 
 repositories {
+    if (extra.has("useLocalMaven") && (extra["useLocalMaven"] as String).toBoolean()) {
+        maven {
+            isAllowInsecureProtocol = true
+            url = uri("http://localhost:8081/repository/maven-public")
+        }
+    }
+    mavenLocal()
     maven { url = uri("https://maven.aliyun.com/repository/public") }
     maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
     maven { url = uri("https://maven.aliyun.com/repository/google") }
     maven {
         url = uri("https://repo.maven.apache.org/maven2/")
     }
-    mavenLocal()
     mavenCentral()
 }
 
@@ -64,6 +70,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":feature:showcase"))
     implementation(project(":feature:application"))
+    implementation(project(":feature:ad"))
 }
 
 //sourceSets {
