@@ -1,0 +1,7 @@
+ok:
+  http:
+    connect-timeout: 60
+    read-timeout: 60
+    write-timeout: 60
+    max-idle-connections: 200
+    keep-alive-duration: 300

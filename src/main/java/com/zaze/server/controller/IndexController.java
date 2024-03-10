@@ -23,21 +23,21 @@ public class IndexController {
     private ShowcaseService showcaseService;
 
     @RequestMapping("/")
-    @LoggerManage(description = "加载index")
+    @LoggerManage(description = "加载index页")
     public String index(Model model) {
         model.addAttribute("showcases", showcaseService.getShowcaseList());
         return "index";
     }
 
     @RequestMapping("/admin")
-    @LoggerManage(description = "加载admin")
+    @LoggerManage(description = "加载admin页")
     public String admin(Model model) {
         model.addAttribute("showcases", showcaseService.getShowcaseList());
         return "admin/showcase";
     }
 
     @RequestMapping("/center")
-    @LoggerManage(description = "加载center")
+    @LoggerManage(description = "加载center页")
     public String center() {
         return "layout/center";
     }

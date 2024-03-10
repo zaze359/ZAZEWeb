@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             AdRules adRules = AdRulesLoader.INSTANCE.parseLTTRules(new FileInputStream(new File("data/ltt_rules.json")));
-            System.out.println("Hello world! : " + adRules);
+            System.out.println("Hello AD : " + adRules);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

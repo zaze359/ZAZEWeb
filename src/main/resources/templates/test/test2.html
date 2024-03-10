@@ -1,0 +1,23 @@
+<div id="_panel1">
+    <form id="_form1"><input name="__text1" value="" /></form>
+</div>
+<!--<div id="_panel2">-->
+<!--    <img id="_img1" src="" />-->
+<!--</div>-->
+<div id="_panel3">
+    <form id="_form2"><input name="__check1" type="checkbox" value="checked" /></form>
+</div>
+<div id="_panel4">
+    <script type="text/javascript">
+        function _form3_submit(event) {
+          var data = {};
+          data.text1 = document.getElementById('_form1').elements['__text1'].value;
+          data.check1 = document.getElementById('_check1').elements['__check1'].value;
+          ajaxPost(_handler_url, data);
+        }
+    </script>
+    <form id="_form3" onsubmit="_form3_submit">
+        <input name="__submit1" type="submit" />
+        <input name="__reset1" type="reset" />
+    </form>
+</div>

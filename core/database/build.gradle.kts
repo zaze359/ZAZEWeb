@@ -9,17 +9,6 @@ plugins {
 group = "com.zaze.server"
 version = "0.0.1-SNAPSHOT"
 
-repositories {
-    maven { url = uri("https://maven.aliyun.com/repository/public") }
-    maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
-    maven { url = uri("https://maven.aliyun.com/repository/google") }
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
-    mavenLocal()
-    mavenCentral()
-}
-
 dependencies {
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
@@ -32,6 +21,8 @@ dependencies {
 //    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     // h2
     runtimeOnly("com.h2database:h2:2.1.214")
+    // 使用 mysql
+    api("mysql:mysql-connector-java")
     // joda money
     implementation("org.joda:joda-money:1.0.3")
     implementation("org.jadira.usertype:usertype.core:6.0.1.GA")

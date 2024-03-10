@@ -9,10 +9,6 @@ plugins {
 group = "com.zaze.server"
 version = "0.0.1-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
@@ -25,6 +21,7 @@ dependencies {
     api("org.aspectj:aspectjweaver:1.9.19")
 
     // kotlin
+    api("org.jetbrains.kotlin:kotlin-reflect")
     api(kotlin("stdlib-jdk8"))
 
     compileOnly("org.projectlombok:lombok")

@@ -12,23 +12,6 @@ plugins {
 group = "com.zaze.server"
 version = "0.0.1-SNAPSHOT"
 
-repositories {
-    if (extra.has("useLocalMaven") && (extra["useLocalMaven"] as String).toBoolean()) {
-        maven {
-            isAllowInsecureProtocol = true
-            url = uri("http://localhost:8081/repository/maven-public")
-        }
-    }
-    mavenLocal()
-    maven { url = uri("https://maven.aliyun.com/repository/public") }
-    maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
-    maven { url = uri("https://maven.aliyun.com/repository/google") }
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
-    mavenCentral()
-}
-
 kotlinLombok {
     lombokConfigurationFile(file("lombok.config"))
 }

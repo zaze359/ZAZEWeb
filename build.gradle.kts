@@ -13,7 +13,9 @@ plugins {
 group = "com.zaze.server"
 version = "0.0.1-SNAPSHOT"
 description = "demo"
+
 java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
 
 configurations {
     compileOnly {
@@ -21,32 +23,14 @@ configurations {
     }
 }
 
-
-repositories {
-    if (extra.has("useLocalMaven") && (extra["useLocalMaven"] as String).toBoolean()) {
-        maven {
-            isAllowInsecureProtocol = true
-            url = uri("http://localhost:8081/repository/maven-public")
-        }
-    }
-    mavenLocal()
-    maven { url = uri("https://maven.aliyun.com/repository/public") }
-    maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
-    maven { url = uri("https://maven.aliyun.com/repository/google") }
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
-    mavenCentral()
-}
-
 dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-cache")
-
     //
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -54,8 +38,6 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation(kotlin("stdlib-jdk8"))
 
 //    implementation("com.github.pagehelper:pagehelper-spring-boot-starter:1.4.6")
 //    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
@@ -68,9 +50,14 @@ dependencies {
 
     // module
     implementation(project(":core:common"))
+    implementation(project(":core:network"))
     implementation(project(":feature:showcase"))
     implementation(project(":feature:application"))
     implementation(project(":feature:ad"))
+    implementation(project(":feature:message"))
+
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
 }
 
 //sourceSets {
@@ -85,8 +72,8 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+//        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "11"
     }
 }
 

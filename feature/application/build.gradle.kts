@@ -9,24 +9,6 @@ plugins {
 group = "com.zaze.server"
 version = "0.0.1-SNAPSHOT"
 
-repositories {
-    if (extra.has("useLocalMaven") && (extra["useLocalMaven"] as String).toBoolean()) {
-        maven {
-            isAllowInsecureProtocol = true
-            url = uri("http://localhost:8081/repository/maven-public")
-        }
-    }
-    mavenLocal()
-    maven { url = uri("https://maven.aliyun.com/repository/public") }
-    maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
-    maven { url = uri("https://maven.aliyun.com/repository/google") }
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
-    mavenCentral()
-}
-
-
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
@@ -44,9 +26,9 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
-//tasks.bootJar {
-//    enabled = false
-//}
-//tasks.jar {
-//    enabled = true
-//}
+tasks.bootJar {
+   enabled = false
+}
+tasks.jar {
+   enabled = true
+}

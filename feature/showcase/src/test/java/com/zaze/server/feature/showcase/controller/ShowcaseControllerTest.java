@@ -1,7 +1,6 @@
-package com.zaze.server.controller;
+package com.zaze.server.feature.showcase.controller;
 
 
-import com.zaze.server.feature.showcase.controller.ShowcaseController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +11,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ShowcaseTest {
+public class ShowcaseControllerTest {
 
     private MockMvc mvc;
 

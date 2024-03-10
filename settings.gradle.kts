@@ -4,6 +4,44 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
+pluginManagement {
+    val localPropertiesFile = File(rootProject.projectDir, "local.properties")
+    val properties = java.util.Properties()
+    properties.load(java.io.DataInputStream(localPropertiesFile.inputStream()))
+    extra["useLocalMaven"] = properties.getProperty("useLocalMaven", "false").toBoolean()
+    repositories {
+        if (extra["useLocalMaven"] == true) {
+            maven {
+                isAllowInsecureProtocol = true
+                url = uri("http://localhost:8081/repository/maven-public")
+            }
+        }
+        mavenLocal()
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        if (extra["useLocalMaven"] == true) {
+            maven {
+                isAllowInsecureProtocol = true
+                url = uri("http://localhost:8081/repository/maven-public")
+            }
+        }
+        mavenLocal()
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
+        maven { url = uri("https://jitpack.io") }
+        mavenCentral()
+    }
+}
+
 rootProject.name = "zaze-server"
 
 include(":core:database")
@@ -12,3 +50,7 @@ include(":core:common")
 include(":feature:showcase")
 include(":feature:application")
 include(":feature:ad")
+include("feature:message")
+findProject(":feature:message")?.name = "message"
+include("core:network")
+findProject(":core:network")?.name = "network"
