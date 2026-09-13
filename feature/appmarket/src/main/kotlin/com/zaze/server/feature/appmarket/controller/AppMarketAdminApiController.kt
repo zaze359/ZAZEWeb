@@ -32,7 +32,7 @@ class AppMarketAdminApiController(
     }
 
     @PostMapping("/sync-store-sources")
-    @LoggerManage(description = "同步第三方商店源（酷安/应用宝）")
+    @LoggerManage(description = "同步第三方商店源（应用宝）")
     fun syncStoreSources(): Response<SyncStoreResultVo> {
         return Response(adminService.syncStoreSources())
     }

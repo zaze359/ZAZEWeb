@@ -49,7 +49,7 @@ data class CollectResultVo(
 )
 
 /**
- * 第三方商店源同步结果统计（酷安 / 应用宝）
+ * 第三方商店源同步结果统计（应用宝）
  */
 data class SyncStoreResultVo(
     val appsProcessed: Int = 0,

@@ -40,6 +40,6 @@ interface AppMarketAdminService {
     /** 触发一次自动采集（从公开上游抓取真实版本与下载地址） */
     fun collect(): CollectResultVo
 
-    /** 全量同步第三方商店源（酷安 / 应用宝），按 packageName 为所有应用的版本补全详情页下载源 */
+    /** 全量同步第三方商店源（应用宝），按 packageName 为所有应用的版本补全详情页下载源 */
     fun syncStoreSources(): SyncStoreResultVo
 }

@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
  * 扩展点：新增 provider（如 FDROID / APKMIRROR）时，在 [collectForTarget] 的 when 分支补充即可，
  * 数据访问层与上层 Service / VO 无需改动。
  *
- * 第三方应用商店（酷安 / 应用宝）的详情页 URL 可由 packageName 确定性推导，无需联网抓取，
+ * 第三方应用商店（应用宝）的详情页 URL 可由 packageName 确定性推导，无需联网抓取，
  * 因此统一在 [ensureStoreSources] 中按 version 幂等补源；[collect] 与 [syncStoreSources] 都会复用它。
  */
 @Service
@@ -160,13 +160,13 @@ class AppMarketCollector(
         } catch (e: Exception) {
             log.warn("GitHub 抓取失败 target={}，商店源仍会补全", target.repo, e)
         }
-        // 同步第三方商店详情页源（酷安 / 应用宝），随采集一并补全（与 GitHub 是否成功无关）
+        // 同步第三方商店详情页源（应用宝），随采集一并补全（与 GitHub 是否成功无关）
         sourcesAdded += ensureStoreSources(app)
         return GithubStat(appsCreated, versionsAdded, sourcesAdded)
     }
 
     /**
-     * 为某个应用的所有版本幂等补上第三方商店详情页下载源（酷安 / 应用宝）。
+     * 为某个应用的所有版本幂等补上第三方商店详情页下载源（应用宝）。
      * URL 由 packageName 确定性推导，无需联网；已存在则跳过，避免重复插入。
      * 返回本次新增的源数量。
      */
@@ -193,7 +193,7 @@ class AppMarketCollector(
     }
 
     /**
-     * 全量同步所有应用的第三方商店源（酷安 / 应用宝）。
+     * 全量同步所有应用的第三方商店源（应用宝）。
      * 覆盖采集器不处理的纯种子应用（如国内主流 app），可由管理后台按需触发。
      */
     fun syncStoreSources(): SyncStoreResultVo {
@@ -247,9 +247,8 @@ class AppMarketCollector(
         private const val DEFAULT_RELEASE_LIMIT = 3
         private const val CHANGELOG_MAX_LEN = 2000
 
-        /** 第三方应用商店详情页源：由 packageName 推导 URL，随采集/全量同步自动补全 */
+        /** 第三方应用商店详情页源：由 packageName 推导 URL，随采集/全量同步自动补全（酷安已停止应用市场分发，仅保留应用宝） */
         private val STORE_SPECS = listOf(
-            StoreSourceSpec("COOLAPK", "酷安", "https://www.coolapk.com/apk/"),
             StoreSourceSpec("MYAPP", "应用宝", "https://sj.qq.com/appdetail/")
         )
     }

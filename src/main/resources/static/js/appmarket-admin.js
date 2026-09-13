@@ -312,7 +312,7 @@
         ajax('POST', API + '/sync-store-sources').done(function (res) {
             var d = (res && res.data) || {};
             var html = '<p class="mb-2">已处理 <b>' + (d.appsProcessed || 0) + '</b> 个应用，' +
-                '本次新增第三方商店源（酷安 / 应用宝） <b>' + (d.sourcesAdded || 0) + '</b> 条。</p>' +
+                '本次新增第三方商店源（应用宝） <b>' + (d.sourcesAdded || 0) + '</b> 条。</p>' +
                 '<p class="small text-muted mb-0">已存在的源会自动跳过，可重复点击。</p>';
             $('#collectBody').html(html);
             $('#collectModal').modal('show');
