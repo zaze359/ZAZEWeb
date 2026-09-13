@@ -4,7 +4,9 @@ server:
     # 应用路径，配置应用路径，可方便进行反向代理
     context-path: /
     session:
-      timeout: 30m #默认（分钟）：30m
+      # 登录会话（token）时效：非活动超过此时长即失效、需重新登录。
+      # 支持 Duration 写法：30m / 2h / 1d / 7d。当前为内网演示用的较长时效，生产建议改短（如 30m）并配合 HTTPS。
+      timeout: 7d
 
 
 spring:

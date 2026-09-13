@@ -59,7 +59,7 @@ useLocalMaven=false
 > 该文件已被 `.gitignore` 忽略，属于本地环境配置，不会进入版本库。
 
 ### 2. 数据源与缓存（`src/main/resources/`）
-- `application.yml`：服务器端口（默认 `8080`）、MySQL 数据源（`jdbc:mysql://localhost:3306/dev`）、OkHttp 超时等。
+- `application.yml`：服务器端口（默认 `8080`）、MySQL 数据源（`jdbc:mysql://localhost:3306/dev`）、OkHttp 超时、登录会话时效（`server.servlet.session.timeout`，当前 `7d`，生产建议改短并配合 HTTPS）。
 - `application.properties`：`spring.jpa.hibernate.ddl-auto=update`（启动时按实体自动建/更表，无需手写 schema）、`spring.cache.type=redis`、`management.endpoints.web.exposure.include=*`（actuator 全量暴露）。
 
 如需对接自己的环境，直接修改以上两个文件中的 `spring.datasource.*` 与 `spring.redis.*` 即可。
