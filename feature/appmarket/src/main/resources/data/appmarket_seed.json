@@ -164,5 +164,545 @@
         ]
       }
     ]
+  },
+  {
+    "name": "微信",
+    "packageName": "com.tencent.mm",
+    "category": "社交",
+    "developer": "腾讯",
+    "summary": "即时通讯与移动支付，国民级社交应用。",
+    "iconUrl": "https://weixin.qq.com/favicon.ico",
+    "officialUrl": "https://weixin.qq.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://support.weixin.qq.com/cgi-bin/mmsupport-bin/readtemplate?t=weixin_download_method&sys=android&loc=weixin",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "QQ",
+    "packageName": "com.tencent.mobileqq",
+    "category": "社交",
+    "developer": "腾讯",
+    "summary": "老牌即时通讯，支持聊天、群聊、文件传输与空间。",
+    "iconUrl": "https://im.qq.com/favicon.ico",
+    "officialUrl": "https://im.qq.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://im.qq.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "支付宝",
+    "packageName": "com.eg.android.AlipayGphone",
+    "category": "支付",
+    "developer": "蚂蚁集团",
+    "summary": "移动支付与生活服务，扫码付款、理财、城市服务。",
+    "iconUrl": "https://www.alipay.com/favicon.ico",
+    "officialUrl": "https://www.alipay.com",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://mobile.alipay.com/index.htm",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "抖音",
+    "packageName": "com.ss.android.ugc.aweme",
+    "category": "影音",
+    "developer": "字节跳动",
+    "summary": "短视频与直播平台，记录与发现生活。",
+    "iconUrl": "https://www.douyin.com/favicon.ico",
+    "officialUrl": "https://www.douyin.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.douyin.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "快手",
+    "packageName": "com.smile.gifmaker",
+    "category": "影音",
+    "developer": "快手科技",
+    "summary": "短视频社区，记录与分享生活。",
+    "iconUrl": "https://www.kuaishou.com/favicon.ico",
+    "officialUrl": "https://www.kuaishou.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.kuaishou.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "哔哩哔哩",
+    "packageName": "tv.danmaku.bili",
+    "category": "影音",
+    "developer": "哔哩哔哩",
+    "summary": "弹幕视频社区，番剧、UP主与直播。",
+    "iconUrl": "https://www.bilibili.com/favicon.ico",
+    "officialUrl": "https://www.bilibili.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.bilibili.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "爱奇艺",
+    "packageName": "com.qiyi.video",
+    "category": "影音",
+    "developer": "爱奇艺",
+    "summary": "长视频平台，影视综艺与自制内容。",
+    "iconUrl": "https://www.iqiyi.com/favicon.ico",
+    "officialUrl": "https://www.iqiyi.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.iqiyi.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "淘宝",
+    "packageName": "com.taobao.taobao",
+    "category": "购物",
+    "developer": "阿里巴巴",
+    "summary": "综合网购平台，海量商品与直播购物。",
+    "iconUrl": "https://www.taobao.com/favicon.ico",
+    "officialUrl": "https://www.taobao.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.taobao.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "京东",
+    "packageName": "com.jingdong.app.mall",
+    "category": "购物",
+    "developer": "京东",
+    "summary": "自营电商与物流，3C 数码品类强。",
+    "iconUrl": "https://www.jd.com/favicon.ico",
+    "officialUrl": "https://www.jd.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://app.jd.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "拼多多",
+    "packageName": "com.xunmeng.pinduoduo",
+    "category": "购物",
+    "developer": "拼多多",
+    "summary": "社交电商，拼团与百亿补贴。",
+    "iconUrl": "https://www.pinduoduo.com/favicon.ico",
+    "officialUrl": "https://www.pinduoduo.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://download.pinduoduo.com/home/download/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "美团",
+    "packageName": "com.dianping.v1",
+    "category": "生活",
+    "developer": "美团",
+    "summary": "本地生活服务，外卖、到店与酒旅。",
+    "iconUrl": "https://www.meituan.com/favicon.ico",
+    "officialUrl": "https://www.meituan.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://i.meituan.com/mobile/down/meituan",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "滴滴出行",
+    "packageName": "com.sdu.didi.psnger",
+    "category": "出行",
+    "developer": "滴滴",
+    "summary": "网约车与出行平台。",
+    "iconUrl": "https://www.didiglobal.com/favicon.ico",
+    "officialUrl": "https://www.didiglobal.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.didiglobal.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "高德地图",
+    "packageName": "com.autonavi.minimap",
+    "category": "出行",
+    "developer": "高德",
+    "summary": "导航与地图，实时路况与打车。",
+    "iconUrl": "https://www.amap.com/favicon.ico",
+    "officialUrl": "https://www.amap.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://mobile.amap.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "百度",
+    "packageName": "com.baidu.searchbox",
+    "category": "工具",
+    "developer": "百度",
+    "summary": "搜索与信息聚合入口。",
+    "iconUrl": "https://www.baidu.com/favicon.ico",
+    "officialUrl": "https://www.baidu.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.baidu.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "微博",
+    "packageName": "com.sina.weibo",
+    "category": "社交",
+    "developer": "新浪",
+    "summary": "社交媒体与公共话题广场。",
+    "iconUrl": "https://weibo.com/favicon.ico",
+    "officialUrl": "https://weibo.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://weibo.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "小红书",
+    "packageName": "com.xingin.xhs",
+    "category": "生活",
+    "developer": "行吟信息科技",
+    "summary": "年轻人生活方式社区，种草与分享。",
+    "iconUrl": "https://www.xiaohongshu.com/favicon.ico",
+    "officialUrl": "https://www.xiaohongshu.com",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.xiaohongshu.com",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "今日头条",
+    "packageName": "com.ss.android.article.news",
+    "category": "资讯",
+    "developer": "字节跳动",
+    "summary": "个性化资讯与新闻聚合。",
+    "iconUrl": "https://www.toutiao.com/favicon.ico",
+    "officialUrl": "https://www.toutiao.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.toutiao.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "网易云音乐",
+    "packageName": "com.netease.cloudmusic",
+    "category": "影音",
+    "developer": "网易",
+    "summary": "音乐流媒体与乐评社区。",
+    "iconUrl": "https://music.163.com/favicon.ico",
+    "officialUrl": "https://music.163.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://music.163.com/#/download",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "WPS",
+    "packageName": "cn.wps.moffice_eng",
+    "category": "办公",
+    "developer": "金山",
+    "summary": "办公套件，文档表格演示编辑。",
+    "iconUrl": "https://www.wps.cn/favicon.ico",
+    "officialUrl": "https://www.wps.cn/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.wps.cn/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "钉钉",
+    "packageName": "com.alibaba.android.rimet",
+    "category": "办公",
+    "developer": "阿里巴巴",
+    "summary": "企业协同与办公 IM。",
+    "iconUrl": "https://www.dingtalk.com/favicon.ico",
+    "officialUrl": "https://www.dingtalk.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.dingtalk.com/download",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          }
+        ]
+      }
+    ]
   }
 ]
