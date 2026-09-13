@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head th:replace="common/head::static"></head>
+<body>
+<div th:replace="common/nav::portal(${user}, ${isAdmin}, 'appmarket')"></div>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">应用列表</h4>
+        <span class="text-muted small">数据来源：公开渠道收集，仅提供外链</span>
+    </div>
+    <div id="app-list" class="row"></div>
+</div>
+
+<script th:src="@{/js/portal.js}"></script>
+<script th:src="@{/js/appmarket.js}"></script>
+</body>
+</html>

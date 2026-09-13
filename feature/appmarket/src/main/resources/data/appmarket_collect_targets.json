@@ -1,0 +1,38 @@
+[
+  {
+    "provider": "GITHUB",
+    "repo": "TeamNewPipe/NewPipe",
+    "appName": "NewPipe",
+    "packageName": "org.schabi.newpipe",
+    "category": "影音播放",
+    "developer": "TeamNewPipe",
+    "summary": "轻量开源的 YouTube 第三方客户端，支持后台播放与音视频下载（基于 GitHub Releases 自动采集）。",
+    "iconUrl": "",
+    "officialUrl": "https://newpipe.net",
+    "releaseLimit": 3
+  },
+  {
+    "provider": "GITHUB",
+    "repo": "markusfisch/BinaryEye",
+    "appName": "Binary Eye",
+    "packageName": "de.markusfisch.android.binaryeye",
+    "category": "实用工具",
+    "developer": "Markus Fisch",
+    "summary": "简洁的条码/二维码扫描器，基于 ZXing，无广告无多余权限。",
+    "iconUrl": "",
+    "officialUrl": "https://github.com/markusfisch/BinaryEye",
+    "releaseLimit": 3
+  },
+  {
+    "provider": "GITHUB",
+    "repo": "Kunzisoft/KeePassDX",
+    "appName": "KeePassDX",
+    "packageName": "com.kunzisoft.keepass.free",
+    "category": "安全隐私",
+    "developer": "Kunzisoft",
+    "summary": "开源密码管理器，兼容 KeePass 数据库格式，支持指纹解锁与自动填充。",
+    "iconUrl": "",
+    "officialUrl": "https://www.keepassdx.com",
+    "releaseLimit": 3
+  }
+]

@@ -35,3 +35,9 @@ bin/
 .DS_Store
 
 local.properties
+
+.claude/
+.trae/
+.codebuddy/
+.cursor/
+.workbuddy/

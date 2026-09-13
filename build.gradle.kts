@@ -55,6 +55,8 @@ dependencies {
     implementation(project(":feature:application"))
     implementation(project(":feature:ad"))
     implementation(project(":feature:message"))
+    implementation(project(":feature:appmarket"))
+    implementation(project(":feature:auth"))
 
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 

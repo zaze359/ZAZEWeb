@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head th:replace="common/head::static"></head>
+<body>
+<div th:replace="common/nav::portal(${user}, ${isAdmin}, 'admin')"></div>
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">应用市场 · 管理后台</h4>
+        <div>
+            <a class="btn btn-outline-secondary btn-sm mr-2" href="/appmarket/">前台门户</a>
+            <button class="btn btn-outline-secondary btn-sm mr-2" type="button" onclick="Admin.refresh()">
+                <i class="fa fa-sync"></i> 刷新
+            </button>
+            <button class="btn btn-primary btn-sm mr-2" id="btnCollect" type="button" onclick="Admin.collect()">
+                <i class="fa fa-cloud-download-alt"></i> 触发自动采集
+            </button>
+            <button class="btn btn-success btn-sm" type="button" onclick="Admin.openAppModal()">
+                <i class="fa fa-plus"></i> 新增应用
+            </button>
+        </div>
+    </div>
+
+    <div id="alertBox"></div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-hover bg-white">
+            <thead class="thead-light">
+            <tr>
+                <th style="width:60px">ID</th>
+                <th>应用</th>
+                <th>包名</th>
+                <th style="width:90px">分类</th>
+                <th>开发者</th>
+                <th style="width:80px">版本数</th>
+                <th style="width:240px">操作</th>
+            </tr>
+            </thead>
+            <tbody id="appTbody">
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">加载中…</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ 应用 新增/编辑 弹窗 ============ -->
+<div class="modal fade" id="appModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appModalTitle">新增应用</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="appId">
+                <div class="form-group">
+                    <label>应用名称 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="appName" placeholder="如 NewPipe">
+                </div>
+                <div class="form-group">
+                    <label>包名</label>
+                    <input type="text" class="form-control" id="appPackageName" placeholder="如 org.schabi.newpipe">
+                </div>
+                <div class="form-group">
+                    <label>分类</label>
+                    <input type="text" class="form-control" id="appCategory" placeholder="如 影音播放">
+                </div>
+                <div class="form-group">
+                    <label>开发者</label>
+                    <input type="text" class="form-control" id="appDeveloper">
+                </div>
+                <div class="form-group">
+                    <label>图标地址</label>
+                    <input type="text" class="form-control" id="appIconUrl" placeholder="http://">
+                </div>
+                <div class="form-group">
+                    <label>官网地址</label>
+                    <input type="text" class="form-control" id="appOfficialUrl" placeholder="http://">
+                </div>
+                <div class="form-group">
+                    <label>简介</label>
+                    <textarea class="form-control" id="appSummary" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="Admin.saveApp()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ 版本与下载源 管理弹窗 ============ -->
+<div class="modal fade" id="manageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">版本与下载源 · <span id="manageAppName"></span></h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong>版本列表</strong>
+                    <button class="btn btn-outline-success btn-sm" type="button" onclick="Admin.openVersionModal()">
+                        <i class="fa fa-plus"></i> 新增版本
+                    </button>
+                </div>
+                <div id="versionList"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ 新增版本 弹窗 ============ -->
+<div class="modal fade" id="versionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增版本</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>版本名 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="verName" placeholder="如 1.2.3">
+                </div>
+                <div class="form-group">
+                    <label>版本号(数字)</label>
+                    <input type="number" class="form-control" id="verCode" placeholder="如 10203">
+                </div>
+                <div class="form-group">
+                    <label>发布日期</label>
+                    <input type="date" class="form-control" id="verDate">
+                </div>
+                <div class="form-group">
+                    <label>体积(MB)</label>
+                    <input type="number" class="form-control" id="verSize">
+                </div>
+                <div class="form-group">
+                    <label>更新说明</label>
+                    <textarea class="form-control" id="verChangelog" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="Admin.saveVersion()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ 新增下载源 弹窗 ============ -->
+<div class="modal fade" id="sourceModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增下载源 · <span id="sourceVersionName"></span></h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>来源名称 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="srcName" placeholder="如 GitHub Releases">
+                </div>
+                <div class="form-group">
+                    <label>来源类型</label>
+                    <select class="form-control" id="srcType">
+                        <option value="GITHUB">GITHUB</option>
+                        <option value="FDROID">FDROID</option>
+                        <option value="APKMIRROR">APKMIRROR</option>
+                        <option value="OFFICIAL">OFFICIAL</option>
+                        <option value="OTHER">OTHER</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>下载地址 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="srcUrl" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>地区</label>
+                    <input type="text" class="form-control" id="srcRegion" placeholder="如 全球 / 中国">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" class="form-control" id="srcNote">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="Admin.saveSource()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ 采集结果 弹窗 ============ -->
+<div class="modal fade" id="collectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">自动采集结果</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body" id="collectBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/portal.js}"></script>
+<script th:src="@{/js/appmarket-admin.js}"></script>
+</body>
+</html>

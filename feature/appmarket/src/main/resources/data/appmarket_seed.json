@@ -1,0 +1,168 @@
+[
+  {
+    "name": "NewPipe",
+    "packageName": "org.schabi.newpipe",
+    "category": "影音",
+    "developer": "Team NewPipe",
+    "summary": "轻量、注重隐私的 YouTube 开源前端，无 Google 服务依赖，支持后台播放与下载。",
+    "iconUrl": "https://f-droid.org/assets/repo/icons-640/org.schabi.newpipe.67.png",
+    "officialUrl": "https://newpipe.net/",
+    "versions": [
+      {
+        "versionName": "0.27.2",
+        "versionCode": 10040272,
+        "releaseDate": "2024-08-12",
+        "sizeMb": 12,
+        "changelog": "修复 YouTube 播放与搜索相关回归。",
+        "sources": [
+          {
+            "sourceName": "GitHub Releases",
+            "sourceType": "GITHUB",
+            "downloadUrl": "https://github.com/TeamNewPipe/NewPipe/releases/download/v0.27.2/NewPipe_v0.27.2.apk",
+            "region": "",
+            "note": "官方 GitHub 发布包"
+          },
+          {
+            "sourceName": "F-Droid",
+            "sourceType": "FDROID",
+            "downloadUrl": "https://f-droid.org/packages/org.schabi.newpipe/",
+            "region": "",
+            "note": "推荐：通过 F-Droid 应用直接安装可自动更新"
+          }
+        ]
+      },
+      {
+        "versionName": "0.27.0",
+        "versionCode": 10040270,
+        "releaseDate": "2024-06-30",
+        "sizeMb": 11,
+        "changelog": "稳定性改进。",
+        "sources": [
+          {
+            "sourceName": "GitHub Releases",
+            "sourceType": "GITHUB",
+            "downloadUrl": "https://github.com/TeamNewPipe/NewPipe/releases/download/v0.27.0/NewPipe_v0.27.0.apk",
+            "region": "",
+            "note": "历史版本"
+          },
+          {
+            "sourceName": "APKMirror",
+            "sourceType": "APKMIRROR",
+            "downloadUrl": "https://www.apkmirror.com/apk/newpipe-team/newpipe/newpipe-0-27-0-release/",
+            "region": "",
+            "note": "镜像站点"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Signal",
+    "packageName": "org.thoughtcrime.securesms",
+    "category": "社交",
+    "developer": "Signal Foundation",
+    "summary": "端到端加密的即时通讯应用，注重隐私与安全。",
+    "iconUrl": "https://signal.org/android/static/android-chrome-192x192.png",
+    "officialUrl": "https://signal.org/android/",
+    "versions": [
+      {
+        "versionName": "7.13.0",
+        "versionCode": 71300,
+        "releaseDate": "2024-09-01",
+        "sizeMb": 38,
+        "changelog": "性能与稳定性优化。",
+        "sources": [
+          {
+            "sourceName": "Signal 官方 APK",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://signal.org/android/apk/",
+            "region": "",
+            "note": "官方直接分发 APK（含更新检查）"
+          },
+          {
+            "sourceName": "GitHub Releases",
+            "sourceType": "GITHUB",
+            "downloadUrl": "https://github.com/signalapp/Signal-Android/releases",
+            "region": "",
+            "note": "开源仓库发布页"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "VLC for Android",
+    "packageName": "org.videolan.vlc",
+    "category": "影音",
+    "developer": "VideoLAN",
+    "summary": "开源、跨平台的多媒体播放器，支持绝大多数音视频格式。",
+    "iconUrl": "https://www.videolan.org/images/icons-VLC-512.png",
+    "officialUrl": "https://www.videolan.org/vlc/download-android.html",
+    "versions": [
+      {
+        "versionName": "3.6.0",
+        "versionCode": 10003600,
+        "releaseDate": "2024-07-20",
+        "sizeMb": 90,
+        "changelog": "全新播放界面与字幕支持。",
+        "sources": [
+          {
+            "sourceName": "VideoLAN 官方",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://get.videolan.org/vlc-android/3.6.0/VLC-Android-3.6.0-arm64-v8a.apk",
+            "region": "",
+            "note": "官方直接下载"
+          },
+          {
+            "sourceName": "F-Droid",
+            "sourceType": "FDROID",
+            "downloadUrl": "https://f-droid.org/packages/org.videolan.vlc/",
+            "region": "",
+            "note": "开源分发渠道"
+          },
+          {
+            "sourceName": "APKMirror",
+            "sourceType": "APKMIRROR",
+            "downloadUrl": "https://www.apkmirror.com/apk/videolabs/vlc-for-android-beta/",
+            "region": "",
+            "note": "镜像站点"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Firefox",
+    "packageName": "org.mozilla.firefox",
+    "category": "工具",
+    "developer": "Mozilla",
+    "summary": "注重隐私保护的移动端浏览器，支持扩展与同步。",
+    "iconUrl": "https://www.mozilla.org/media/protocol/img/logos/firefox/browser/logo-lg.3d8ef17e.png",
+    "officialUrl": "https://www.mozilla.org/firefox/mobile/",
+    "versions": [
+      {
+        "versionName": "130.0",
+        "versionCode": 2016097800,
+        "releaseDate": "2024-09-03",
+        "sizeMb": 85,
+        "changelog": "引擎与隐私保护更新。",
+        "sources": [
+          {
+            "sourceName": "GitHub (firefox-android)",
+            "sourceType": "GITHUB",
+            "downloadUrl": "https://github.com/mozilla-mobile/firefox-android",
+            "region": "",
+            "note": "源码仓库"
+          },
+          {
+            "sourceName": "APKMirror",
+            "sourceType": "APKMIRROR",
+            "downloadUrl": "https://www.apkmirror.com/apk/mozilla/firefox/",
+            "region": "",
+            "note": "稳定版镜像"
+          }
+        ]
+      }
+    ]
+  }
+]

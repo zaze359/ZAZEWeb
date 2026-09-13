@@ -22,10 +22,15 @@ public class IndexController {
     @Autowired
     private ShowcaseService showcaseService;
 
+    /**
+     * 首页（门户）。
+     *
+     * 页面需要的 `user` / `isAdmin` 由 {@link com.zaze.server.config.PortalModelAdvice} 统一注入，
+     * 这里不重复塞模型，也不在方法签名里暴露 HttpSession（`@LoggerManage` 会序列化入参进日志）。
+     */
     @RequestMapping("/")
     @LoggerManage(description = "加载index页")
-    public String index(Model model) {
-        model.addAttribute("showcases", showcaseService.getShowcaseList());
+    public String index() {
         return "index";
     }
 

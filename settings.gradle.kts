@@ -52,5 +52,7 @@ include(":feature:application")
 include(":feature:ad")
 include("feature:message")
 findProject(":feature:message")?.name = "message"
+include(":feature:appmarket")
+include(":feature:auth")
 include("core:network")
 findProject(":core:network")?.name = "network"
