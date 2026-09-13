@@ -984,5 +984,702 @@
         ]
       }
     ]
+  },
+  {
+    "name": "腾讯视频",
+    "packageName": "com.tencent.qqlive",
+    "category": "影音",
+    "developer": "腾讯",
+    "summary": "腾讯旗下视频平台，影视、综艺与体育直播。",
+    "iconUrl": "https://v.qq.com/favicon.ico",
+    "officialUrl": "https://v.qq.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://v.qq.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.tencent.qqlive",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.qqlive",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "优酷",
+    "packageName": "com.youku.phone",
+    "category": "影音",
+    "developer": "阿里巴巴",
+    "summary": "阿里文娱视频平台，热剧、综艺与电影。",
+    "iconUrl": "https://www.youku.com/favicon.ico",
+    "officialUrl": "https://www.youku.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.youku.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.youku.phone",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.youku.phone",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "喜马拉雅",
+    "packageName": "com.ximalaya.ting.android",
+    "category": "影音",
+    "developer": "喜马拉雅",
+    "summary": "音频分享平台，播客、有声书与知识内容。",
+    "iconUrl": "https://www.ximalaya.com/favicon.ico",
+    "officialUrl": "https://www.ximalaya.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.ximalaya.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.ximalaya.ting.android",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.ximalaya.ting.android",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "知乎",
+    "packageName": "com.zhihu.android",
+    "category": "社交",
+    "developer": "知乎",
+    "summary": "中文问答与内容社区，话题与专业讨论。",
+    "iconUrl": "https://www.zhihu.com/favicon.ico",
+    "officialUrl": "https://www.zhihu.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.zhihu.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.zhihu.android",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.zhihu.android",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "携程旅行",
+    "packageName": "ctrip.android.view",
+    "category": "出行",
+    "developer": "携程",
+    "summary": "在线旅行预订，机票、酒店与度假。",
+    "iconUrl": "https://www.ctrip.com/favicon.ico",
+    "officialUrl": "https://www.ctrip.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.ctrip.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/ctrip.android.view",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/ctrip.android.view",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "饿了么",
+    "packageName": "com.ele.me",
+    "category": "生活",
+    "developer": "阿里巴巴",
+    "summary": "本地生活外卖平台，美食即时配送。",
+    "iconUrl": "https://www.ele.me/favicon.ico",
+    "officialUrl": "https://www.ele.me/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.ele.me/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.ele.me",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.ele.me",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "飞书",
+    "packageName": "com.ss.android.lark",
+    "category": "办公",
+    "developer": "字节跳动",
+    "summary": "企业协同办公套件，文档、会议与 IM。",
+    "iconUrl": "https://www.feishu.cn/favicon.ico",
+    "officialUrl": "https://www.feishu.cn/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.feishu.cn/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.ss.android.lark",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.ss.android.lark",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "腾讯会议",
+    "packageName": "com.tencent.wemeet.app",
+    "category": "办公",
+    "developer": "腾讯",
+    "summary": "腾讯视频会议工具，高清云会议。",
+    "iconUrl": "https://meeting.tencent.com/favicon.ico",
+    "officialUrl": "https://meeting.tencent.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://meeting.tencent.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.tencent.wemeet.app",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.wemeet.app",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "云闪付",
+    "packageName": "com.unionpay",
+    "category": "支付",
+    "developer": "中国银联",
+    "summary": "银联出品的移动支付 App，银行卡管理与优惠。",
+    "iconUrl": "https://yunshanfu.unionpay.com/favicon.ico",
+    "officialUrl": "https://yunshanfu.unionpay.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://yunshanfu.unionpay.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.unionpay",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.unionpay",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "百度网盘",
+    "packageName": "com.baidu.netdisk",
+    "category": "工具",
+    "developer": "百度",
+    "summary": "百度网盘，文件存储、同步与分享。",
+    "iconUrl": "https://pan.baidu.com/favicon.ico",
+    "officialUrl": "https://pan.baidu.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://pan.baidu.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.baidu.netdisk",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.baidu.netdisk",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "网易新闻",
+    "packageName": "com.netease.newsreader.activity",
+    "category": "资讯",
+    "developer": "网易",
+    "summary": "网易新闻，全天候资讯与深度报道。",
+    "iconUrl": "https://news.163.com/favicon.ico",
+    "officialUrl": "https://news.163.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://news.163.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.netease.newsreader.activity",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.netease.newsreader.activity",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "王者荣耀",
+    "packageName": "com.tencent.tmgp.sgame",
+    "category": "游戏",
+    "developer": "腾讯",
+    "summary": "腾讯现象级 MOBA 手游。",
+    "iconUrl": "https://pvp.qq.com/favicon.ico",
+    "officialUrl": "https://pvp.qq.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://pvp.qq.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.tencent.tmgp.sgame",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.tmgp.sgame",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "和平精英",
+    "packageName": "com.tencent.tmgp.pubgmhd",
+    "category": "游戏",
+    "developer": "腾讯",
+    "summary": "腾讯战术竞技射击手游。",
+    "iconUrl": "https://gp.qq.com/favicon.ico",
+    "officialUrl": "https://gp.qq.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://gp.qq.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.tencent.tmgp.pubgmhd",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.tmgp.pubgmhd",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "铁路12306",
+    "packageName": "com.MobileTicket",
+    "category": "出行",
+    "developer": "中国铁路",
+    "summary": "中国铁路官方购票 App，火车票预订。",
+    "iconUrl": "https://www.12306.cn/favicon.ico",
+    "officialUrl": "https://www.12306.cn/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.12306.cn/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.MobileTicket",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.MobileTicket",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "菜鸟",
+    "packageName": "com.cainiao.wireless",
+    "category": "生活",
+    "developer": "菜鸟(阿里巴巴)",
+    "summary": "菜鸟裹裹，快递查询与寄件。",
+    "iconUrl": "https://www.cainiao.com/favicon.ico",
+    "officialUrl": "https://www.cainiao.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.cainiao.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.cainiao.wireless",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.cainiao.wireless",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "盒马",
+    "packageName": "com.wormpex.bird",
+    "category": "生活",
+    "developer": "盒马(阿里巴巴)",
+    "summary": "盒马生鲜，门店+即时配送的新零售。",
+    "iconUrl": "https://www.freshippo.com/favicon.ico",
+    "officialUrl": "https://www.freshippo.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://www.freshippo.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.wormpex.bird",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.wormpex.bird",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "番茄小说",
+    "packageName": "com.dragon.read",
+    "category": "阅读",
+    "developer": "字节跳动",
+    "summary": "番茄小说，免费正版网络小说阅读。",
+    "iconUrl": "https://fanqienovel.com/favicon.ico",
+    "officialUrl": "https://fanqienovel.com/",
+    "versions": [
+      {
+        "versionName": "官方最新版",
+        "versionCode": 0,
+        "releaseDate": "2026-09-13",
+        "sizeMb": 0,
+        "changelog": "以官网实时版本为准。",
+        "sources": [
+          {
+            "sourceName": "官方网站",
+            "sourceType": "OFFICIAL",
+            "downloadUrl": "https://fanqienovel.com/",
+            "region": "中国",
+            "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.dragon.read",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.dragon.read",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          }
+        ]
+      }
+    ]
   }
 ]
