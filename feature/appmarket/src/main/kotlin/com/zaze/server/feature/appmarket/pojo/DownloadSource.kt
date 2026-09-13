@@ -8,7 +8,7 @@ import javax.persistence.*
 /**
  * 应用市场 - 下载源（隶属于某个版本，通过 versionId 关联）
  *
- * sourceType 取值约定：GITHUB / FDROID / APKMIRROR / OFFICIAL / OTHER（纯字符串列）
+ * sourceType 取值约定：GITHUB / FDROID / APKMIRROR / OFFICIAL / COOLAPK / MYAPP / OTHER（纯字符串列，可扩展）
  */
 @Entity
 @Table(name = "appmarket_source")

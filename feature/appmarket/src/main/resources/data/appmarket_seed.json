@@ -187,6 +187,20 @@
             "downloadUrl": "https://support.weixin.qq.com/cgi-bin/mmsupport-bin/readtemplate?t=weixin_download_method&sys=android&loc=weixin",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.tencent.mm",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.mm",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -214,6 +228,20 @@
             "downloadUrl": "https://im.qq.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.tencent.mobileqq",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.mobileqq",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -241,6 +269,20 @@
             "downloadUrl": "https://mobile.alipay.com/index.htm",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.eg.android.AlipayGphone",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.eg.android.AlipayGphone",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -268,6 +310,20 @@
             "downloadUrl": "https://www.douyin.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.ss.android.ugc.aweme",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.ss.android.ugc.aweme",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -295,6 +351,20 @@
             "downloadUrl": "https://www.kuaishou.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.smile.gifmaker",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.smile.gifmaker",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -322,6 +392,20 @@
             "downloadUrl": "https://www.bilibili.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/tv.danmaku.bili",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/tv.danmaku.bili",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -349,6 +433,20 @@
             "downloadUrl": "https://www.iqiyi.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.qiyi.video",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.qiyi.video",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -376,6 +474,20 @@
             "downloadUrl": "https://www.taobao.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.taobao.taobao",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.taobao.taobao",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -403,6 +515,20 @@
             "downloadUrl": "https://app.jd.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.jingdong.app.mall",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.jingdong.app.mall",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -430,6 +556,20 @@
             "downloadUrl": "https://download.pinduoduo.com/home/download/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.xunmeng.pinduoduo",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.xunmeng.pinduoduo",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -457,6 +597,20 @@
             "downloadUrl": "https://i.meituan.com/mobile/down/meituan",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.dianping.v1",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.dianping.v1",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -484,6 +638,20 @@
             "downloadUrl": "https://www.didiglobal.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.sdu.didi.psnger",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.sdu.didi.psnger",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -511,6 +679,20 @@
             "downloadUrl": "https://mobile.amap.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.autonavi.minimap",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.autonavi.minimap",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -538,6 +720,20 @@
             "downloadUrl": "https://www.baidu.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.baidu.searchbox",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.baidu.searchbox",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -565,6 +761,20 @@
             "downloadUrl": "https://weibo.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.sina.weibo",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.sina.weibo",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -592,6 +802,20 @@
             "downloadUrl": "https://www.xiaohongshu.com",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.xingin.xhs",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.xingin.xhs",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -619,6 +843,20 @@
             "downloadUrl": "https://www.toutiao.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.ss.android.article.news",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.ss.android.article.news",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -646,6 +884,20 @@
             "downloadUrl": "https://music.163.com/#/download",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.netease.cloudmusic",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.netease.cloudmusic",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -673,6 +925,20 @@
             "downloadUrl": "https://www.wps.cn/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/cn.wps.moffice_eng",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/cn.wps.moffice_eng",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -700,6 +966,20 @@
             "downloadUrl": "https://www.dingtalk.com/download",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
+          },
+          {
+            "sourceName": "酷安",
+            "sourceType": "COOLAPK",
+            "downloadUrl": "https://www.coolapk.com/apk/com.alibaba.android.rimet",
+            "region": "中国",
+            "note": "酷安应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
+          },
+          {
+            "sourceName": "应用宝",
+            "sourceType": "MYAPP",
+            "downloadUrl": "https://sj.qq.com/appdetail/com.alibaba.android.rimet",
+            "region": "中国",
+            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }

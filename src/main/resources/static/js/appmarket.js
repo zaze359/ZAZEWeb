@@ -10,6 +10,8 @@
         FDROID: '#197278',
         OFFICIAL: 'btn-primary',
         APKMIRROR: 'btn-warning',
+        COOLAPK: 'btn-info',
+        MYAPP: 'btn-success',
         OTHER: 'btn-secondary'
     };
 
