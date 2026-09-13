@@ -47,3 +47,11 @@ data class CollectResultVo(
     val success: Boolean = true,
     val messages: List<String> = emptyList()
 )
+
+/**
+ * 第三方商店源同步结果统计（酷安 / 应用宝）
+ */
+data class SyncStoreResultVo(
+    val appsProcessed: Int = 0,
+    val sourcesAdded: Int = 0
+)

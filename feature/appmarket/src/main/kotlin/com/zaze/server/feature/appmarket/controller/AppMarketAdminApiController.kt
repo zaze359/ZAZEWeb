@@ -6,6 +6,7 @@ import com.zaze.server.common.controller.Response
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
+import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.service.AppMarketAdminService
 import com.zaze.server.feature.appmarket.vo.AppDetailVo
@@ -28,6 +29,12 @@ class AppMarketAdminApiController(
     @LoggerManage(description = "触发应用市场自动采集")
     fun collect(): Response<CollectResultVo> {
         return Response(adminService.collect())
+    }
+
+    @PostMapping("/sync-store-sources")
+    @LoggerManage(description = "同步第三方商店源（酷安/应用宝）")
+    fun syncStoreSources(): Response<SyncStoreResultVo> {
+        return Response(adminService.syncStoreSources())
     }
 
     @GetMapping("/apps")

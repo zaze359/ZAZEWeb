@@ -4,6 +4,7 @@ import com.zaze.server.feature.appmarket.collector.AppMarketCollector
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
+import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.model.asVo
 import com.zaze.server.feature.appmarket.pojo.App
@@ -158,6 +159,11 @@ class AppMarketAdminServiceImpl(
     @CacheEvict(allEntries = true)
     override fun collect(): CollectResultVo {
         return collector.collect()
+    }
+
+    @CacheEvict(allEntries = true)
+    override fun syncStoreSources(): SyncStoreResultVo {
+        return collector.syncStoreSources()
     }
 
     private fun parseDate(s: String?): java.util.Date? {

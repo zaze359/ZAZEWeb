@@ -296,6 +296,25 @@
         });
     }
 
+    // ------------------------------------------------------------ sync store sources
+    function syncStoreSources() {
+        var $btn = $('#btnSyncStore');
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 同步中…');
+        ajax('POST', API + '/sync-store-sources').done(function (res) {
+            var d = (res && res.data) || {};
+            var html = '<p class="mb-2">已处理 <b>' + (d.appsProcessed || 0) + '</b> 个应用，' +
+                '本次新增第三方商店源（酷安 / 应用宝） <b>' + (d.sourcesAdded || 0) + '</b> 条。</p>' +
+                '<p class="small text-muted mb-0">已存在的源会自动跳过，可重复点击。</p>';
+            $('#collectBody').html(html);
+            $('#collectModal').modal('show');
+            loadApps();
+        }).fail(function (xhr) {
+            notify('error', errMsg(xhr, '同步商店源失败'));
+        }).always(function () {
+            $btn.prop('disabled', false).html('<i class="fa fa-store"></i> 同步商店源');
+        });
+    }
+
     // ------------------------------------------------------------ helpers
     function findApp(id) {
         return state.apps.filter(function (a) { return a.id === id; })[0];
@@ -315,6 +334,7 @@
     window.Admin = {
         refresh: loadApps,
         collect: collect,
+        syncStoreSources: syncStoreSources,
         openAppModal: openAppModal,
         saveApp: saveApp,
         deleteApp: deleteApp,
