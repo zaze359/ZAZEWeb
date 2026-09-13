@@ -65,3 +65,33 @@ hr.divider {
 	font-size: 28px;
 	color: #999999;
 } */
+
+/* ===== 应用市场：图标固定尺寸 + 默认占位 ===== */
+.app-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f1f3f5;
+    border: 1px solid #e9ecef;
+}
+.app-icon-sm {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #f1f3f5;
+    border: 1px solid #e9ecef;
+}
+.app-icon-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 22px;
+}
+.app-icon-sm.app-icon-placeholder {
+    font-size: 14px;
+}

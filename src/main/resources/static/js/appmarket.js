@@ -19,6 +19,23 @@
         return SOURCE_CLASS[type] || 'btn-secondary';
     }
 
+    // 应用图标：有 iconUrl 渲染 <img>（固定尺寸，加载失败回退占位），否则直接渲染默认占位图标
+    function appIconMarkup(app) {
+        if (app && app.iconUrl) {
+            return '<img class="app-icon" src="' + app.iconUrl + '" alt="' + escapeHtml(app.name) + '" onerror="appIconFallback(this)"/>';
+        }
+        return '<div class="app-icon app-icon-placeholder"><i class="fa fa-cube" aria-hidden="true"></i></div>';
+    }
+
+    // 图片加载失败时替换为默认占位图标（供 onerror 内联调用，需挂到 window）
+    function appIconFallback(img) {
+        var ph = document.createElement('div');
+        ph.className = 'app-icon app-icon-placeholder';
+        ph.innerHTML = '<i class="fa fa-cube" aria-hidden="true"></i>';
+        if (img && img.parentNode) img.parentNode.replaceChild(ph, img);
+    }
+    window.appIconFallback = appIconFallback;
+
     function renderList(keyword) {
         if (!$('#app-list').length) return;
         var url = API + '/apps';
@@ -31,9 +48,7 @@
                 return;
             }
             var html = apps.map(function (app) {
-                var icon = app.iconUrl
-                    ? '<img class="app-icon" src="' + app.iconUrl + '" alt="" onerror="this.style.display=\'none\'"/>'
-                    : '<div class="app-icon d-flex align-items-center justify-content-center bg-light text-muted">APP</div>';
+                var icon = appIconMarkup(app);
                 return '' +
                     '<div class="col-md-4 col-sm-6 mb-3">' +
                     '  <a href="' + (window.ctx || '') + '/appmarket/' + app.id + '" class="text-decoration-none">' +

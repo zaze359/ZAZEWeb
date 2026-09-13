@@ -20,6 +20,15 @@
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    // 后台表格缩略图加载失败时替换为默认占位图标（供 onerror 内联调用，需挂到 window）
+    function appIconFallbackSm(img) {
+        var ph = document.createElement('span');
+        ph.className = 'app-icon-sm app-icon-placeholder';
+        ph.innerHTML = '<i class="fa fa-cube" aria-hidden="true"></i>';
+        if (img && img.parentNode) img.parentNode.replaceChild(ph, img);
+    }
+    window.appIconFallbackSm = appIconFallbackSm;
+
     function fmtDate(ms) {
         try {
             var d = new Date(ms);
@@ -67,8 +76,8 @@
         }
         var html = state.apps.map(function (app) {
             var icon = app.iconUrl
-                ? '<img src="' + esc(app.iconUrl) + '" alt="" style="width:28px;height:28px;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\'"/>'
-                : '';
+                ? '<img class="app-icon-sm" src="' + esc(app.iconUrl) + '" alt="" onerror="appIconFallbackSm(this)"/>'
+                : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube" aria-hidden="true"></i></span>';
             return '' +
                 '<tr>' +
                 '  <td>' + app.id + '</td>' +
