@@ -5,10 +5,12 @@ import com.zaze.server.common.controller.BaseController
 import com.zaze.server.common.controller.Response
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
+import com.zaze.server.feature.appmarket.dto.ExternalAppPreview
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
 import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.service.AppMarketAdminService
+import com.zaze.server.feature.appmarket.service.AppMarketExternalService
 import com.zaze.server.feature.appmarket.vo.AppDetailVo
 import com.zaze.server.feature.appmarket.vo.AppVersionVo
 import com.zaze.server.feature.appmarket.vo.AppVo
@@ -22,7 +24,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/appmarket/admin")
 class AppMarketAdminApiController(
-    private val adminService: AppMarketAdminService
+    private val adminService: AppMarketAdminService,
+    private val externalService: AppMarketExternalService
 ) : BaseController() {
 
     @PostMapping("/collect")
@@ -89,5 +92,23 @@ class AppMarketAdminApiController(
     @LoggerManage(description = "管理端-删除下载源")
     fun deleteSource(@PathVariable id: Long): Response<Boolean> {
         return Response(adminService.deleteSource(id))
+    }
+
+    @GetMapping("/external-lookup")
+    @LoggerManage(description = "管理端-查询外部应用(F-Droid)")
+    fun lookupExternal(@RequestParam packageName: String): Response<ExternalAppPreview?> {
+        val preview = externalService.lookup(packageName)
+        return if (preview != null) Response(preview)
+        else Response(200, null, "未找到该包名对应的外部应用（F-Droid 无记录，或网络不可达）")
+    }
+
+    @PostMapping("/external-import")
+    @LoggerManage(description = "管理端-一键导入外部应用(F-Droid)")
+    fun importExternal(@RequestParam packageName: String): Response<AppVo?> {
+        return try {
+            Response(externalService.importApp(packageName))
+        } catch (e: IllegalArgumentException) {
+            Response(200, null, e.message ?: "导入失败")
+        }
     }
 }

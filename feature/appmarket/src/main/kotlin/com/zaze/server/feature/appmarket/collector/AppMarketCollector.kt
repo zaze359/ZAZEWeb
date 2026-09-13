@@ -170,7 +170,7 @@ class AppMarketCollector(
      * URL 由 packageName 确定性推导，无需联网；已存在则跳过，避免重复插入。
      * 返回本次新增的源数量。
      */
-    private fun ensureStoreSources(app: App): Int {
+    fun ensureStoreSources(app: App): Int {
         var added = 0
         for (version in versionRepository.findByAppId(app.id)) {
             for (spec in STORE_SPECS) {

@@ -7,6 +7,7 @@
 
     var state = {
         apps: [],
+        keyword: '',
         currentAppId: null,
         currentVersionId: null,
         currentDetail: null
@@ -70,11 +71,23 @@
     }
 
     function renderApps() {
-        if (!state.apps.length) {
-            $('#appTbody').html('<tr><td colspan="7" class="text-center text-muted py-4">暂无应用，点击右上角「新增应用」或「触发自动采集」。</td></tr>');
+        var apps = state.apps;
+        if (state.keyword) {
+            var kw = state.keyword.toLowerCase();
+            apps = apps.filter(function (a) {
+                return [a.name, a.packageName, a.developer, a.category]
+                    .some(function (f) { return f && String(f).toLowerCase().indexOf(kw) >= 0; });
+            });
+        }
+        if (!apps.length) {
+            $('#appTbody').html('<tr><td colspan="7" class="text-center text-muted py-4">' +
+                (state.keyword ? '没有匹配「' + esc(state.keyword) + '」的已导入应用。' : '暂无应用，点击右上角「新增应用」或「触发自动采集」。') +
+                '</td></tr>');
+            $('#adminSearchCount').text(state.keyword ? '0 条' : '');
             return;
         }
-        var html = state.apps.map(function (app) {
+        $('#adminSearchCount').text(state.keyword ? ('匹配 ' + apps.length + ' / ' + state.apps.length + ' 条') : '');
+        var html = apps.map(function (app) {
             var icon = app.iconUrl
                 ? '<img class="app-icon-sm" src="' + esc(app.iconUrl) + '" alt="" onerror="appIconFallbackSm(this)"/>'
                 : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube" aria-hidden="true"></i></span>';
@@ -338,7 +351,81 @@
 
     $(function () {
         loadApps();
+        bindAdminSearch();
     });
+
+    // ------------------------------------------------------------ search ①：当前已导入应用列表过滤
+    function bindAdminSearch() {
+        var t = null;
+        $('#adminSearchInput').on('input', function () {
+            var v = $(this).val();
+            clearTimeout(t);
+            t = setTimeout(function () {
+                state.keyword = (v || '').trim();
+                renderApps();
+            }, 250);
+        });
+    }
+
+    // ------------------------------------------------------------ search ②：外部资源查询与导入
+    function openExternalModal() {
+        $('#extInput').val('');
+        $('#extResult').empty();
+        $('#externalModal').modal('show');
+    }
+
+    function lookupExternal() {
+        var raw = $('#extInput').val().trim();
+        if (!raw) { notify('warn', '请输入包名或商店链接'); return; }
+        var $btn = $('#btnExtLookup');
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 查询中…');
+        $('#extResult').html('<div class="text-muted small">查询中…</div>');
+        $.getJSON(API + '/external-lookup', { packageName: raw }).done(function (res) {
+            var p = res && res.data;
+            if (!p) {
+                $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc((res && res.msg) || '未找到该外部应用') + '</div>');
+                return;
+            }
+            var icon = p.iconDataUri
+                ? '<img class="app-icon-sm" src="' + esc(p.iconDataUri) + '" alt=""/>'
+                : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube"></i></span>';
+            var meta = [];
+            if (p.category) meta.push('分类：' + esc(p.category));
+            if (p.developer) meta.push('开发者：' + esc(p.developer));
+            if (p.latestVersionName) meta.push('最新版本：v' + esc(p.latestVersionName) + (p.sizeMb ? '（' + p.sizeMb + ' MB）' : ''));
+            var html = '' +
+                '<div class="border rounded p-2">' +
+                '  <div class="d-flex align-items-center mb-2">' + icon +
+                '    <div class="ml-2"><strong>' + esc(p.name || p.packageName) + '</strong>' +
+                '      <div class="text-muted small"><code>' + esc(p.packageName || '') + '</code></div></div>' +
+                '</div>' +
+                (p.summary ? '<div class="small text-muted mb-2">' + esc(p.summary) + '</div>' : '') +
+                (meta.length ? '<div class="small mb-2">' + meta.map(function (m) { return '<span class="mr-3">' + m + '</span>'; }).join('') + '</div>' : '') +
+                (p.apkUrl ? '<div class="small mb-2">APK：<a href="' + esc(p.apkUrl) + '" target="_blank" rel="noopener">' + esc(p.apkUrl) + '</a></div>' : '') +
+                '<button class="btn btn-success btn-sm" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\')"><i class="fa fa-download"></i> 一键导入</button>' +
+                '</div>';
+            $('#extResult').html(html);
+        }).fail(function (xhr) {
+            $('#extResult').html('<div class="alert alert-danger py-2 mb-0">' + esc(errMsg(xhr, '查询失败')) + '</div>');
+        }).always(function () {
+            $btn.prop('disabled', false).html('<i class="fa fa-search"></i> 查询');
+        });
+    }
+
+    function importExternal(packageName) {
+        if (!packageName) return;
+        ajax('POST', API + '/external-import?packageName=' + encodeURIComponent(packageName), null).done(function (res) {
+            if (res && res.data) {
+                notify('ok', '已导入：' + (res.data.name || packageName));
+                $('#externalModal').modal('hide');
+                loadApps();
+            } else {
+                notify('warn', (res && res.msg) || '导入失败');
+            }
+        }).fail(function (xhr) {
+            notify('error', errMsg(xhr, '导入失败'));
+        });
+    }
 
     window.Admin = {
         refresh: loadApps,
@@ -353,6 +440,9 @@
         deleteVersion: deleteVersion,
         openSourceModal: openSourceModal,
         saveSource: saveSource,
-        deleteSource: deleteSource
+        deleteSource: deleteSource,
+        openExternalModal: openExternalModal,
+        lookupExternal: lookupExternal,
+        importExternal: importExternal
     };
 })(jQuery);

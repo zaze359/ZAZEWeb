@@ -55,3 +55,22 @@ data class SyncStoreResultVo(
     val appsProcessed: Int = 0,
     val sourcesAdded: Int = 0
 )
+
+/**
+ * 外部应用（F-Droid）查询预览。
+ * iconDataUri 为 F-Droid 返回的 base64 图标（data:image/...;base64,...），仅在后台预览展示，不持久化。
+ */
+data class ExternalAppPreview(
+    val packageName: String? = null,
+    val name: String? = null,
+    val summary: String? = null,
+    val iconDataUri: String? = null,
+    val developer: String? = null,
+    val officialUrl: String? = null,
+    val category: String? = null,
+    val latestVersionName: String? = null,
+    val latestVersionCode: Long? = null,
+    val sizeMb: Long? = null,
+    val apkUrl: String? = null,
+    val sourceUrl: String? = null
+)
