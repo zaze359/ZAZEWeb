@@ -33,6 +33,14 @@ class AppMarketServiceImpl : AppMarketService {
         }
     }
 
+    override fun searchApps(keyword: String): List<AppVo> {
+        val kw = keyword.trim()
+        if (kw.isBlank()) return listApps()
+        return appRepository.search(kw).map { app ->
+            app.asVo(versionRepository.countByAppId(app.id).toInt())
+        }
+    }
+
     @Cacheable
     override fun getAppDetail(appId: Long): AppDetailVo? {
         val app: App = appRepository.findById(appId).orElse(null) ?: return null

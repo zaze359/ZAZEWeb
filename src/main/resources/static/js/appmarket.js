@@ -19,12 +19,15 @@
         return SOURCE_CLASS[type] || 'btn-secondary';
     }
 
-    function renderList() {
+    function renderList(keyword) {
         if (!$('#app-list').length) return;
-        $.getJSON(API + '/apps', function (res) {
+        var url = API + '/apps';
+        if (keyword) url += '?keyword=' + encodeURIComponent(keyword);
+        $.getJSON(url, function (res) {
             var apps = (res && res.data) || [];
             if (!apps.length) {
-                $('#app-list').html('<div class="col-12 text-muted">暂无应用数据。</div>');
+                var msg = keyword ? '未找到与「' + escapeHtml(keyword) + '」匹配的应用。' : '暂无应用数据。';
+                $('#app-list').html('<div class="col-12 text-muted">' + msg + '</div>');
                 return;
             }
             var html = apps.map(function (app) {
@@ -120,8 +123,20 @@
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    var _searchTimer;
+    function bindSearch() {
+        var $input = $('#app-search');
+        if (!$input.length) return;
+        $input.on('input', function () {
+            var q = $.trim($input.val());
+            clearTimeout(_searchTimer);
+            _searchTimer = setTimeout(function () { renderList(q); }, 250);
+        });
+    }
+
     $(function () {
         renderList();
+        bindSearch();
         renderDetail();
     });
 })(jQuery);

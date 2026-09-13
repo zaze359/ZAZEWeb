@@ -19,8 +19,9 @@ class AppMarketApiController : BaseController() {
     @GetMapping("/apps")
     @LoggerManage(description = "获取应用市场应用列表")
     @ResponseBody
-    fun listApps(): Response<List<AppVo>> {
-        return Response(appMarketService.listApps())
+    fun listApps(@RequestParam(required = false) keyword: String?): Response<List<AppVo>> {
+        return if (keyword.isNullOrBlank()) Response(appMarketService.listApps())
+        else Response(appMarketService.searchApps(keyword))
     }
 
     @GetMapping("/apps/{id}")

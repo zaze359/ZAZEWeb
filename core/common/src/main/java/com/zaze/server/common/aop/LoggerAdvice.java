@@ -36,7 +36,7 @@ public class LoggerAdvice {
         }
         StringBuilder param = new StringBuilder("传入参数[{}] ");
         for (Object obj : params) {
-            param.append(obj.toString()).append("  ");
+            param.append(obj == null ? "null" : obj.toString()).append("  ");
         }
         return param.toString();
     }
