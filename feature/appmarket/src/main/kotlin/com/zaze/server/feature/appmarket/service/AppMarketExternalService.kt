@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.net.URLEncoder
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * 外部应用查询与一键导入（搜索上游：F-Droid + IzzyOnDroid）。
@@ -79,6 +80,23 @@ class AppMarketExternalService(
     private var izzyCache: Pair<Long, IzzyIndexDto>? = null
     private val izzyLock = Any()
     private val IZZY_CACHE_TTL_MS = 60 * 60 * 1000L
+
+    /** 外部请求超时：上游不可达/极慢时快速失败，避免查询接口长时间挂起。
+     *  在注入的 OkHttpClient 基础上显式覆盖 connect/read/write/call 四类超时（双保险，
+     *  避免仅设置 callTimeout 时仍被底层 readTimeout 接管导致无法快速失败）。 */
+    private val extClient = okHttpClient.newBuilder()
+        .connectTimeout(8, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .callTimeout(10, TimeUnit.SECONDS)
+        .build()
+    /** IzzyOnDroid 索引较大（数 MB），首次拉取给稍长超时；成功后内存缓存 1h */
+    private val izzyClient = okHttpClient.newBuilder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
+        .callTimeout(15, TimeUnit.SECONDS)
+        .build()
 
     /** 按包名/链接精确查询预览（不写库）；跨上游，返回首个命中（带 source 标记） */
     fun lookup(raw: String): ExternalAppPreview? {
@@ -284,12 +302,9 @@ class AppMarketExternalService(
 
     private fun fetchFdroid(packageName: String): FdroidPackageDto? {
         val url = fdroidBase + packageName
-        // 外部网络可能偶发抖动，最多重试一次
-        repeat(2) {
-            val dto = doFetch(url)
-            if (dto != null) return dto
-        }
-        return null
+        // 已为外部请求设置硬性超时（extClient 10s），上游不可达会快速失败；
+        // 此处单次请求即可，重试对「超时型不可达」无意义，仅徒增等待。
+        return doFetch(url)
     }
 
     private fun fetchSearch(keyword: String): List<FdroidSearchItemDto>? {
@@ -308,12 +323,12 @@ class AppMarketExternalService(
             }
         }
         for (url in candidates) {
-            repeat(2) {
-                val items = doFetchSearch(url)
-                if (items != null) {
-                    synchronized(searchCache) { searchCache[cacheKey] = now to items }
-                    return items
-                }
+            // 已为外部请求设置硬性超时（extClient 10s），单次请求即可；
+            // 上游不可达会快速失败（返回 null），不在此处重试以免叠加超时。
+            val items = doFetchSearch(url)
+            if (items != null) {
+                synchronized(searchCache) { searchCache[cacheKey] = now to items }
+                return items
             }
         }
         return null
@@ -325,7 +340,7 @@ class AppMarketExternalService(
             .header("Accept", "application/json")
             .get().build()
         return try {
-            okHttpClient.newCall(request).execute().use { resp ->
+            extClient.newCall(request).execute().use { resp ->
                 if (!resp.isSuccessful) null
                 else {
                     val body = resp.body?.string() ?: return null
@@ -420,7 +435,7 @@ class AppMarketExternalService(
                 .header("User-Agent", "zaze-appmarket-external")
                 .header("Accept", "application/json")
                 .get().build()
-            okHttpClient.newCall(request).execute().use { resp ->
+            izzyClient.newCall(request).execute().use { resp ->
                 if (!resp.isSuccessful) null
                 else {
                     val body = resp.body?.string() ?: return null
@@ -461,7 +476,7 @@ class AppMarketExternalService(
             .header("User-Agent", "zaze-appmarket-external")
             .get().build()
         return try {
-            okHttpClient.newCall(request).execute().use { resp ->
+            extClient.newCall(request).execute().use { resp ->
                 if (!resp.isSuccessful) null
                 else {
                     val body = resp.body?.string() ?: return null

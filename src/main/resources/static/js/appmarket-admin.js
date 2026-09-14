@@ -45,13 +45,14 @@
         setTimeout(function () { $('#alertBox').empty(); }, 4000);
     }
 
-    function ajax(method, url, data) {
+    function ajax(method, url, data, timeout) {
         return $.ajax({
             url: url,
             type: method,
             contentType: 'application/json; charset=utf-8',
             data: data != null ? JSON.stringify(data) : undefined,
-            dataType: 'json'
+            dataType: 'json',
+            timeout: timeout   // 单位 ms；不传则无超时限制（长导入任务用）
         });
     }
 
@@ -404,11 +405,21 @@
         // 包名/链接走精确查询；自由文本（应用名）走模糊搜索
         var byPackage = isPackageOrUrl(raw);
         var endpoint = byPackage ? '/external-lookup' : '/external-search';
-        $.getJSON(API + endpoint, { packageName: raw, keyword: raw }).done(function (res) {
+        // 只读查询，上游不可达/极慢时 15s 超时快速失败，避免按钮一直卡在「查询中…」
+        $.ajax({
+            url: API + endpoint,
+            type: 'GET',
+            data: { packageName: raw, keyword: raw },
+            dataType: 'json',
+            timeout: 15000
+        }).done(function (res) {
             if (byPackage) renderLookupPreview(res);
             else renderSearchList(res);
-        }).fail(function (xhr) {
-            $('#extResult').html('<div class="alert alert-danger py-2 mb-0">' + esc(errMsg(xhr, '查询失败')) + '</div>');
+        }).fail(function (xhr, textStatus) {
+            var msg = (textStatus === 'timeout')
+                ? '查询超时（上游响应过慢），请稍后重试'
+                : errMsg(xhr, '查询失败');
+            $('#extResult').html('<div class="alert alert-danger py-2 mb-0">' + esc(msg) + '</div>');
         }).always(function () {
             $btn.prop('disabled', false).html('<i class="fa fa-search"></i> 查询');
         });
@@ -482,7 +493,8 @@
         if (!packageName) return;
         var url = API + '/external-import?packageName=' + encodeURIComponent(packageName);
         if (source) url += '&source=' + encodeURIComponent(source);
-        ajax('POST', url, null).done(function (res) {
+        // 导入需从上游拉取元数据/索引，比只读查询更耗时，给 30s（服务端单次请求上限 10s/Izzy 15s）
+        ajax('POST', url, null, 30000).done(function (res) {
             if (res && res.data) {
                 notify('ok', '已导入：' + (res.data.name || packageName));
                 $('#externalModal').modal('hide');
