@@ -1,6 +1,8 @@
 package com.zaze.server.feature.appmarket.service
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import com.zaze.server.common.utils.JsonUtil
@@ -41,6 +43,7 @@ import java.util.concurrent.TimeUnit
 @CacheConfig(cacheNames = ["appmarket"])
 class AppMarketExternalService(
     private val okHttpClient: OkHttpClient,
+    private val cnDict: AppMarketCnDict,
     private val appRepository: AppRepository,
     private val versionRepository: AppVersionRepository,
     private val sourceRepository: DownloadSourceRepository,
@@ -98,6 +101,35 @@ class AppMarketExternalService(
         .callTimeout(15, TimeUnit.SECONDS)
         .build()
 
+    /**
+     * 应用宝详情页基址（**服务端渲染**：`https://sj.qq.com/appdetail/<包名>` 返回内嵌
+     * `__NEXT_DATA__` 的 HTML，可按包名取到名称 / 版本名 / 大小 / 图标 / 简介 / 开发商 / 分类）。
+     * 可用 -Dappmarket.myapp.base=... 覆盖。
+     *
+     * 注意：应用宝的**搜索**是客户端渲染的（`searchDetail.htm?kw=` 实际返回首页），
+     * 服务端抓不到搜索结果，因此「应用名 → 包名」改由 [AppMarketCnDict] 本地词典解决。
+     */
+    private val myappBase =
+        (System.getProperty("appmarket.myapp.base") ?: "https://sj.qq.com/appdetail/").let {
+            if (it.endsWith("/")) it else "$it/"
+        }
+
+    /** 是否启用应用宝上游（默认 true；可用 -Dappmarket.myapp.enabled=false 关闭） */
+    private val myappEnabled = (System.getProperty("appmarket.myapp.enabled") ?: "true").toBoolean()
+
+    /** 应用宝详情页约 300KB，比 F-Droid 响应大得多，给更长超时（四类超时都要显式覆盖） */
+    private val myappClient = okHttpClient.newBuilder()
+        .connectTimeout(8, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
+        .callTimeout(20, TimeUnit.SECONDS)
+        .build()
+
+    /** 应用宝详情缓存（按包名，TTL 30min）：详情变化不频繁，避免重复抓取 300KB 页面 */
+    @Volatile
+    private var myappCache: MutableMap<String, Pair<Long, MyAppDetail>> = HashMap()
+    private val MYAPP_CACHE_TTL_MS = 30 * 60 * 1000L
+
     /** 按包名/链接精确查询预览（不写库）；跨上游，返回首个命中（带 source 标记） */
     fun lookup(raw: String): ExternalAppPreview? {
         val pkgName = normalizePackageName(raw) ?: return null
@@ -108,6 +140,10 @@ class AppMarketExternalService(
         if (izzyEnabled) {
             val iz = lookupIzzy(pkgName)
             if (iz != null) return iz
+        }
+        // 应用宝放最后：前两个上游能提供 APK 直链，应用宝只能提供详情页，作为国内应用兜底
+        if (myappEnabled) {
+            fetchMyAppDetail(pkgName)?.let { return toMyAppPreview(it) }
         }
         return null
     }
@@ -125,6 +161,10 @@ class AppMarketExternalService(
         val lower = kw.lowercase()
         val all = mutableListOf<ExternalAppPreview>()
         val errors = mutableListOf<String>()
+        // 本地词典排最前：即时返回、不依赖网络，且去重时保证国内应用候选保留「本地词典」来源标记
+        if (cnDict.enabled) {
+            all += searchDict(lower)
+        }
         if (fdroidEnabled) {
             try { all += searchFdroid(kw, lower) }
             catch (e: IllegalStateException) { errors += e.message ?: "F-Droid 搜索失败" }
@@ -140,6 +180,26 @@ class AppMarketExternalService(
             throw IllegalStateException(errors.first())
         }
         return deduped.take(MAX_SEARCH_RESULTS)
+    }
+
+    /**
+     * 是否走应用宝导入路径。
+     * 「本地词典」候选只有包名、没有元数据，因此与「应用宝」来源合并处理——都由应用宝补全。
+     */
+    private fun isMyAppSource(source: String?): Boolean =
+        source == MYAPP_SOURCE || source == AppMarketCnDict.SOURCE_LABEL
+
+    /** 本地词典上游按名搜索：只给候选包名 + 名称，元数据在导入阶段由应用宝补全 */
+    private fun searchDict(lower: String): List<ExternalAppPreview> {
+        return cnDict.match(lower).map {
+            ExternalAppPreview(
+                packageName = it.packageName,
+                name = it.name,
+                category = it.category,
+                officialUrl = myappBase + it.packageName,
+                source = AppMarketCnDict.SOURCE_LABEL
+            )
+        }
     }
 
     /** F-Droid 上游按名搜索（复用官方搜索 API + 客户端关键词兜底过滤） */
@@ -178,10 +238,16 @@ class AppMarketExternalService(
     fun importApp(raw: String, source: String? = null): AppVo {
         val pkgName = normalizePackageName(raw)
             ?: throw IllegalArgumentException("无法从输入中识别包名：$raw")
-        if (appRepository.findByPackageName(pkgName) != null) {
-            throw IllegalArgumentException("包名 $pkgName 已存在，无需重复导入")
+        val existing = appRepository.findByPackageName(pkgName)
+        return when {
+            // 「本地词典」候选只提供包名，元数据同样由应用宝补全，因此与「应用宝」走同一条 upsert 路径
+            // （补全元数据 + 追加版本，可修复 seed 中的占位版本与 favicon 图标）；
+            // F-Droid / Izzy 维持「已存在即拒绝」的原语义不变。
+            isMyAppSource(source) -> importFromMyApp(pkgName, existing)
+            existing != null -> throw IllegalArgumentException("包名 $pkgName 已存在，无需重复导入")
+            source == "IzzyOnDroid" -> importFromIzzy(pkgName)
+            else -> importFromFdroid(pkgName)
         }
-        return if (source == "IzzyOnDroid") importFromIzzy(pkgName) else importFromFdroid(pkgName)
     }
 
     /** 从 F-Droid 导入（沿用其 /api/v1/packages/{pkg} 元数据） */
@@ -276,6 +342,153 @@ class AppMarketExternalService(
         }
         collector.ensureStoreSources(app)
         return app.asVo(1)
+    }
+
+    // ------------------------------------------------------------ 应用宝上游（国内应用元数据补全）
+
+    /**
+     * 从应用宝导入（upsert）：按包名抓取详情页元数据。
+     * - 应用不存在：新建应用 + 版本 + 详情页下载源；
+     * - 应用已存在：补全缺失的元数据 + 追加新版本（版本名不同才加），原有数据不丢。
+     *
+     * 应用宝不提供 `versionCode`，因此版本判重按**版本名**进行。
+     */
+    private fun importFromMyApp(pkgName: String, existing: App?): AppVo {
+        val d = fetchMyAppDetail(pkgName)
+            ?: throw IllegalArgumentException("应用宝未找到该包名：$pkgName")
+        val app = if (existing != null) {
+            val icon = existing.iconUrl
+            // 只把 favicon 之类占位图标换成应用宝 CDN 图标；已是真实图标（data URI / CDN）则不动
+            val placeholderIcon = icon.isNullOrBlank() ||
+                icon.contains("favicon", ignoreCase = true) ||
+                icon.endsWith(".ico", ignoreCase = true)
+            val merged = existing.copy(
+                iconUrl = if (placeholderIcon) (d.iconUrl ?: icon) else icon,
+                summary = existing.summary?.takeIf { it.isNotBlank() } ?: d.summary,
+                developer = existing.developer?.takeIf { it.isNotBlank() } ?: d.developer,
+                category = existing.category?.takeIf { it.isNotBlank() } ?: d.category,
+                officialUrl = existing.officialUrl?.takeIf { it.isNotBlank() } ?: d.sourceUrl
+            )
+            if (merged != existing) appRepository.save(merged) else existing
+        } else {
+            appRepository.save(
+                App(
+                    name = d.name ?: pkgName,
+                    packageName = pkgName,
+                    category = d.category,
+                    developer = d.developer,
+                    summary = d.summary,
+                    iconUrl = d.iconUrl,
+                    officialUrl = d.sourceUrl
+                )
+            )
+        }
+        val vn = d.versionName
+        if (!vn.isNullOrBlank() && versionRepository.findByAppIdAndVersionName(app.id, vn) == null) {
+            versionRepository.save(
+                AppVersion(
+                    appId = app.id,
+                    versionName = vn,
+                    sizeMb = d.sizeMb,
+                    releaseDate = d.updateTimeSec?.let { Date(it * 1000) }
+                )
+            )
+        }
+        // 自动补全应用宝（MyApp）商店源，与现有商店源体系一致（幂等）
+        collector.ensureStoreSources(app)
+        return app.asVo(versionRepository.countByAppId(app.id).toInt())
+    }
+
+    /** 应用宝详情 → 预览（不写库） */
+    private fun toMyAppPreview(d: MyAppDetail): ExternalAppPreview = ExternalAppPreview(
+        packageName = d.packageName,
+        name = d.name,
+        summary = d.summary,
+        iconSrc = d.iconUrl,
+        developer = d.developer,
+        officialUrl = d.sourceUrl,
+        category = d.category,
+        latestVersionName = d.versionName,
+        latestVersionCode = null, // 应用宝不提供 versionCode
+        sizeMb = d.sizeMb,
+        apkUrl = null,            // 详情页不提供 APK 直链
+        sourceUrl = d.sourceUrl,
+        source = MYAPP_SOURCE
+    )
+
+    /** 抓取应用宝详情（30min 内存缓存）；未启用 / 不可达 / 未找到均返回 null（不重试） */
+    private fun fetchMyAppDetail(pkgName: String): MyAppDetail? {
+        if (!myappEnabled) return null
+        val now = System.currentTimeMillis()
+        myappCache[pkgName]?.let { (ts, d) -> if (now - ts < MYAPP_CACHE_TTL_MS) return d }
+        val d = doFetchMyApp(pkgName)
+        if (d != null) synchronized(this) { myappCache[pkgName] = now to d }
+        return d
+    }
+
+    private fun doFetchMyApp(pkgName: String): MyAppDetail? {
+        val request = Request.Builder().url(myappBase + pkgName)
+            .header("User-Agent", "zaze-appmarket-external")
+            .get().build()
+        return try {
+            myappClient.newCall(request).execute().use { resp ->
+                if (!resp.isSuccessful) null
+                else parseMyApp(resp.body?.string() ?: return null, pkgName)
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * 解析应用宝详情页：取出内嵌的 `__NEXT_DATA__` JSON，递归找 `pkg_name == pkgName` 的对象。
+     * 不写死 `components[i].data.itemData[j]` 这类路径，页面结构调整时更抗变。
+     */
+    private fun parseMyApp(html: String, pkgName: String): MyAppDetail? {
+        val m = Regex("id=\"__NEXT_DATA__\"[^>]*>(.*?)</script>", RegexOption.DOT_MATCHES_ALL)
+            .find(html) ?: return null
+        val root = try {
+            JsonParser.parseString(m.groupValues[1]).asJsonObject
+        } catch (e: Exception) {
+            return null
+        }
+        val item = findPkgNode(root, pkgName) ?: return null
+        fun str(vararg keys: String): String? = keys.firstNotNullOfOrNull { k ->
+            item[k]?.takeIf { it.isJsonPrimitive }?.asString?.trim()?.takeIf { it.isNotEmpty() }
+        }
+        fun long(key: String): Long? =
+            item[key]?.takeIf { it.isJsonPrimitive }?.asString?.trim()?.toLongOrNull()
+        return MyAppDetail(
+            packageName = pkgName,
+            name = str("name"),
+            summary = str("description", "editor_intro")?.take(500),
+            iconUrl = str("icon"),
+            developer = str("developer", "operator"),
+            category = str("cate_name", "cate_name_new"),
+            versionName = str("version_name"),
+            sizeMb = long("apk_size")?.let { it / 1024 / 1024 },
+            updateTimeSec = long("update_time"),
+            sourceUrl = myappBase + pkgName
+        )
+    }
+
+    /** 递归查找 `pkg_name` 等于目标包名的 JsonObject */
+    private fun findPkgNode(node: JsonElement, pkg: String): JsonObject? {
+        when {
+            node.isJsonObject -> {
+                val obj = node.asJsonObject
+                if (obj["pkg_name"]?.takeIf { it.isJsonPrimitive }?.asString == pkg) return obj
+                for ((_, v) in obj.entrySet()) {
+                    findPkgNode(v, pkg)?.let { return it }
+                }
+            }
+            node.isJsonArray -> {
+                for (v in node.asJsonArray) {
+                    findPkgNode(v, pkg)?.let { return it }
+                }
+            }
+        }
+        return null
     }
 
     private fun toPreview(pkg: FdroidPackageDto): ExternalAppPreview {
@@ -452,7 +665,11 @@ class AppMarketExternalService(
     /** 列出所有已配置的搜索上游（供管理端 UI 展示「所有源」） */
     fun listSearchProviders(): List<SearchProviderMeta> = listOf(
         SearchProviderMeta("fdroid", "F-Droid", "https://search.f-droid.org/api/search_apps", fdroidEnabled),
-        SearchProviderMeta("izzy", "IzzyOnDroid", izzyIndexUrl, izzyEnabled)
+        SearchProviderMeta("izzy", "IzzyOnDroid", izzyIndexUrl, izzyEnabled),
+        SearchProviderMeta(
+            "dict", AppMarketCnDict.SOURCE_LABEL, "classpath:${AppMarketCnDict.DICT_PATH}", cnDict.enabled
+        ),
+        SearchProviderMeta("myapp", MYAPP_SOURCE, myappBase, myappEnabled)
     )
 
     /** 兼容 F-Droid 字段既可能是字符串，也可能是 {locale: text} 对象 */
@@ -514,8 +731,30 @@ class AppMarketExternalService(
         return map.values.firstOrNull()
     }
 
+    /**
+     * 应用宝详情页解析结果（仅取所需字段）。
+     *
+     * 应用宝只提供 `version_name` + `update_time` + `md_5`，**没有 versionCode**，
+     * 也没有 APK 直链（`apk_url` / `download_url` 为空），因此只能落详情页下载源。
+     */
+    private data class MyAppDetail(
+        val packageName: String,
+        val name: String? = null,
+        val summary: String? = null,
+        val iconUrl: String? = null,
+        val developer: String? = null,
+        val category: String? = null,
+        val versionName: String? = null,
+        val sizeMb: Long? = null,
+        val updateTimeSec: Long? = null,
+        val sourceUrl: String? = null
+    )
+
     companion object {
         private val PACKAGE_RE = Regex("^[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]+)+\$")
+
+        /** 上游来源标记：应用宝（腾讯） */
+        const val MYAPP_SOURCE = "应用宝"
     }
 }
 

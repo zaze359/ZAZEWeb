@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/09-15-cn-app-name-search/prd.md", "reason": "需求背景、实测结论、验收标准 AC1-AC7 与范围边界"}
+{"file": ".trellis/tasks/09-15-cn-app-name-search/design.md", "reason": "数据流、词典 schema、应用宝解析契约与字段映射、upsert 语义、图标策略"}
+{"file": ".trellis/tasks/09-15-cn-app-name-search/implement.md", "reason": "8 步执行清单、验证命令与回滚点"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/service/AppMarketExternalService.kt", "reason": "待改造：lookup/searchByName 链、importApp 分派、新增应用宝上游"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/dto/AdminDtos.kt", "reason": "ExternalAppPreview 字段复用，确认无需新增字段"}

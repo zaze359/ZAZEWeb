@@ -1,0 +1,482 @@
+[
+  {
+    "name": "Keep",
+    "packageName": "com.gotokeep.keep",
+    "category": "健康"
+  },
+  {
+    "name": "Microsoft Excel",
+    "packageName": "com.microsoft.office.excel",
+    "category": "办公"
+  },
+  {
+    "name": "Microsoft Word",
+    "packageName": "com.microsoft.office.word",
+    "category": "办公"
+  },
+  {
+    "name": "Outlook",
+    "packageName": "com.microsoft.office.outlook",
+    "category": "办公"
+  },
+  {
+    "name": "QQ邮箱",
+    "packageName": "com.tencent.androidqqmail",
+    "category": "办公"
+  },
+  {
+    "name": "TIM",
+    "packageName": "com.tencent.tim",
+    "category": "办公"
+  },
+  {
+    "name": "WPS Office",
+    "packageName": "cn.wps.moffice_eng",
+    "category": "办公"
+  },
+  {
+    "name": "企业微信",
+    "packageName": "com.tencent.wework",
+    "category": "办公"
+  },
+  {
+    "name": "扫描全能王",
+    "packageName": "com.intsig.camscanner",
+    "category": "办公"
+  },
+  {
+    "name": "网易邮箱大师",
+    "packageName": "com.netease.mail",
+    "category": "办公"
+  },
+  {
+    "name": "钉钉",
+    "packageName": "com.alibaba.android.rimet",
+    "category": "办公"
+  },
+  {
+    "name": "飞书",
+    "packageName": "com.ss.android.lark",
+    "category": "办公"
+  },
+  {
+    "name": "地铁跑酷",
+    "packageName": "com.kiloo.subwaysurf",
+    "category": "动作冒险"
+  },
+  {
+    "name": "哈啰出行",
+    "packageName": "com.jingyao.easybike",
+    "category": "导航"
+  },
+  {
+    "name": "嘀嗒出行",
+    "packageName": "com.didapinche.booking",
+    "category": "导航"
+  },
+  {
+    "name": "滴滴出行",
+    "packageName": "com.sdu.didi.psnger",
+    "category": "导航"
+  },
+  {
+    "name": "百度地图",
+    "packageName": "com.baidu.BaiduMap",
+    "category": "导航"
+  },
+  {
+    "name": "腾讯地图",
+    "packageName": "com.tencent.map",
+    "category": "导航"
+  },
+  {
+    "name": "高德地图",
+    "packageName": "com.autonavi.minimap",
+    "category": "导航"
+  },
+  {
+    "name": "Chrome",
+    "packageName": "com.android.chrome",
+    "category": "工具"
+  },
+  {
+    "name": "QQ浏览器",
+    "packageName": "com.tencent.mtt",
+    "category": "工具"
+  },
+  {
+    "name": "UC浏览器",
+    "packageName": "com.UCMobile",
+    "category": "工具"
+  },
+  {
+    "name": "墨迹天气",
+    "packageName": "com.moji.mjweather",
+    "category": "工具"
+  },
+  {
+    "name": "夸克浏览器",
+    "packageName": "com.quark.browser",
+    "category": "工具"
+  },
+  {
+    "name": "搜狗输入法",
+    "packageName": "com.sohu.inputmethod.sogou",
+    "category": "工具"
+  },
+  {
+    "name": "有道词典",
+    "packageName": "com.youdao.dict",
+    "category": "工具"
+  },
+  {
+    "name": "百度输入法",
+    "packageName": "com.baidu.input",
+    "category": "工具"
+  },
+  {
+    "name": "讯飞输入法",
+    "packageName": "com.iflytek.inputmethod",
+    "category": "工具"
+  },
+  {
+    "name": "迅雷",
+    "packageName": "com.xunlei.downloadprovider",
+    "category": "工具"
+  },
+  {
+    "name": "剪映",
+    "packageName": "com.lemon.lv",
+    "category": "摄影"
+  },
+  {
+    "name": "美颜相机",
+    "packageName": "com.meitu.meiyancamera",
+    "category": "摄影"
+  },
+  {
+    "name": "作业帮",
+    "packageName": "com.baidu.homework",
+    "category": "教育"
+  },
+  {
+    "name": "小猿搜题",
+    "packageName": "com.fenbi.android.solar",
+    "category": "教育"
+  },
+  {
+    "name": "去哪儿旅行",
+    "packageName": "com.Qunar",
+    "category": "旅游"
+  },
+  {
+    "name": "携程旅行",
+    "packageName": "ctrip.android.view",
+    "category": "旅游"
+  },
+  {
+    "name": "铁路12306",
+    "packageName": "com.MobileTicket",
+    "category": "旅游"
+  },
+  {
+    "name": "欢乐斗地主",
+    "packageName": "com.qqgame.hlddz",
+    "category": "棋牌中心"
+  },
+  {
+    "name": "东方财富",
+    "packageName": "com.eastmoney.android.berlin",
+    "category": "理财"
+  },
+  {
+    "name": "中国工商银行",
+    "packageName": "com.icbc",
+    "category": "理财"
+  },
+  {
+    "name": "中国建设银行",
+    "packageName": "com.chinamworld.main",
+    "category": "理财"
+  },
+  {
+    "name": "同花顺",
+    "packageName": "com.hexin.plat.android",
+    "category": "理财"
+  },
+  {
+    "name": "招商银行",
+    "packageName": "cmb.pb",
+    "category": "理财"
+  },
+  {
+    "name": "大众点评",
+    "packageName": "com.dianping.v1",
+    "category": "生活"
+  },
+  {
+    "name": "美团",
+    "packageName": "com.sankuai.meituan",
+    "category": "生活"
+  },
+  {
+    "name": "QQ",
+    "packageName": "com.tencent.mobileqq",
+    "category": "社交"
+  },
+  {
+    "name": "Soul",
+    "packageName": "cn.soulapp.android",
+    "category": "社交"
+  },
+  {
+    "name": "小红书",
+    "packageName": "com.xingin.xhs",
+    "category": "社交"
+  },
+  {
+    "name": "微信",
+    "packageName": "com.tencent.mm",
+    "category": "社交"
+  },
+  {
+    "name": "微博",
+    "packageName": "com.sina.weibo",
+    "category": "社交"
+  },
+  {
+    "name": "探探",
+    "packageName": "com.p1.mobile.putong",
+    "category": "社交"
+  },
+  {
+    "name": "百度贴吧",
+    "packageName": "com.baidu.tieba",
+    "category": "社交"
+  },
+  {
+    "name": "知乎",
+    "packageName": "com.zhihu.android",
+    "category": "社交"
+  },
+  {
+    "name": "豆瓣",
+    "packageName": "com.douban.frodo",
+    "category": "社交"
+  },
+  {
+    "name": "陌陌",
+    "packageName": "com.immomo.momo",
+    "category": "社交"
+  },
+  {
+    "name": "360手机卫士",
+    "packageName": "com.qihoo360.mobilesafe",
+    "category": "系统"
+  },
+  {
+    "name": "应用宝",
+    "packageName": "com.tencent.android.qqdownloader",
+    "category": "系统"
+  },
+  {
+    "name": "百度网盘",
+    "packageName": "com.baidu.netdisk",
+    "category": "系统"
+  },
+  {
+    "name": "腾讯手机管家",
+    "packageName": "com.tencent.qqpimsecure",
+    "category": "系统"
+  },
+  {
+    "name": "阿里云盘",
+    "packageName": "com.alicloud.databox",
+    "category": "系统"
+  },
+  {
+    "name": "王者荣耀",
+    "packageName": "com.tencent.tmgp.sgame",
+    "category": "经营策略"
+  },
+  {
+    "name": "优酷",
+    "packageName": "com.youku.phone",
+    "category": "视频"
+  },
+  {
+    "name": "咪咕视频",
+    "packageName": "com.cmcc.cmvideo",
+    "category": "视频"
+  },
+  {
+    "name": "哔哩哔哩",
+    "packageName": "tv.danmaku.bili",
+    "category": "视频"
+  },
+  {
+    "name": "快手",
+    "packageName": "com.smile.gifmaker",
+    "category": "视频"
+  },
+  {
+    "name": "快手极速版",
+    "packageName": "com.kuaishou.nebula",
+    "category": "视频"
+  },
+  {
+    "name": "抖音",
+    "packageName": "com.ss.android.ugc.aweme",
+    "category": "视频"
+  },
+  {
+    "name": "抖音极速版",
+    "packageName": "com.ss.android.ugc.aweme.lite",
+    "category": "视频"
+  },
+  {
+    "name": "抖音火山版",
+    "packageName": "com.ss.android.ugc.live",
+    "category": "视频"
+  },
+  {
+    "name": "搜狐视频",
+    "packageName": "com.sohu.sohuvideo",
+    "category": "视频"
+  },
+  {
+    "name": "斗鱼",
+    "packageName": "air.tv.douyu.android",
+    "category": "视频"
+  },
+  {
+    "name": "爱奇艺",
+    "packageName": "com.qiyi.video",
+    "category": "视频"
+  },
+  {
+    "name": "腾讯视频",
+    "packageName": "com.tencent.qqlive",
+    "category": "视频"
+  },
+  {
+    "name": "芒果TV",
+    "packageName": "com.hunantv.imgo.activity",
+    "category": "视频"
+  },
+  {
+    "name": "西瓜视频",
+    "packageName": "com.ss.android.article.video",
+    "category": "视频"
+  },
+  {
+    "name": "云闪付",
+    "packageName": "com.unionpay",
+    "category": "购物"
+  },
+  {
+    "name": "京东",
+    "packageName": "com.jingdong.app.mall",
+    "category": "购物"
+  },
+  {
+    "name": "唯品会",
+    "packageName": "com.achievo.vipshop",
+    "category": "购物"
+  },
+  {
+    "name": "天猫",
+    "packageName": "com.tmall.wireless",
+    "category": "购物"
+  },
+  {
+    "name": "拼多多",
+    "packageName": "com.xunmeng.pinduoduo",
+    "category": "购物"
+  },
+  {
+    "name": "支付宝",
+    "packageName": "com.eg.android.AlipayGphone",
+    "category": "购物"
+  },
+  {
+    "name": "淘宝",
+    "packageName": "com.taobao.taobao",
+    "category": "购物"
+  },
+  {
+    "name": "苏宁易购",
+    "packageName": "com.suning.mobile.ebuy",
+    "category": "购物"
+  },
+  {
+    "name": "闲鱼",
+    "packageName": "com.taobao.idlefish",
+    "category": "购物"
+  },
+  {
+    "name": "今日头条",
+    "packageName": "com.ss.android.article.news",
+    "category": "阅读"
+  },
+  {
+    "name": "学习强国",
+    "packageName": "cn.xuexi.android",
+    "category": "阅读"
+  },
+  {
+    "name": "新浪新闻",
+    "packageName": "com.sina.news",
+    "category": "阅读"
+  },
+  {
+    "name": "百度",
+    "packageName": "com.baidu.searchbox",
+    "category": "阅读"
+  },
+  {
+    "name": "网易新闻",
+    "packageName": "com.netease.newsreader.activity",
+    "category": "阅读"
+  },
+  {
+    "name": "腾讯新闻",
+    "packageName": "com.tencent.news",
+    "category": "阅读"
+  },
+  {
+    "name": "QQ音乐",
+    "packageName": "com.tencent.qqmusic",
+    "category": "音乐"
+  },
+  {
+    "name": "全民K歌",
+    "packageName": "com.tencent.karaoke",
+    "category": "音乐"
+  },
+  {
+    "name": "喜马拉雅",
+    "packageName": "com.ximalaya.ting.android",
+    "category": "音乐"
+  },
+  {
+    "name": "网易云音乐",
+    "packageName": "com.netease.cloudmusic",
+    "category": "音乐"
+  },
+  {
+    "name": "酷我音乐",
+    "packageName": "cn.kuwo.player",
+    "category": "音乐"
+  },
+  {
+    "name": "酷狗音乐",
+    "packageName": "com.kugou.android",
+    "category": "音乐"
+  },
+  {
+    "name": "和平精英",
+    "packageName": "com.tencent.tmgp.pubgmhd",
+    "category": "飞行射击"
+  }
+]

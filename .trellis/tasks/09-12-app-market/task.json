@@ -19,7 +19,8 @@
   "pr_url": null,
   "subtasks": [],
   "children": [
-    "09-15-cn-store-metadata"
+    "09-15-cn-store-metadata",
+    "09-15-cn-app-name-search"
   ],
   "parent": null,
   "relatedFiles": [],
