@@ -1,6 +1,8 @@
 package com.zaze.server.feature.appmarket.service.impl
 
 import com.zaze.server.feature.appmarket.collector.AppMarketCollector
+import com.zaze.server.feature.appmarket.dto.ApkImportRequest
+import com.zaze.server.feature.appmarket.dto.ApkImportResultVo
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
@@ -164,6 +166,63 @@ class AppMarketAdminServiceImpl(
     @CacheEvict(allEntries = true)
     override fun syncStoreSources(): SyncStoreResultVo {
         return collector.syncStoreSources()
+    }
+
+    @Transactional
+    @CacheEvict(allEntries = true)
+    override fun importFromApk(form: ApkImportRequest): ApkImportResultVo {
+        val pkgName = form.packageName?.trim()?.takeIf { it.isNotBlank() }
+            ?: throw IllegalArgumentException("缺少包名，无法导入（APK 解析结果不含 package）")
+
+        val existing = appRepository.findByPackageName(pkgName)
+        val appCreated = existing == null
+        val app = existing ?: appRepository.save(
+            App(
+                name = form.name?.takeIf { it.isNotBlank() } ?: pkgName,
+                packageName = pkgName,
+                iconUrl = form.iconDataUri
+            )
+        )
+        // 已有应用：仅在库中尚无图标时补齐，不覆盖人工维护的图标
+        if (!appCreated && app.iconUrl.isNullOrBlank() && !form.iconDataUri.isNullOrBlank()) {
+            appRepository.save(app.copy(iconUrl = form.iconDataUri))
+        }
+
+        // 版本：仅在解析出版本信息时处理；已存在同版本则跳过，避免重复导入
+        var versionAdded = false
+        val hasVersionInfo = form.versionCode != null || !form.versionName.isNullOrBlank()
+        if (hasVersionInfo) {
+            val duplicated = versionRepository.findByAppId(app.id).any { v ->
+                when {
+                    form.versionCode != null && v.versionCode != null ->
+                        v.versionCode == form.versionCode
+                    form.versionName != null && v.versionName != null ->
+                        v.versionName == form.versionName
+                    else -> false
+                }
+            }
+            if (!duplicated) {
+                versionRepository.save(
+                    AppVersion(
+                        appId = app.id,
+                        versionName = form.versionName,
+                        versionCode = form.versionCode,
+                        sizeMb = form.sizeMb
+                    )
+                )
+                versionAdded = true
+            }
+        }
+
+        // 按 packageName 幂等补应用宝详情页下载源（已存在则跳过）
+        val sourcesAdded = collector.ensureStoreSources(app)
+
+        return ApkImportResultVo(
+            app = app.asVo(versionRepository.countByAppId(app.id).toInt()),
+            appCreated = appCreated,
+            versionAdded = versionAdded,
+            sourcesAdded = sourcesAdded
+        )
     }
 
     private fun parseDate(s: String?): java.util.Date? {

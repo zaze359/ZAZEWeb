@@ -353,6 +353,7 @@
     $(function () {
         loadApps();
         bindAdminSearch();
+        $('#apkFile').on('change', onApkSelected);
     });
 
     // ------------------------------------------------------------ search ①：当前已导入应用列表过滤
@@ -507,6 +508,109 @@
         });
     }
 
+    // ------------------------------------------------------------ 从 APK 导入
+    var APK_MAX_BYTES = 200 * 1024 * 1024;   // APK 大小上限，避免大文件卡死浏览器
+    var ICON_MAX_BYTES = 100 * 1024;         // 图标超过该值仅预览、不入库
+    var APK_PARSER_SRC = (window.ctx || '') + '/vendor/app-info-parser/app-info-parser.min.js';
+    var apkParsed = null;                    // 当前解析结果（待提交）
+
+    /** 懒加载解析库（约 459KB），避免拖慢管理后台首屏 */
+    function loadApkParser() {
+        if (window.AppInfoParser) return $.Deferred().resolve().promise();
+        return $.getScript(APK_PARSER_SRC);
+    }
+
+    function openApkModal() {
+        apkParsed = null;
+        $('#apkFile').val('');
+        $('#apkStatus').empty();
+        $('#apkResult').empty();
+        $('#btnApkImport').prop('disabled', true).html('<i class="fa fa-download"></i> 确认导入');
+        $('#apkModal').modal('show');
+        loadApkParser();   // 预加载，用户选文件时即可用
+    }
+
+    function onApkSelected() {
+        var input = $('#apkFile')[0];
+        var file = input && input.files && input.files[0];
+        apkParsed = null;
+        $('#apkResult').empty();
+        $('#btnApkImport').prop('disabled', true);
+        if (!file) { $('#apkStatus').empty(); return; }
+        if (file.size > APK_MAX_BYTES) {
+            $('#apkStatus').html('<span class="text-danger">文件过大（超过 200MB），请选择更小的 APK</span>');
+            return;
+        }
+        $('#apkStatus').html('<span class="text-muted"><i class="fa fa-spinner fa-spin"></i> 正在加载解析库…</span>');
+        loadApkParser().done(function () {
+            $('#apkStatus').html('<span class="text-muted"><i class="fa fa-spinner fa-spin"></i> 正在解析 APK…</span>');
+            new window.AppInfoParser(file).parse().then(function (r) {
+                renderApkResult(r, file);
+            }).catch(function () {
+                $('#apkStatus').html('<span class="text-danger">APK 解析失败：文件可能损坏或经过加固</span>');
+            });
+        }).fail(function () {
+            $('#apkStatus').html('<span class="text-danger">解析库加载失败，请检查网络或联系管理员</span>');
+        });
+    }
+
+    function renderApkResult(r, file) {
+        var pkg = r && r.package;
+        if (!pkg) {
+            $('#apkStatus').html('<span class="text-danger">未能解析出包名，无法导入</span>');
+            return;
+        }
+        var label = (r.application && r.application.label) || pkg;
+        var icon = r.icon || '';
+        var iconTooLarge = !!icon && icon.length > ICON_MAX_BYTES;
+        apkParsed = {
+            packageName: pkg,
+            name: label,
+            versionName: r.versionName || null,
+            versionCode: (r.versionCode != null ? Number(r.versionCode) : null),
+            iconDataUri: iconTooLarge ? null : (icon || null),
+            sizeMb: file && file.size ? Math.round(file.size / 1024 / 1024) : null
+        };
+        var rows = [
+            ['包名', pkg],
+            ['应用名', label],
+            ['版本', (r.versionName || '-') + (r.versionCode != null ? '（' + r.versionCode + '）' : '')],
+            ['大小', apkParsed.sizeMb != null ? (apkParsed.sizeMb + ' MB') : '-']
+        ];
+        var html = '<div class="border rounded p-2 d-flex align-items-center">' +
+            (icon
+                ? '<img class="app-icon-sm" src="' + esc(icon) + '" alt=""/>'
+                : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube"></i></span>') +
+            '<div class="ml-2">' + rows.map(function (x) {
+                return '<div class="small"><span class="text-muted">' + esc(x[0]) + '：</span>' + esc(x[1]) + '</div>';
+            }).join('') + '</div></div>' +
+            (iconTooLarge ? '<div class="small text-warning mt-1">图标过大（超过 100KB），仅预览不入库</div>' : '');
+        $('#apkResult').html(html);
+        $('#apkStatus').html('<span class="text-success">解析完成，请确认后导入</span>');
+        $('#btnApkImport').prop('disabled', false);
+    }
+
+    function importFromApk() {
+        if (!apkParsed || !apkParsed.packageName) { notify('warn', '请先选择并解析 APK'); return; }
+        var $btn = $('#btnApkImport');
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 导入中…');
+        // 导入需写库并补商店源，比只读查询耗时，单独给 30s
+        ajax('POST', API + '/import-from-apk', apkParsed, 30000).done(function (res) {
+            if (res && res.data) {
+                notify('ok', res.msg || '导入成功');
+                $('#apkModal').modal('hide');
+                loadApps();
+            } else {
+                notify('warn', (res && res.msg) || '导入失败');
+            }
+        }).fail(function (xhr, textStatus) {
+            var msg = (textStatus === 'timeout') ? '导入超时，请稍后重试' : errMsg(xhr, '导入失败');
+            notify('error', msg);
+        }).always(function () {
+            $btn.prop('disabled', false).html('<i class="fa fa-download"></i> 确认导入');
+        });
+    }
+
     window.Admin = {
         refresh: loadApps,
         collect: collect,
@@ -523,6 +627,8 @@
         deleteSource: deleteSource,
         openExternalModal: openExternalModal,
         lookupExternal: lookupExternal,
-        importExternal: importExternal
+        importExternal: importExternal,
+        openApkModal: openApkModal,
+        importFromApk: importFromApk
     };
 })(jQuery);

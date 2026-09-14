@@ -1,5 +1,7 @@
 package com.zaze.server.feature.appmarket.dto
 
+import com.zaze.server.feature.appmarket.vo.AppVo
+
 /**
  * 管理后台 - 应用表单
  */
@@ -75,4 +77,35 @@ data class ExternalAppPreview(
     val sourceUrl: String? = null,
     /** 结果来自哪个搜索上游（F-Droid / IzzyOnDroid），用于前台按源展示与导入溯源 */
     val source: String? = null
+)
+
+/**
+ * 管理后台 - 从 APK 导入请求。
+ *
+ * 由前端用 app-info-parser 解析**本地** APK 后提交：APK 二进制不上传服务端，
+ * 此处只接收解析出的元数据（受 CORS 限制，前端无法直接解析远端 APK）。
+ * [iconDataUri] 为 APK 内图标的 base64（data:image/...;base64,...），会持久化到 App.iconUrl。
+ */
+data class ApkImportRequest(
+    val packageName: String? = null,
+    val name: String? = null,
+    val versionName: String? = null,
+    val versionCode: Long? = null,
+    val iconDataUri: String? = null,
+    val sizeMb: Long? = null
+)
+
+/**
+ * 从 APK 导入的结果。
+ *
+ * @param app 导入后的应用
+ * @param appCreated 本次是否新建了应用（false 表示复用了库中已有应用）
+ * @param versionAdded 本次是否新增了版本（false 表示该版本已存在，无需重复导入）
+ * @param sourcesAdded 本次新增的下载源数量（应用宝详情页，已存在则跳过）
+ */
+data class ApkImportResultVo(
+    val app: AppVo,
+    val appCreated: Boolean = false,
+    val versionAdded: Boolean = false,
+    val sourcesAdded: Int = 0
 )

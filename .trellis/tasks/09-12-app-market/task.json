@@ -18,7 +18,9 @@
   "commit": null,
   "pr_url": null,
   "subtasks": [],
-  "children": [],
+  "children": [
+    "09-15-cn-store-metadata"
+  ],
   "parent": null,
   "relatedFiles": [],
   "notes": "",

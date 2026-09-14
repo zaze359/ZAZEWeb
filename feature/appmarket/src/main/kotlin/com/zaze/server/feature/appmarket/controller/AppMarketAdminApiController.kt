@@ -3,6 +3,8 @@ package com.zaze.server.feature.appmarket.controller
 import com.zaze.server.common.aop.LoggerManage
 import com.zaze.server.common.controller.BaseController
 import com.zaze.server.common.controller.Response
+import com.zaze.server.feature.appmarket.dto.ApkImportRequest
+import com.zaze.server.feature.appmarket.dto.ApkImportResultVo
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.ExternalAppPreview
@@ -128,6 +130,28 @@ class AppMarketAdminApiController(
     ): Response<AppVo?> {
         return try {
             Response(externalService.importApp(packageName, source))
+        } catch (e: IllegalArgumentException) {
+            Response(200, null, e.message ?: "导入失败")
+        }
+    }
+
+    /**
+     * 从 APK 解析结果导入：前端用 app-info-parser 解析**本地** APK 后仅提交元数据，
+     * APK 二进制不上传服务端。
+     *
+     * 注意：本接口**不加** [@LoggerManage]——该切面会序列化入参进日志，
+     * 而入参含体积较大的 base64 图标，会撑爆日志。
+     */
+    @PostMapping("/import-from-apk")
+    fun importFromApk(@RequestBody form: ApkImportRequest): Response<ApkImportResultVo?> {
+        return try {
+            val result = adminService.importFromApk(form)
+            val msg = when {
+                result.appCreated -> "已导入：${result.app.name}"
+                result.versionAdded -> "已新增版本：${result.app.name}"
+                else -> "已是最新，无需重复导入"
+            }
+            Response(200, result, msg)
         } catch (e: IllegalArgumentException) {
             Response(200, null, e.message ?: "导入失败")
         }

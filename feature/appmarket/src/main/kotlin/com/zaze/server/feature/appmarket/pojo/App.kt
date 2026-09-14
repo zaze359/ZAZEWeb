@@ -32,7 +32,7 @@ data class App(
     val developer: String? = null,
     @Column(columnDefinition = "TEXT")
     val summary: String? = null,
-    @Column
+    @Column(columnDefinition = "TEXT")
     val iconUrl: String? = null,
     @Column
     val officialUrl: String? = null

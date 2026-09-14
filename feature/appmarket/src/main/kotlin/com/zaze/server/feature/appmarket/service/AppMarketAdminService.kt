@@ -1,5 +1,7 @@
 package com.zaze.server.feature.appmarket.service
 
+import com.zaze.server.feature.appmarket.dto.ApkImportRequest
+import com.zaze.server.feature.appmarket.dto.ApkImportResultVo
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
@@ -42,4 +44,14 @@ interface AppMarketAdminService {
 
     /** 全量同步第三方商店源（应用宝），按 packageName 为所有应用的版本补全详情页下载源 */
     fun syncStoreSources(): SyncStoreResultVo
+
+    /**
+     * 从 APK 解析结果导入：前端解析**本地** APK 后只提交元数据，APK 二进制不上传服务端。
+     *
+     * - 应用不存在则创建；已存在则在其下追加新版本（版本号相同则跳过，视为「已是最新」）；
+     * - 始终按 packageName 幂等补全应用宝详情页下载源。
+     *
+     * 包名缺失时抛 [IllegalArgumentException]（包名是判重与推导下载源的前提）。
+     */
+    fun importFromApk(form: ApkImportRequest): ApkImportResultVo
 }

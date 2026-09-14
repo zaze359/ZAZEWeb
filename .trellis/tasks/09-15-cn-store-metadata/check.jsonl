@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/09-15-cn-store-metadata/prd.md", "reason": "验收标准 AC1-AC7 与已决策 D1-D6，用于检查实现是否达标"}
+{"file": ".trellis/tasks/09-15-cn-store-metadata/design.md", "reason": "检查关键约束：APK 不上传服务端、不接商店抓取接口、iconUrl 需手动 DDL、新接口不加 @LoggerManage"}

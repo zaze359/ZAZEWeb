@@ -1,0 +1,3 @@
+{"file": ".trellis/tasks/09-15-cn-store-metadata/prd.md", "reason": "需求与验收标准 AC1-AC7，实现必须以此为准（真实版本号、追加版本、APK 不上传服务端）"}
+{"file": ".trellis/tasks/09-15-cn-store-metadata/design.md", "reason": "技术设计：前后端边界、import-from-apk 接口契约、版本去重口径、iconUrl 扩 TEXT 与手动 DDL 迁移"}
+{"file": ".trellis/tasks/09-15-cn-store-metadata/implement.md", "reason": "执行清单：vendor 依赖引入、DTO/Service/Controller/前端改动顺序、验证命令与回滚点"}
