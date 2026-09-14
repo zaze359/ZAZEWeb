@@ -371,7 +371,28 @@
     function openExternalModal() {
         $('#extInput').val('');
         $('#extResult').empty();
+        loadExternalSources();
         $('#externalModal').modal('show');
+    }
+
+    /** 列出所有已配置的搜索上游（F-Droid / IzzyOnDroid 等），方便查看当前有哪些源 */
+    function loadExternalSources() {
+        $.getJSON(API + '/external-sources').done(function (res) {
+            var list = (res && res.data) || [];
+            if (!list.length) {
+                $('#extSources').html('<span class="text-muted">暂无已启用的搜索源</span>');
+                return;
+            }
+            var html = '<span class="text-muted mr-2">搜索源：</span>' + list.map(function (s) {
+                var cls = s.enabled ? 'badge-success' : 'badge-secondary';
+                var title = esc(s.searchUrl || '');
+                return '<span class="badge ' + cls + ' mr-1" title="' + title + '">' +
+                    esc(s.name || s.id) + (s.enabled ? '' : '（已停用）') + '</span>';
+            }).join('');
+            $('#extSources').html(html);
+        }).fail(function () {
+            $('#extSources').html('<span class="text-danger">加载搜索源失败</span>');
+        });
     }
 
     function lookupExternal() {
@@ -411,11 +432,12 @@
             '  <div class="d-flex align-items-center mb-2">' + icon +
             '    <div class="ml-2"><strong>' + esc(p.name || p.packageName) + '</strong>' +
             '      <div class="text-muted small"><code>' + esc(p.packageName || '') + '</code></div></div>' +
+            (p.source ? '<span class="badge badge-info ml-2 align-self-start">' + esc(p.source) + '</span>' : '') +
             '</div>' +
             (p.summary ? '<div class="small text-muted mb-2">' + esc(p.summary) + '</div>' : '') +
             (meta.length ? '<div class="small mb-2">' + meta.map(function (m) { return '<span class="mr-3">' + m + '</span>'; }).join('') + '</div>' : '') +
             (p.apkUrl ? '<div class="small mb-2">APK：<a href="' + esc(p.apkUrl) + '" target="_blank" rel="noopener">' + esc(p.apkUrl) + '</a></div>' : '') +
-            '<button class="btn btn-success btn-sm" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\')"><i class="fa fa-download"></i> 一键导入</button>' +
+            '<button class="btn btn-success btn-sm" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\',\'' + esc(p.source || '') + '\')"><i class="fa fa-download"></i> 一键导入</button>' +
             '</div>';
         $('#extResult').html(html);
     }
@@ -437,11 +459,12 @@
             return '<div class="border rounded p-2 mb-2 d-flex align-items-center">' +
                 icon +
                 '<div class="ml-2 flex-grow-1" style="min-width:0">' +
-                '  <div><strong>' + esc(p.name || p.packageName) + '</strong> <code class="small text-muted">' + esc(p.packageName || '') + '</code></div>' +
+                '  <div><strong>' + esc(p.name || p.packageName) + '</strong> <code class="small text-muted">' + esc(p.packageName || '') + '</code>' +
+                (p.source ? ' <span class="badge badge-info ml-1">' + esc(p.source) + '</span>' : '') + '</div>' +
                 (p.summary ? '<div class="small text-muted text-truncate">' + esc(p.summary) + '</div>' : '') +
                 (p.latestVersionName ? '<div class="small text-muted">最新版本：v' + esc(p.latestVersionName) + '</div>' : '') +
                 '</div>' +
-                '<button class="btn btn-success btn-sm ml-2 flex-shrink-0" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\')"><i class="fa fa-download"></i> 导入</button>' +
+                '<button class="btn btn-success btn-sm ml-2 flex-shrink-0" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\',\'' + esc(p.source || '') + '\')"><i class="fa fa-download"></i> 导入</button>' +
                 '</div>';
         }).join('');
         $('#extResult').html(html);
@@ -455,9 +478,11 @@
         return false;
     }
 
-    function importExternal(packageName) {
+    function importExternal(packageName, source) {
         if (!packageName) return;
-        ajax('POST', API + '/external-import?packageName=' + encodeURIComponent(packageName), null).done(function (res) {
+        var url = API + '/external-import?packageName=' + encodeURIComponent(packageName);
+        if (source) url += '&source=' + encodeURIComponent(source);
+        ajax('POST', url, null).done(function (res) {
             if (res && res.data) {
                 notify('ok', '已导入：' + (res.data.name || packageName));
                 $('#externalModal').modal('hide');

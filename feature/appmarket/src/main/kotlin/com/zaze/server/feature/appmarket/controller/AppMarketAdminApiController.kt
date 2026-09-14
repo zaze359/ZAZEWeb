@@ -11,6 +11,7 @@ import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.service.AppMarketAdminService
 import com.zaze.server.feature.appmarket.service.AppMarketExternalService
+import com.zaze.server.feature.appmarket.service.SearchProviderMeta
 import com.zaze.server.feature.appmarket.vo.AppDetailVo
 import com.zaze.server.feature.appmarket.vo.AppVersionVo
 import com.zaze.server.feature.appmarket.vo.AppVo
@@ -103,7 +104,7 @@ class AppMarketAdminApiController(
     }
 
     @GetMapping("/external-search")
-    @LoggerManage(description = "管理端-按应用名搜索外部应用(F-Droid)")
+    @LoggerManage(description = "管理端-按应用名搜索外部应用(跨上游)")
     fun searchExternal(@RequestParam keyword: String): Response<List<ExternalAppPreview>> {
         return try {
             Response(externalService.searchByName(keyword))
@@ -113,11 +114,20 @@ class AppMarketAdminApiController(
         }
     }
 
+    @GetMapping("/external-sources")
+    @LoggerManage(description = "管理端-列出外部搜索源")
+    fun listExternalSources(): Response<List<SearchProviderMeta>> {
+        return Response(externalService.listSearchProviders())
+    }
+
     @PostMapping("/external-import")
-    @LoggerManage(description = "管理端-一键导入外部应用(F-Droid)")
-    fun importExternal(@RequestParam packageName: String): Response<AppVo?> {
+    @LoggerManage(description = "管理端-一键导入外部应用(跨上游)")
+    fun importExternal(
+        @RequestParam packageName: String,
+        @RequestParam(required = false) source: String?
+    ): Response<AppVo?> {
         return try {
-            Response(externalService.importApp(packageName))
+            Response(externalService.importApp(packageName, source))
         } catch (e: IllegalArgumentException) {
             Response(200, null, e.message ?: "导入失败")
         }

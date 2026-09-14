@@ -190,6 +190,7 @@
                     <select class="form-control" id="srcType">
                         <option value="GITHUB">GITHUB</option>
                         <option value="FDROID">FDROID</option>
+                        <option value="IZZY">IZZY</option>
                         <option value="APKMIRROR">APKMIRROR</option>
                         <option value="OFFICIAL">OFFICIAL</option>
                         <option value="MYAPP">MYAPP</option>
@@ -238,7 +239,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">导入外部应用（F-Droid）</h5>
+                <h5 class="modal-title">导入外部应用</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
             <div class="modal-body">
@@ -252,6 +253,7 @@
                 <button class="btn btn-outline-primary btn-sm" type="button" id="btnExtLookup" onclick="Admin.lookupExternal()">
                     <i class="fa fa-search"></i> 查询
                 </button>
+                <div id="extSources" class="mt-2 mb-1 small text-muted"></div>
                 <div id="extResult" class="mt-3"></div>
             </div>
             <div class="modal-footer">

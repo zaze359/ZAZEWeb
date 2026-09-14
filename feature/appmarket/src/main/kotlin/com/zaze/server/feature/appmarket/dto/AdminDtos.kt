@@ -72,5 +72,7 @@ data class ExternalAppPreview(
     val latestVersionCode: Long? = null,
     val sizeMb: Long? = null,
     val apkUrl: String? = null,
-    val sourceUrl: String? = null
+    val sourceUrl: String? = null,
+    /** 结果来自哪个搜索上游（F-Droid / IzzyOnDroid），用于前台按源展示与导入溯源 */
+    val source: String? = null
 )
