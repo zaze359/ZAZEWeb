@@ -1,5 +1,8 @@
 package com.zaze.server.feature.appmarket.service
 
+import com.google.gson.Gson
+import com.google.gson.JsonParser
+import com.google.gson.annotations.SerializedName
 import com.zaze.server.common.utils.JsonUtil
 import com.zaze.server.feature.appmarket.collector.AppMarketCollector
 import com.zaze.server.feature.appmarket.dto.ExternalAppPreview
@@ -43,9 +46,17 @@ class AppMarketExternalService(
             if (it.endsWith("/")) it else "$it/"
         }
 
-    /** F-Droid 按名搜索接口；可用 -Dappmarket.fdroid.search=... 覆盖 */
+    /** F-Droid 按名搜索接口（官方搜索 API，服务端按 q 过滤）；可用 -Dappmarket.fdroid.search=... 覆盖 */
     private val fdroidSearchBase =
-        System.getProperty("appmarket.fdroid.search") ?: "https://f-droid.org/repo/search.json"
+        System.getProperty("appmarket.fdroid.search") ?: "https://search.f-droid.org/api/search_apps"
+
+    /** 按名搜索返回的最大候选数 */
+    private val MAX_SEARCH_RESULTS = 30
+
+    /** 搜索结果内存缓存（按关键词），避免频繁打 F-Droid 搜索 API 触发限流 */
+    @Volatile
+    private var searchCache: MutableMap<String, Pair<Long, List<FdroidSearchItemDto>>> = HashMap()
+    private val SEARCH_CACHE_TTL_MS = 5 * 60 * 1000L
 
     /** 按包名/链接精确查询预览（不写库） */
     fun lookup(raw: String): ExternalAppPreview? {
@@ -54,12 +65,30 @@ class AppMarketExternalService(
         return toPreview(pkg)
     }
 
-    /** 按应用名模糊搜索，返回候选列表（不写库）。上游不可达或空结果时返回空列表。 */
+    /**
+     * 按应用名模糊搜索，返回候选列表（不写库）。
+     * - 优先调用 F-Droid 官方搜索 API（服务端按 q 过滤）；
+     * - 解析失败时兼容「数组 / {results:[...]} 包裹 / 单对象」多种返回结构；
+     * - 客户端再做一次关键词命中过滤作为兜底；
+     * - 上游不可达或接口异常时抛 [IllegalStateException]，由控制器转成友好提示（而非静默返回空）。
+     */
     fun searchByName(keyword: String): List<ExternalAppPreview> {
         val kw = keyword.trim()
         if (kw.isEmpty()) return emptyList()
-        val items = fetchSearch(kw) ?: return emptyList()
-        return items.mapNotNull { toSearchPreview(it) }
+        val items = fetchSearch(kw)
+            ?: throw IllegalStateException("暂无法连接 F-Droid 搜索服务（网络不可达或接口异常），请稍后重试")
+        val lower = kw.lowercase()
+        return items.asSequence()
+            .mapNotNull { toSearchPreview(it) }
+            .filter { matchKeyword(it, lower) }
+            .take(MAX_SEARCH_RESULTS)
+            .toList()
+    }
+
+    /** 候选是否命中关键词（名称 / 简介 / 包名，忽略大小写） */
+    private fun matchKeyword(p: ExternalAppPreview, lower: String): Boolean {
+        return listOf(p.name, p.summary, p.packageName)
+            .any { it != null && it.toString().lowercase().contains(lower) }
     }
 
     /**
@@ -150,10 +179,28 @@ class AppMarketExternalService(
     }
 
     private fun fetchSearch(keyword: String): List<FdroidSearchItemDto>? {
-        val url = "$fdroidSearchBase?q=${URLEncoder.encode(keyword, "UTF-8")}&limit=20"
-        repeat(2) {
-            val items = doFetchSearch(url)
-            if (items != null) return items
+        val q = URLEncoder.encode(keyword, "UTF-8")
+        val cacheKey = keyword.trim().lowercase()
+        val now = System.currentTimeMillis()
+        synchronized(searchCache) {
+            val hit = searchCache[cacheKey]
+            if (hit != null && now - hit.first < SEARCH_CACHE_TTL_MS) return hit.second
+        }
+        val candidates = mutableListOf<String>().apply {
+            add("$fdroidSearchBase?q=$q")
+            // 兼容旧配置：若主地址指向 f-droid.org 的 search.json（静态全量索引 / 已失效），自动回退到官方搜索 API
+            if (fdroidSearchBase.contains("f-droid.org") && fdroidSearchBase.contains("search.json")) {
+                add("https://search.f-droid.org/api/search_apps?q=$q")
+            }
+        }
+        for (url in candidates) {
+            repeat(2) {
+                val items = doFetchSearch(url)
+                if (items != null) {
+                    synchronized(searchCache) { searchCache[cacheKey] = now to items }
+                    return items
+                }
+            }
         }
         return null
     }
@@ -161,18 +208,42 @@ class AppMarketExternalService(
     private fun doFetchSearch(url: String): List<FdroidSearchItemDto>? {
         val request = Request.Builder().url(url)
             .header("User-Agent", "zaze-appmarket-external")
+            .header("Accept", "application/json")
             .get().build()
         return try {
             okHttpClient.newCall(request).execute().use { resp ->
                 if (!resp.isSuccessful) null
                 else {
                     val body = resp.body?.string() ?: return null
-                    JsonUtil.parseJson(body, Array<FdroidSearchItemDto>::class.java)?.toList()
+                    parseSearchBody(body)
                 }
             }
         } catch (e: Exception) {
             null
         }
+    }
+
+    /**
+     * 兼容 F-Droid 搜索 API 的多种返回结构：
+     * 1) 顶层数组 [...]；2) 顶层对象且首个数组字段为结果（如 {results:[...]}）；3) 单个对象。
+     * 解析成功但集合为空（如 []）也返回空列表，以区分「无匹配」与「解析失败」。
+     */
+    private fun parseSearchBody(body: String): List<FdroidSearchItemDto>? {
+        val gson = Gson()
+        // 1) 直接是数组
+        runCatching { gson.fromJson(body, Array<FdroidSearchItemDto>::class.java)?.toList() }
+            .getOrNull()?.let { if (it.isNotEmpty() || body.trim() == "[]") return it }
+        // 2) 被对象包裹：取第一个数组类型字段
+        runCatching {
+            JsonParser.parseString(body).asJsonObject
+                .entrySet().firstOrNull { it.value.isJsonArray }
+                ?.value?.asJsonArray
+                ?.let { gson.fromJson(it, Array<FdroidSearchItemDto>::class.java)?.toList() }
+        }.getOrNull()?.let { return it }
+        // 3) 顶层就是单个对象
+        runCatching { gson.fromJson(body, FdroidSearchItemDto::class.java) }
+            .getOrNull()?.let { return listOf(it) }
+        return null
     }
 
     private fun toSearchPreview(item: FdroidSearchItemDto): ExternalAppPreview? {
@@ -279,13 +350,13 @@ private data class FdroidRepoDto(
     val type: String? = null
 )
 
-/** F-Droid /repo/search.json 返回的候选项（字段兼容字符串或 {locale:text} 对象） */
+/** F-Droid 官方搜索 API 返回的候选项（字段兼容字符串或 {locale:text} 对象，并兼容常见别名） */
 private data class FdroidSearchItemDto(
-    val packageName: String? = null,
-    val name: Any? = null,
-    val summary: Any? = null,
-    val icon: String? = null,
-    val version: String? = null,
-    val author: String? = null,
-    val categories: List<String>? = null
+    @SerializedName("packageName", alternate = ["package_name", "id"]) val packageName: String? = null,
+    @SerializedName("name", alternate = ["title", "appName"]) val name: Any? = null,
+    @SerializedName("summary", alternate = ["description", "short_description"]) val summary: Any? = null,
+    @SerializedName("icon", alternate = ["iconPath", "icon_path", "iconUrl", "icon_url"]) val icon: String? = null,
+    @SerializedName("version", alternate = ["versionName", "latestVersion", "version_name"]) val version: String? = null,
+    @SerializedName("author", alternate = ["authorName"]) val author: String? = null,
+    @SerializedName("categories", alternate = ["category"]) val categories: List<String>? = null
 )

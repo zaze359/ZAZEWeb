@@ -423,7 +423,11 @@
     function renderSearchList(res) {
         var list = (res && res.data) || [];
         if (!list.length) {
-            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc((res && res.msg) || '未找到匹配的应用，换个关键词试试') + '</div>');
+            // 空结果时：若后端给出了明确的提示（如网络不可达）则展示该提示，
+            // 否则一律显示「未找到匹配的应用」，避免把信封默认 msg「请求成功」误显成结果。
+            var msg = (res && res.msg) || '';
+            if (!msg || msg === '请求成功') msg = '未找到匹配的应用，换个关键词试试';
+            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc(msg) + '</div>');
             return;
         }
         var html = list.map(function (p) {

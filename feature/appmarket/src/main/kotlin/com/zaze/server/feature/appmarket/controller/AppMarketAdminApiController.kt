@@ -105,7 +105,12 @@ class AppMarketAdminApiController(
     @GetMapping("/external-search")
     @LoggerManage(description = "管理端-按应用名搜索外部应用(F-Droid)")
     fun searchExternal(@RequestParam keyword: String): Response<List<ExternalAppPreview>> {
-        return Response(externalService.searchByName(keyword))
+        return try {
+            Response(externalService.searchByName(keyword))
+        } catch (e: IllegalStateException) {
+            // 上游不可达 / 接口异常：返回明确提示，而非静默空列表（避免前台误显「请求成功」）
+            Response(200, emptyList(), e.message ?: "搜索服务暂不可用，请稍后重试")
+        }
     }
 
     @PostMapping("/external-import")
