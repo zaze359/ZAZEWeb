@@ -64,7 +64,7 @@ data class ExternalAppPreview(
     val packageName: String? = null,
     val name: String? = null,
     val summary: String? = null,
-    val iconDataUri: String? = null,
+    val iconSrc: String? = null,
     val developer: String? = null,
     val officialUrl: String? = null,
     val category: String? = null,

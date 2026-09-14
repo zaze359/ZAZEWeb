@@ -102,6 +102,12 @@ class AppMarketAdminApiController(
         else Response(200, null, "未找到该包名对应的外部应用（F-Droid 无记录，或网络不可达）")
     }
 
+    @GetMapping("/external-search")
+    @LoggerManage(description = "管理端-按应用名搜索外部应用(F-Droid)")
+    fun searchExternal(@RequestParam keyword: String): Response<List<ExternalAppPreview>> {
+        return Response(externalService.searchByName(keyword))
+    }
+
     @PostMapping("/external-import")
     @LoggerManage(description = "管理端-一键导入外部应用(F-Droid)")
     fun importExternal(@RequestParam packageName: String): Response<AppVo?> {

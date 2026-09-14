@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.net.URLEncoder
 import java.util.*
 
 /**
@@ -42,11 +43,23 @@ class AppMarketExternalService(
             if (it.endsWith("/")) it else "$it/"
         }
 
-    /** 查询预览（不写库） */
+    /** F-Droid 按名搜索接口；可用 -Dappmarket.fdroid.search=... 覆盖 */
+    private val fdroidSearchBase =
+        System.getProperty("appmarket.fdroid.search") ?: "https://f-droid.org/repo/search.json"
+
+    /** 按包名/链接精确查询预览（不写库） */
     fun lookup(raw: String): ExternalAppPreview? {
         val pkgName = normalizePackageName(raw) ?: return null
         val pkg = fetchFdroid(pkgName) ?: return null
         return toPreview(pkg)
+    }
+
+    /** 按应用名模糊搜索，返回候选列表（不写库）。上游不可达或空结果时返回空列表。 */
+    fun searchByName(keyword: String): List<ExternalAppPreview> {
+        val kw = keyword.trim()
+        if (kw.isEmpty()) return emptyList()
+        val items = fetchSearch(kw) ?: return emptyList()
+        return items.mapNotNull { toSearchPreview(it) }
     }
 
     /**
@@ -114,7 +127,7 @@ class AppMarketExternalService(
             packageName = pkg.packageName,
             name = localized(pkg.name) ?: pkgName,
             summary = localized(pkg.summary),
-            iconDataUri = pkg.icon,
+            iconSrc = pkg.icon,
             developer = pkg.authorName,
             officialUrl = pkg.webSite,
             category = pkg.categories?.firstOrNull(),
@@ -134,6 +147,62 @@ class AppMarketExternalService(
             if (dto != null) return dto
         }
         return null
+    }
+
+    private fun fetchSearch(keyword: String): List<FdroidSearchItemDto>? {
+        val url = "$fdroidSearchBase?q=${URLEncoder.encode(keyword, "UTF-8")}&limit=20"
+        repeat(2) {
+            val items = doFetchSearch(url)
+            if (items != null) return items
+        }
+        return null
+    }
+
+    private fun doFetchSearch(url: String): List<FdroidSearchItemDto>? {
+        val request = Request.Builder().url(url)
+            .header("User-Agent", "zaze-appmarket-external")
+            .get().build()
+        return try {
+            okHttpClient.newCall(request).execute().use { resp ->
+                if (!resp.isSuccessful) null
+                else {
+                    val body = resp.body?.string() ?: return null
+                    JsonUtil.parseJson(body, Array<FdroidSearchItemDto>::class.java)?.toList()
+                }
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun toSearchPreview(item: FdroidSearchItemDto): ExternalAppPreview? {
+        val pkg = item.packageName ?: return null
+        val icon = item.icon?.let { if (it.startsWith("http")) it else "https://f-droid.org/repo/$it" }
+        return ExternalAppPreview(
+            packageName = pkg,
+            name = resolveText(item.name) ?: pkg,
+            summary = resolveText(item.summary),
+            iconSrc = icon,
+            developer = item.author,
+            category = item.categories?.firstOrNull(),
+            latestVersionName = item.version
+        )
+    }
+
+    /** 兼容 F-Droid 字段既可能是字符串，也可能是 {locale: text} 对象 */
+    private fun resolveText(v: Any?): String? {
+        return when (v) {
+            is String -> v.takeIf { it.isNotBlank() }
+            is Map<*, *> -> {
+                val m = v.mapKeys { (it.key ?: "").toString().lowercase() }
+                for (k in listOf("zh-cn", "zh", "zh-hans", "en", "en-us")) {
+                    val valStr = m[k]
+                    if (valStr is String && valStr.isNotBlank()) return valStr
+                }
+                m.values.firstOrNull() as? String
+            }
+            else -> null
+        }
     }
 
     private fun doFetch(url: String): FdroidPackageDto? {
@@ -208,4 +277,15 @@ private data class FdroidVersionDto(
 private data class FdroidRepoDto(
     val address: String? = null,
     val type: String? = null
+)
+
+/** F-Droid /repo/search.json 返回的候选项（字段兼容字符串或 {locale:text} 对象） */
+private data class FdroidSearchItemDto(
+    val packageName: String? = null,
+    val name: Any? = null,
+    val summary: Any? = null,
+    val icon: String? = null,
+    val version: String? = null,
+    val author: String? = null,
+    val categories: List<String>? = null
 )

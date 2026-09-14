@@ -376,40 +376,79 @@
 
     function lookupExternal() {
         var raw = $('#extInput').val().trim();
-        if (!raw) { notify('warn', '请输入包名或商店链接'); return; }
+        if (!raw) { notify('warn', '请输入包名、商店链接或应用名'); return; }
         var $btn = $('#btnExtLookup');
         $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 查询中…');
         $('#extResult').html('<div class="text-muted small">查询中…</div>');
-        $.getJSON(API + '/external-lookup', { packageName: raw }).done(function (res) {
-            var p = res && res.data;
-            if (!p) {
-                $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc((res && res.msg) || '未找到该外部应用') + '</div>');
-                return;
-            }
-            var icon = p.iconDataUri
-                ? '<img class="app-icon-sm" src="' + esc(p.iconDataUri) + '" alt=""/>'
-                : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube"></i></span>';
-            var meta = [];
-            if (p.category) meta.push('分类：' + esc(p.category));
-            if (p.developer) meta.push('开发者：' + esc(p.developer));
-            if (p.latestVersionName) meta.push('最新版本：v' + esc(p.latestVersionName) + (p.sizeMb ? '（' + p.sizeMb + ' MB）' : ''));
-            var html = '' +
-                '<div class="border rounded p-2">' +
-                '  <div class="d-flex align-items-center mb-2">' + icon +
-                '    <div class="ml-2"><strong>' + esc(p.name || p.packageName) + '</strong>' +
-                '      <div class="text-muted small"><code>' + esc(p.packageName || '') + '</code></div></div>' +
-                '</div>' +
-                (p.summary ? '<div class="small text-muted mb-2">' + esc(p.summary) + '</div>' : '') +
-                (meta.length ? '<div class="small mb-2">' + meta.map(function (m) { return '<span class="mr-3">' + m + '</span>'; }).join('') + '</div>' : '') +
-                (p.apkUrl ? '<div class="small mb-2">APK：<a href="' + esc(p.apkUrl) + '" target="_blank" rel="noopener">' + esc(p.apkUrl) + '</a></div>' : '') +
-                '<button class="btn btn-success btn-sm" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\')"><i class="fa fa-download"></i> 一键导入</button>' +
-                '</div>';
-            $('#extResult').html(html);
+        // 包名/链接走精确查询；自由文本（应用名）走模糊搜索
+        var byPackage = isPackageOrUrl(raw);
+        var endpoint = byPackage ? '/external-lookup' : '/external-search';
+        $.getJSON(API + endpoint, { packageName: raw, keyword: raw }).done(function (res) {
+            if (byPackage) renderLookupPreview(res);
+            else renderSearchList(res);
         }).fail(function (xhr) {
             $('#extResult').html('<div class="alert alert-danger py-2 mb-0">' + esc(errMsg(xhr, '查询失败')) + '</div>');
         }).always(function () {
             $btn.prop('disabled', false).html('<i class="fa fa-search"></i> 查询');
         });
+    }
+
+    function renderLookupPreview(res) {
+        var p = res && res.data;
+        if (!p) {
+            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc((res && res.msg) || '未找到该外部应用') + '</div>');
+            return;
+        }
+        var icon = p.iconSrc
+            ? '<img class="app-icon-sm" src="' + esc(p.iconSrc) + '" alt=""/>'
+            : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube"></i></span>';
+        var meta = [];
+        if (p.category) meta.push('分类：' + esc(p.category));
+        if (p.developer) meta.push('开发者：' + esc(p.developer));
+        if (p.latestVersionName) meta.push('最新版本：v' + esc(p.latestVersionName) + (p.sizeMb ? '（' + p.sizeMb + ' MB）' : ''));
+        var html = '' +
+            '<div class="border rounded p-2">' +
+            '  <div class="d-flex align-items-center mb-2">' + icon +
+            '    <div class="ml-2"><strong>' + esc(p.name || p.packageName) + '</strong>' +
+            '      <div class="text-muted small"><code>' + esc(p.packageName || '') + '</code></div></div>' +
+            '</div>' +
+            (p.summary ? '<div class="small text-muted mb-2">' + esc(p.summary) + '</div>' : '') +
+            (meta.length ? '<div class="small mb-2">' + meta.map(function (m) { return '<span class="mr-3">' + m + '</span>'; }).join('') + '</div>' : '') +
+            (p.apkUrl ? '<div class="small mb-2">APK：<a href="' + esc(p.apkUrl) + '" target="_blank" rel="noopener">' + esc(p.apkUrl) + '</a></div>' : '') +
+            '<button class="btn btn-success btn-sm" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\')"><i class="fa fa-download"></i> 一键导入</button>' +
+            '</div>';
+        $('#extResult').html(html);
+    }
+
+    function renderSearchList(res) {
+        var list = (res && res.data) || [];
+        if (!list.length) {
+            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc((res && res.msg) || '未找到匹配的应用，换个关键词试试') + '</div>');
+            return;
+        }
+        var html = list.map(function (p) {
+            var icon = p.iconSrc
+                ? '<img class="app-icon-sm" src="' + esc(p.iconSrc) + '" alt="" onerror="appIconFallbackSm(this)"/>'
+                : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube"></i></span>';
+            return '<div class="border rounded p-2 mb-2 d-flex align-items-center">' +
+                icon +
+                '<div class="ml-2 flex-grow-1" style="min-width:0">' +
+                '  <div><strong>' + esc(p.name || p.packageName) + '</strong> <code class="small text-muted">' + esc(p.packageName || '') + '</code></div>' +
+                (p.summary ? '<div class="small text-muted text-truncate">' + esc(p.summary) + '</div>' : '') +
+                (p.latestVersionName ? '<div class="small text-muted">最新版本：v' + esc(p.latestVersionName) + '</div>' : '') +
+                '</div>' +
+                '<button class="btn btn-success btn-sm ml-2 flex-shrink-0" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\')"><i class="fa fa-download"></i> 导入</button>' +
+                '</div>';
+        }).join('');
+        $('#extResult').html(html);
+    }
+
+    /** 判断输入是包名/商店链接（走精确查询），还是自由文本应用名（走模糊搜索） */
+    function isPackageOrUrl(raw) {
+        if (/^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z0-9_]+)+$/.test(raw)) return true;
+        if (raw.indexOf('/') >= 0) return true;   // 含路径，视为商店链接
+        if (/[?&]id=/.test(raw)) return true;       // Google Play 等 ?id=
+        return false;
     }
 
     function importExternal(packageName) {
