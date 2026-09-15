@@ -1,0 +1,9 @@
+{"file": ".trellis/tasks/09-16-batch-complete-myapp/prd.md", "reason": "需求背景、复用事实、验收标准 AC1-AC7、范围边界与风险"}
+{"file": ".trellis/tasks/09-16-batch-complete-myapp/design.md", "reason": "数据流、BatchCompleteResultVo 结构、batchCompleteFromMyApp 分类计数逻辑、复用清单与回滚"}
+{"file": ".trellis/tasks/09-16-batch-complete-myapp/implement.md", "reason": "改动文件清单、T1-T7 步骤、H2 冒烟 T-a..T-g、回滚点"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/service/AppMarketExternalService.kt", "reason": "复用的 importFromMyApp(pkgName, existing) upsert 核心；新增 batchCompleteFromMyApp 的位置"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/collector/AppMarketCollector.kt", "reason": "参考 syncStoreSources 的全量遍历形态与 ensureStoreSources（应用宝源补充）"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/controller/AppMarketAdminApiController.kt", "reason": "参考 /sync-store-sources 端点形态，新增 /batch-complete-myapp"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/service/impl/AppMarketAdminServiceImpl.kt", "reason": "参考 syncStoreSources 的 @CacheEvict 透传实现"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/dto/AdminDtos.kt", "reason": "参考 SyncStoreResultVo 结构，新增 BatchCompleteResultVo"}
+{"file": "src/main/resources/static/js/appmarket-admin.js", "reason": "新增「批量补全」按钮与 120s 超时调用、结果展示"}

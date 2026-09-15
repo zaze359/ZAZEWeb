@@ -338,6 +338,37 @@
         });
     }
 
+    // ------------------------------------------------------------ batch complete from 应用宝
+    function batchCompleteMyapp() {
+        var $btn = $('#btnBatchComplete');
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 补全中…（可能需 1~2 分钟）');
+        // 遍历全库逐个跑应用宝，最坏 41 × 20s，给足 120s
+        ajax('POST', API + '/batch-complete-myapp', null, 120000).done(function (res) {
+            var d = (res && res.data) || {};
+            var html = '<p class="mb-2">共处理 <b>' + (d.appsProcessed || 0) + '</b> 个应用：' +
+                '补全真实元数据 <b>' + (d.appsUpdated || 0) + '</b>，' +
+                '跳过（应用宝无记录 / 已是最新） <b>' + (d.appsSkipped || 0) + '</b>，' +
+                '失败 <b>' + (d.appsFailed || 0) + '</b>。</p>';
+            var msgs = (d.messages || []);
+            if (msgs.length) {
+                html += '<div class="small text-danger mt-2">失败明细：<br>' +
+                    msgs.map(function (m) { return esc(m); }).join('<br>') + '</div>';
+            }
+            html += '<p class="small text-muted mb-0 mt-2">可重复点击；应用宝详情页结果内存缓存 30 分钟，再次执行极快。</p>';
+            $('#collectBody').html(html);
+            $('#collectModal').modal('show');
+            loadApps();
+        }).fail(function (xhr, textStatus) {
+            if (textStatus === 'timeout') {
+                notify('error', '补全超时（应用宝响应过慢），请稍后重试或分批处理');
+            } else {
+                notify('error', errMsg(xhr, '批量补全失败'));
+            }
+        }).always(function () {
+            $btn.prop('disabled', false).html('<i class="fa fa-magic"></i> 批量补全应用宝元数据');
+        });
+    }
+
     // ------------------------------------------------------------ helpers
     function findApp(id) {
         return state.apps.filter(function (a) { return a.id === id; })[0];
@@ -618,6 +649,7 @@
         refresh: loadApps,
         collect: collect,
         syncStoreSources: syncStoreSources,
+        batchCompleteMyapp: batchCompleteMyapp,
         openAppModal: openAppModal,
         saveApp: saveApp,
         deleteApp: deleteApp,

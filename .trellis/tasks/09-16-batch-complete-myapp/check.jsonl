@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/09-16-batch-complete-myapp/prd.md", "reason": "按 AC1-AC7 逐条核对最终行为（补全占位数据、跳过开源、幂等、统计准确、单点失败隔离、开关降级、缓存可见）"}
+{"file": ".trellis/tasks/09-16-batch-complete-myapp/design.md", "reason": "核对数据流、BatchCompleteResultVo 字段、分类计数逻辑与应用宝 upsert 复用是否一致"}
+{"file": ".trellis/tasks/09-16-batch-complete-myapp/implement.md", "reason": "执行 T1-T7 与 H2 冒烟 T-a..T-g，确认构建通过与统计准确"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/service/AppMarketExternalService.kt", "reason": "确认 batchCompleteFromMyApp 正确复用 importFromMyApp 且不改动其既有语义"}
+{"file": "feature/appmarket/src/main/kotlin/com/zaze/server/feature/appmarket/controller/AppMarketAdminApiController.kt", "reason": "确认新端点路由、@LoggerManage 无敏感入参、统一 Response 信封"}

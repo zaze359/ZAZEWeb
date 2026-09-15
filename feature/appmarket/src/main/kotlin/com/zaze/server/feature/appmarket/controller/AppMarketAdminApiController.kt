@@ -9,6 +9,7 @@ import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.ExternalAppPreview
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
+import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.service.AppMarketAdminService
@@ -41,6 +42,12 @@ class AppMarketAdminApiController(
     @LoggerManage(description = "同步第三方商店源（应用宝）")
     fun syncStoreSources(): Response<SyncStoreResultVo> {
         return Response(adminService.syncStoreSources())
+    }
+
+    @PostMapping("/batch-complete-myapp")
+    @LoggerManage(description = "批量补全应用宝元数据")
+    fun batchCompleteFromMyApp(): Response<BatchCompleteResultVo> {
+        return Response(adminService.batchCompleteFromMyApp())
     }
 
     @GetMapping("/apps")

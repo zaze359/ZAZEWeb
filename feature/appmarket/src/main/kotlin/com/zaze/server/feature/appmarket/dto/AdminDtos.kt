@@ -59,6 +59,23 @@ data class SyncStoreResultVo(
 )
 
 /**
+ * 批量补全应用宝元数据的结果统计。
+ *
+ * @param appsProcessed 遍历到的应用总数
+ * @param appsUpdated   应用宝有数据且产生了真实变更（新增版本 或 占位图标→真实图标）
+ * @param appsSkipped   应用宝查不到（开源应用 / 已下架），或应用宝有数据但无变更（已补全过，幂等）
+ * @param appsFailed    其他异常（网络抖动 / 解析失败），不影响其余应用
+ * @param messages      失败项的可读信息（包名 + 原因），最多保留前 20 条
+ */
+data class BatchCompleteResultVo(
+    val appsProcessed: Int = 0,
+    val appsUpdated: Int = 0,
+    val appsSkipped: Int = 0,
+    val appsFailed: Int = 0,
+    val messages: List<String> = emptyList()
+)
+
+/**
  * 外部应用（F-Droid）查询预览。
  * iconDataUri 为 F-Droid 返回的 base64 图标（data:image/...;base64,...），仅在后台预览展示，不持久化。
  */

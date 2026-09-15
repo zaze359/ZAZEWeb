@@ -7,6 +7,7 @@ import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import com.zaze.server.common.utils.JsonUtil
 import com.zaze.server.feature.appmarket.collector.AppMarketCollector
+import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.ExternalAppPreview
 import com.zaze.server.feature.appmarket.model.asVo
 import com.zaze.server.feature.appmarket.pojo.App
@@ -397,6 +398,68 @@ class AppMarketExternalService(
         // 自动补全应用宝（MyApp）商店源，与现有商店源体系一致（幂等）
         collector.ensureStoreSources(app)
         return app.asVo(versionRepository.countByAppId(app.id).toInt())
+    }
+
+    /**
+     * 批量补全：遍历库内所有应用，按包名逐个跑应用宝 upsert 真实元数据。
+     * 复用 [importFromMyApp] 的 upsert 语义（只填空字段 / 仅替换占位图标 / 按版本名追加版本），
+     * 本方法只负责「遍历 + 分类计数」。幂等、可重复执行。
+     *
+     * - 应用宝有该应用 → upsert；若产生了真实变更（新增版本 或 占位图标→真实图标）计入 [BatchCompleteResultVo.appsUpdated]；
+     *   应用宝有数据但无变更（已补全过）计入 [appsSkipped]（无副作用）。
+     * - 应用宝查不到（开源应用 / 已下架）→ 计入 [appsSkipped]，不报错。
+     * - 个别异常 → 计入 [appsFailed]，不影响其余应用。
+     * - [myappEnabled] 关闭时直接返回空结果，不发起任何请求。
+     */
+    fun batchCompleteFromMyApp(): BatchCompleteResultVo {
+        if (!myappEnabled) return BatchCompleteResultVo(appsProcessed = 0)
+        var processed = 0
+        var updated = 0
+        var skipped = 0
+        var failed = 0
+        val msgs = mutableListOf<String>()
+        for (app in appRepository.findAll()) {
+            processed++
+            val pkg = app.packageName
+            if (pkg.isNullOrBlank()) {
+                // 无包名的应用无法走应用宝，直接跳过（不报错）
+                skipped++
+                continue
+            }
+            try {
+                val beforeVer = versionRepository.countByAppId(app.id)
+                val beforeIcon = app.iconUrl
+                importFromMyApp(pkg, app)
+                val afterVer = versionRepository.countByAppId(app.id)
+                val after = appRepository.findByPackageName(pkg)
+                val changed = afterVer > beforeVer ||
+                    (after != null && after.iconUrl != beforeIcon && isRealIcon(after.iconUrl))
+                if (changed) updated++ else skipped++
+            } catch (e: IllegalArgumentException) {
+                // importFromMyApp 在「应用宝未找到」时抛此异常（message 含「未找到」）
+                if (e.message?.contains("未找到") == true) skipped++
+                else {
+                    failed++
+                    if (msgs.size < 20) msgs += "${app.packageName}: ${e.message}"
+                }
+            } catch (e: Exception) {
+                failed++
+                if (msgs.size < 20) msgs += "${app.packageName}: ${e.message}"
+            }
+        }
+        return BatchCompleteResultVo(
+            appsProcessed = processed,
+            appsUpdated = updated,
+            appsSkipped = skipped,
+            appsFailed = failed,
+            messages = msgs
+        )
+    }
+
+    /** 判断图标是否为真实图标（非 null/blank，且不是 favicon / .ico 占位） */
+    private fun isRealIcon(url: String?): Boolean {
+        if (url.isNullOrBlank()) return false
+        return !url.contains("favicon", ignoreCase = true) && !url.endsWith(".ico", ignoreCase = true)
     }
 
     /** 应用宝详情 → 预览（不写库） */

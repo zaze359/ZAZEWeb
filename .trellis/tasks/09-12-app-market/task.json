@@ -20,7 +20,8 @@
   "subtasks": [],
   "children": [
     "09-15-cn-store-metadata",
-    "09-15-cn-app-name-search"
+    "09-15-cn-app-name-search",
+    "09-16-batch-complete-myapp"
   ],
   "parent": null,
   "relatedFiles": [],

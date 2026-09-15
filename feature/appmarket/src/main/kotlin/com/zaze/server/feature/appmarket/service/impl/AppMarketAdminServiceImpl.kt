@@ -6,6 +6,7 @@ import com.zaze.server.feature.appmarket.dto.ApkImportResultVo
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
+import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.model.asVo
@@ -16,6 +17,7 @@ import com.zaze.server.feature.appmarket.repository.AppRepository
 import com.zaze.server.feature.appmarket.repository.AppVersionRepository
 import com.zaze.server.feature.appmarket.repository.DownloadSourceRepository
 import com.zaze.server.feature.appmarket.service.AppMarketAdminService
+import com.zaze.server.feature.appmarket.service.AppMarketExternalService
 import com.zaze.server.feature.appmarket.vo.AppDetailVo
 import com.zaze.server.feature.appmarket.vo.AppVersionVo
 import com.zaze.server.feature.appmarket.vo.AppVo
@@ -32,7 +34,8 @@ class AppMarketAdminServiceImpl(
     private val appRepository: AppRepository,
     private val versionRepository: AppVersionRepository,
     private val sourceRepository: DownloadSourceRepository,
-    private val collector: AppMarketCollector
+    private val collector: AppMarketCollector,
+    private val externalService: AppMarketExternalService
 ) : AppMarketAdminService {
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
@@ -166,6 +169,11 @@ class AppMarketAdminServiceImpl(
     @CacheEvict(allEntries = true)
     override fun syncStoreSources(): SyncStoreResultVo {
         return collector.syncStoreSources()
+    }
+
+    @CacheEvict(allEntries = true)
+    override fun batchCompleteFromMyApp(): BatchCompleteResultVo {
+        return externalService.batchCompleteFromMyApp()
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import com.zaze.server.feature.appmarket.dto.ApkImportResultVo
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
+import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.vo.AppDetailVo
@@ -44,6 +45,13 @@ interface AppMarketAdminService {
 
     /** 全量同步第三方商店源（应用宝），按 packageName 为所有应用的版本补全详情页下载源 */
     fun syncStoreSources(): SyncStoreResultVo
+
+    /**
+     * 批量补全应用宝元数据：按包名把库内所有应用跑一遍应用宝，upsert 真实元数据
+     * （版本名 / 大小 / 图标 / 简介 / 开发商 / 分类），刷新 seed 中的占位数据。
+     * 复用 [AppMarketExternalService.batchCompleteFromMyApp] 的 upsert 语义，幂等、可重复执行。
+     */
+    fun batchCompleteFromMyApp(): BatchCompleteResultVo
 
     /**
      * 从 APK 解析结果导入：前端解析**本地** APK 后只提交元数据，APK 二进制不上传服务端。
