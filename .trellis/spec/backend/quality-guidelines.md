@@ -65,6 +65,15 @@ Spring Boot's dependency-management BOM (`io.spring.dependency-management`) is a
 
 Also worth knowing: `jackson-module-kotlin` is on the classpath (auto-registered by Spring Boot), so Kotlin data classes work directly as `@RequestBody` DTOs — no need for mutable Java-style form classes.
 
+### External HTTP Integration (OkHttp)
+
+Patterns for calling third-party HTTP/HTML upstreams from the app (learned building the app-market external-importer):
+
+- **Always override all four timeouts on a derived `OkHttpClient`.** `core:network`'s injected `okHttpClient` only sets `connect/read/writeTimeout` (large values) and leaves `callTimeout` unset. Overriding **only** `callTimeout` is not enough — a slow body read is still governed by `readTimeout`, so the call never times out fast. You must explicitly override `connectTimeout`, `readTimeout`, `writeTimeout`, **and** `callTimeout` on `okHttpClient.newBuilder()`.
+- **Domestic app stores have no server-side name search.** Verified 2026-09-15: 应用宝 (`searchDetail.htm?kw=`) and 小米 return client-rendered home pages; 华为 needs a signed request (`rtnCode 1002`); 酷安 returns 403; OPPO/vivo/APKPure/APKMirror/APKCombo are unreachable from the sandbox. Do **not** attempt to scrape search results.
+- **But some detail pages are SSR.** 应用宝 `https://sj.qq.com/appdetail/<packageName>` returns ~300KB HTML with an embedded `__NEXT_DATA__` JSON. Parse it and **recursively walk** for the object whose `pkg_name` matches the target (do not hardcode `components[i].data.itemData[j]` paths — they break on page restructures). The detail page exposes `version_name` + `update_time` + `md_5` but **no `version_code`** and **no APK direct link**.
+- **Treat upstream failures as "not found".** Return `null`, no retry (retrying a timed-out upstream only stacks timeouts). Cache expensive responses in-memory with a TTL (应用宝 detail pages ~300KB; cache 30 min).
+
 ### Kotlin trap: nested block comments
 
 Kotlin block comments **nest**. Writing an Ant-style pattern such as `/api/v1/auth/**` inside a KDoc opens a nested comment that is never closed → `Unclosed comment` compile error. In doc comments, describe path patterns without `**` (e.g. "`/api/v1/auth/` 下的接口"). `"/api/v1/auth/**"` inside a **string literal** is fine — the trap is only in comments.

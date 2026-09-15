@@ -55,7 +55,7 @@ download_num=8977275013  average_rating=4.30  md_5=FDD4F4BECE4E5C872A74690FDF30D
 
 ## In Scope
 
-- 内置词典文件（常见国内应用约 150 条），加载后在 `searchByName` 中优先返回候选
+- 内置词典文件（常见国内应用 **96 条**，经应用宝逐条校验），加载后在 `searchByName` 中优先返回候选
 - 新增应用宝上游：`lookup` 链末尾回退；`importApp(source=应用宝)` 时抓取详情补全
 - 已存在应用走 **upsert**：补全元数据 + 追加真实版本
   （可修复 seed 中 41 个应用的「官方最新版」占位版本与 favicon 图标）
