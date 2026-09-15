@@ -1,4 +1,0 @@
-{"file": ".trellis/tasks/09-15-cn-app-name-search/prd.md", "reason": "按 AC1-AC7 逐条核对最终行为"}
-{"file": ".trellis/tasks/09-15-cn-app-name-search/design.md", "reason": "核对实现是否符合字段映射与 upsert 语义"}
-{"file": ".trellis/tasks/09-15-cn-app-name-search/implement.md", "reason": "执行 T1-T9 冒烟用例并记录结果"}
-{"file": "src/main/resources/static/js/appmarket-admin.js", "reason": "检查搜索结果渲染能否容忍词典候选缺少版本/图标字段"}
