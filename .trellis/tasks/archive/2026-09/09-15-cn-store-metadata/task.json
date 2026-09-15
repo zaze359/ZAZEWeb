@@ -3,7 +3,7 @@
   "name": "cn-store-metadata",
   "title": "接入国内应用商店元数据",
   "description": "扩展应用市场外部导入：新增国内应用商店（应用宝/华为等）元数据上游，使微信、QQ、抖音等国内应用可被搜索并一键导入",
-  "status": "in_progress",
+  "status": "completed",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -11,7 +11,7 @@
   "creator": "zaze",
   "assignee": "zaze",
   "createdAt": "2026-09-15",
-  "completedAt": null,
+  "completedAt": "2026-09-15",
   "branch": "master",
   "base_branch": "master",
   "worktree_path": null,
@@ -22,5 +22,8 @@
   "parent": "09-12-app-market",
   "relatedFiles": [],
   "notes": "",
-  "meta": {}
+  "meta": {
+    "completedAt": "2026-09-15",
+    "status": "completed"
+  }
 }
