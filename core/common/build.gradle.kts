@@ -36,6 +36,11 @@ tasks.getByName<Test>("test") {
 tasks.bootJar {
     enabled = false
 }
+// 库模块没有 main class：禁用 bootRun，否则在根项目执行 `./gradlew bootRun` 时
+// Gradle 会为每个子项目都执行同名任务，导致 core:common:bootRun 因无法解析 mainClass 而失败。
+tasks.bootRun {
+    enabled = false
+}
 tasks.jar {
     enabled = true
 }

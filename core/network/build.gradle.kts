@@ -26,6 +26,10 @@ tasks.test {
 tasks.bootJar {
     enabled = false
 }
+// 库模块没有 main class：禁用 bootRun，避免 `./gradlew bootRun` 因 mainClass 无法解析而失败。
+tasks.bootRun {
+    enabled = false
+}
 tasks.jar {
     enabled = true
 }
