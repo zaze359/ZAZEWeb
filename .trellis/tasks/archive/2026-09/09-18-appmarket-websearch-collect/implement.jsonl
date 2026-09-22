@@ -1,0 +1,2 @@
+{"file":".trellis/tasks/09-18-appmarket-websearch-collect/design.md","reason":"发现管线架构、Bing 抽取契约与接入点（searchByName 兜底 / listSearchProviders），实现期必读"}
+{"file":".trellis/tasks/09-18-appmarket-websearch-collect/implement.md","reason":"有序执行清单、验证命令（AC1-AC6）与风险文件/回滚点"}
