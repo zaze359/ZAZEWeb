@@ -6,7 +6,6 @@ import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
 import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
-import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.vo.AppDetailVo
 import com.zaze.server.feature.appmarket.vo.AppVersionVo
@@ -42,9 +41,6 @@ interface AppMarketAdminService {
 
     /** 触发一次自动采集（从公开上游抓取真实版本与下载地址） */
     fun collect(): CollectResultVo
-
-    /** 全量同步第三方商店源（应用宝），按 packageName 为所有应用的版本补全详情页下载源 */
-    fun syncStoreSources(): SyncStoreResultVo
 
     /**
      * 批量补全应用宝元数据：按包名把库内所有应用跑一遍应用宝，upsert 真实元数据

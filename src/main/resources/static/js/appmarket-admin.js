@@ -319,54 +319,15 @@
         });
     }
 
-    // ------------------------------------------------------------ sync store sources
-    function syncStoreSources() {
-        var $btn = $('#btnSyncStore');
-        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 同步中…');
-        ajax('POST', API + '/sync-store-sources').done(function (res) {
-            var d = (res && res.data) || {};
-            var html = '<p class="mb-2">已处理 <b>' + (d.appsProcessed || 0) + '</b> 个应用，' +
-                '本次新增第三方商店源（应用宝） <b>' + (d.sourcesAdded || 0) + '</b> 条。</p>' +
-                '<p class="small text-muted mb-0">已存在的源会自动跳过，可重复点击。</p>';
-            $('#collectBody').html(html);
-            $('#collectModal').modal('show');
-            loadApps();
-        }).fail(function (xhr) {
-            notify('error', errMsg(xhr, '同步商店源失败'));
-        }).always(function () {
-            $btn.prop('disabled', false).html('<i class="fa fa-store"></i> 同步商店源');
-        });
-    }
-
     // ------------------------------------------------------------ batch complete from 应用宝
     function batchCompleteMyapp() {
         var $btn = $('#btnBatchComplete');
-        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 补全中…（可能需 1~2 分钟）');
-        // 遍历全库逐个跑应用宝，最坏 41 × 20s，给足 120s
-        ajax('POST', API + '/batch-complete-myapp', null, 120000).done(function (res) {
-            var d = (res && res.data) || {};
-            var html = '<p class="mb-2">共处理 <b>' + (d.appsProcessed || 0) + '</b> 个应用：' +
-                '补全真实元数据 <b>' + (d.appsUpdated || 0) + '</b>，' +
-                '跳过（应用宝无记录 / 已是最新） <b>' + (d.appsSkipped || 0) + '</b>，' +
-                '失败 <b>' + (d.appsFailed || 0) + '</b>。</p>';
-            var msgs = (d.messages || []);
-            if (msgs.length) {
-                html += '<div class="small text-danger mt-2">失败明细：<br>' +
-                    msgs.map(function (m) { return esc(m); }).join('<br>') + '</div>';
-            }
-            html += '<p class="small text-muted mb-0 mt-2">可重复点击；应用宝详情页结果内存缓存 30 分钟，再次执行极快。</p>';
-            $('#collectBody').html(html);
-            $('#collectModal').modal('show');
-            loadApps();
-        }).fail(function (xhr, textStatus) {
-            if (textStatus === 'timeout') {
-                notify('error', '补全超时（应用宝响应过慢），请稍后重试或分批处理');
-            } else {
-                notify('error', errMsg(xhr, '批量补全失败'));
-            }
-        }).always(function () {
-            $btn.prop('disabled', false).html('<i class="fa fa-magic"></i> 批量补全应用宝元数据');
-        });
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> 启动中…');
+        // 旧实现同步等待最长 120s、期间无任何进度；改为启动后台任务 + SSE 实时滚动态
+        // （逐个应用「补链接 → 抓元数据」的结果会实时出现在链路面板里）
+        startTracedImport('batch-complete');
+        // 任务已在后台执行（幂等，可重复点击），按钮立即恢复
+        $btn.prop('disabled', false).html('<i class="fa fa-magic"></i> 批量补全应用宝元数据');
     }
 
     // ------------------------------------------------------------ helpers
@@ -437,13 +398,14 @@
         // 包名/链接走精确查询；自由文本（应用名）走模糊搜索
         var byPackage = isPackageOrUrl(raw);
         var endpoint = byPackage ? '/external-lookup' : '/external-search';
-        // 只读查询，上游不可达/极慢时 15s 超时快速失败，避免按钮一直卡在「查询中…」
+        // 只读查询。各上游现在「各自计时、各自超时」（最慢的 Izzy 索引可达 15s），
+        // 因此整体等待放宽到 30s，避免前端先超时、把后端已查到的结果丢掉。
         $.ajax({
             url: API + endpoint,
             type: 'GET',
             data: { packageName: raw, keyword: raw },
             dataType: 'json',
-            timeout: 15000
+            timeout: 30000
         }).done(function (res) {
             if (byPackage) renderLookupPreview(res);
             else renderSearchList(res);
@@ -457,10 +419,71 @@
         });
     }
 
+    /**
+     * 逐源探测明细：每个上游**单独一行**（状态 / 源名 / 该源自身耗时 / 说明）。
+     * 与「预览 / 候选列表」分开渲染，不混在一起——便于一眼看出是哪个源命中、哪个源慢或超时。
+     */
+    /** 分组标题：国内源 / 国外备选源（后端按可达性分组，国外源仅在国内源未命中时才查询） */
+    var GROUP_META = {
+        DOMESTIC: { title: '国内源', hint: '常态可达，默认查询', badge: 'badge-primary' },
+        OVERSEAS: { title: '国外备选源', hint: '国内源未命中时才降级查询', badge: 'badge-secondary' }
+    };
+
+    function groupKeyOf(g) {
+        return (g === 'OVERSEAS') ? 'OVERSEAS' : 'DOMESTIC';
+    }
+
+    function probeRows(list) {
+        return list.map(function (pr) {
+            var cls = pr.status === 'HIT' ? 'text-success'
+                : (pr.status === 'MISS' ? 'text-muted'
+                    : (pr.status === 'TIMEOUT' ? 'text-warning' : 'text-danger'));
+            var icon = pr.status === 'HIT' ? 'fa-check-circle'
+                : (pr.status === 'MISS' ? 'fa-circle-o'
+                    : (pr.status === 'TIMEOUT' ? 'fa-clock-o' : 'fa-exclamation-circle'));
+            var label = pr.status === 'HIT' ? '命中'
+                : (pr.status === 'MISS' ? '未命中'
+                    : (pr.status === 'TIMEOUT' ? '超时' : '异常'));
+            return '<div class="d-flex align-items-start py-1 px-2 border-bottom">' +
+                '<span class="mr-2 ' + cls + '" style="flex:0 0 4.8rem"><i class="fa ' + icon + '"></i> ' + label + '</span>' +
+                '<span class="font-weight-bold mr-2" style="flex:0 0 6.5rem">' + esc(pr.source) + '</span>' +
+                '<span class="mr-2 text-muted" style="flex:0 0 4.6rem">' + (pr.elapsedMs != null ? pr.elapsedMs + 'ms' : '-') + '</span>' +
+                '<span class="small text-muted" style="min-width:0;word-break:break-all">' +
+                esc(pr.message || pr.url || '') + '</span>' +
+                '</div>';
+        }).join('');
+    }
+
+    function renderProbes(probes, overseasQueried) {
+        var list = probes || [];
+        if (!list.length) return '';
+        var groups = ['DOMESTIC', 'OVERSEAS'].map(function (g) {
+            return { key: g, items: list.filter(function (p) { return groupKeyOf(p.group) === g; }) };
+        }).filter(function (x) { return x.items.length; });
+
+        var blocks = groups.map(function (x) {
+            var meta = GROUP_META[x.key];
+            var note = (x.key === 'OVERSEAS' && overseasQueried === false)
+                ? ' <span class="text-muted small">（本次国内源已命中，未查询）</span>' : '';
+            return '<div class="mb-2">' +
+                '<div class="small font-weight-bold mb-1">' +
+                '<span class="badge ' + meta.badge + '">' + meta.title + '</span> ' +
+                '<span class="text-muted">' + meta.hint + '</span>' + note + '</div>' +
+                '<div class="border rounded" style="max-height:220px;overflow-y:auto">' + probeRows(x.items) + '</div>' +
+                '</div>';
+        }).join('');
+
+        return '<div class="mt-3">' +
+            '<div class="small font-weight-bold mb-1">各上游探测明细（每源单独计时，互不影响）</div>' +
+            blocks + '</div>';
+    }
+
     function renderLookupPreview(res) {
-        var p = res && res.data;
+        var data = (res && res.data) || {};
+        var p = data.preview;
         if (!p) {
-            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc((res && res.msg) || '未找到该外部应用') + '</div>');
+            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' +
+                esc((res && res.msg) || '未找到该外部应用') + '</div>' + renderProbes(data.probes, data.overseasQueried));
             return;
         }
         var icon = p.iconSrc
@@ -482,11 +505,13 @@
             (p.apkUrl ? '<div class="small mb-2">APK：<a href="' + esc(p.apkUrl) + '" target="_blank" rel="noopener">' + esc(p.apkUrl) + '</a></div>' : '') +
             '<button class="btn btn-success btn-sm" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\',\'' + esc(p.source || '') + '\')"><i class="fa fa-download"></i> 一键导入</button>' +
             '</div>';
-        $('#extResult').html(html);
+        // 预览与「逐源明细」分开：先看结果，再看每个源各自的表现
+        $('#extResult').html(html + renderProbes(data.probes, data.overseasQueried));
     }
 
     function renderSearchList(res) {
-        var list = (res && res.data) || [];
+        var data = (res && res.data) || {};
+        var list = data.items || [];
         if (!list.length) {
             // 空结果时：若后端给出了明确的提示（如网络不可达）则展示该提示，
             // 否则一律显示「未找到匹配的应用」，避免把信封默认 msg「请求成功」误显成结果。
@@ -495,25 +520,49 @@
                 msg = '未找到匹配的应用。国内应用可试试常见名称（微信 / 抖音 / 高德地图…），' +
                     '冷门应用请改用「从 APK 导入」上传安装包解析包名';
             }
-            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc(msg) + '</div>');
+            $('#extResult').html('<div class="alert alert-warning py-2 mb-0">' + esc(msg) + '</div>' +
+                renderProbes(data.probes, data.overseasQueried));
             return;
         }
-        var html = list.map(function (p) {
-            var icon = p.iconSrc
-                ? '<img class="app-icon-sm" src="' + esc(p.iconSrc) + '" alt="" onerror="appIconFallbackSm(this)"/>'
-                : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube"></i></span>';
-            return '<div class="border rounded p-2 mb-2 d-flex align-items-center">' +
-                icon +
-                '<div class="ml-2 flex-grow-1" style="min-width:0">' +
-                '  <div><strong>' + esc(p.name || p.packageName) + '</strong> <code class="small text-muted">' + esc(p.packageName || '') + '</code>' +
-                (p.source ? ' <span class="badge badge-info ml-1">' + esc(p.source) + '</span>' : '') + '</div>' +
-                (p.summary ? '<div class="small text-muted text-truncate">' + esc(p.summary) + '</div>' : '') +
-                (p.latestVersionName ? '<div class="small text-muted">最新版本：v' + esc(p.latestVersionName) + '</div>' : '') +
-                '</div>' +
-                '<button class="btn btn-success btn-sm ml-2 flex-shrink-0" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\',\'' + esc(p.source || '') + '\')"><i class="fa fa-download"></i> 导入</button>' +
-                '</div>';
+        // 按**上游**分区渲染：每个源单独一块，一眼看出候选各自来自哪里、每个源给了几条。
+        // 区块标题同时带「国内源 / 国外备选源」徽章以保留分组信息；国外源默认折叠（多为降级结果）。
+        var order = [];
+        var bySource = {};
+        list.forEach(function (p) {
+            var k = p.source || '未知来源';
+            if (!bySource[k]) { bySource[k] = []; order.push(k); }
+            bySource[k].push(p);
+        });
+        var blocks = order.map(function (k) {
+            var items = bySource[k];
+            var g = groupKeyOf(items[0].group);
+            var meta = GROUP_META[g];
+            var rows = items.map(function (p) {
+                var icon = p.iconSrc
+                    ? '<img class="app-icon-sm" src="' + esc(p.iconSrc) + '" alt="" onerror="appIconFallbackSm(this)"/>'
+                    : '<span class="app-icon-sm app-icon-placeholder"><i class="fa fa-cube"></i></span>';
+                // 区块标题已标明来源，行内不再重复 source 徽章
+                return '<div class="border rounded p-2 mb-2 d-flex align-items-center">' +
+                    icon +
+                    '<div class="ml-2 flex-grow-1" style="min-width:0">' +
+                    '  <div><strong>' + esc(p.name || p.packageName) + '</strong> <code class="small text-muted">' + esc(p.packageName || '') + '</code></div>' +
+                    (p.summary ? '<div class="small text-muted text-truncate">' + esc(p.summary) + '</div>' : '') +
+                    (p.latestVersionName ? '<div class="small text-muted">最新版本：v' + esc(p.latestVersionName) + '</div>' : '') +
+                    '</div>' +
+                    '<button class="btn btn-success btn-sm ml-2 flex-shrink-0" onclick="Admin.importExternal(\'' + esc(p.packageName || '') + '\',\'' + esc(p.source || '') + '\')"><i class="fa fa-download"></i> 导入</button>' +
+                    '</div>';
+            }).join('');
+            var open = g === 'DOMESTIC' ? ' open' : '';
+            return '<details class="mb-2"' + open + '>' +
+                '<summary class="small font-weight-bold" style="cursor:pointer">' +
+                '<span class="badge badge-info">' + esc(k) + '</span> ' +
+                '<span class="badge ' + meta.badge + '">' + meta.title + '</span> ' +
+                '<span class="text-muted">' + items.length + ' 个候选</span></summary>' +
+                '<div class="mt-2">' + rows + '</div>' +
+                '</details>';
         }).join('');
-        $('#extResult').html(html);
+        // 候选列表与「逐源明细」分开渲染
+        $('#extResult').html(blocks + renderProbes(data.probes, data.overseasQueried));
     }
 
     /** 判断输入是包名/商店链接（走精确查询），还是自由文本应用名（走模糊搜索） */
@@ -524,22 +573,121 @@
         return false;
     }
 
+    // ------------------------------------------------------------ 导入链路实时追踪（SSE）
+    // 旧实现：一次 POST 同步等待最长 30s，期间无任何状态，失败只给一句笼统提示。
+    // 新实现：POST 启动任务立即拿 taskId → EventSource 订阅流，逐条实时展示每一步链路。
+    var traceSource = null;    // 当前 EventSource
+    var traceTimer = null;     // 耗时计时器
+    var traceStartAt = 0;
+    var traceFinished = false; // 任务是否已结束（用于判断提前关闭时的提示）
+
+    function closeTraceStream() {
+        if (traceSource) { try { traceSource.close(); } catch (e) { /* ignore */ } traceSource = null; }
+        if (traceTimer) { clearInterval(traceTimer); traceTimer = null; }
+    }
+
+    /** 单条步骤 → 一行（左侧色条按状态着色，含序号 / 阶段 / 上游 / 明细 / 耗时） */
+    function traceStepRow(s) {
+        var ms = (s.durationMs != null) ? '<span class="ts-ms">' + s.durationMs + 'ms</span>' : '';
+        var up = s.upstream ? '<span class="ts-up">' + esc(s.upstream) + '</span>' : '';
+        return '<div class="trace-step trace-st-' + esc(s.status) + '">' +
+            '<span class="ts-seq">' + (s.seq || '') + '</span>' +
+            '<span class="ts-body"><span class="ts-phase">' + esc(s.phase) + '</span>' + up +
+            '<span class="ts-detail">' + esc(s.detail) + '</span>' + ms + '</span></div>';
+    }
+
+    function renderTraceSteps(steps) {
+        var html = (steps || []).map(traceStepRow).join('');
+        $('#traceSteps').html(html ||
+            '<div class="trace-step trace-placeholder"><span class="ts-body text-muted">已启动，等待后端推送链路…</span></div>');
+        scrollTraceToBottom();
+    }
+
+    function scrollTraceToBottom() {
+        var box = document.getElementById('traceSteps');
+        if (box) box.scrollTop = box.scrollHeight;
+    }
+
+    /**
+     * 启动一个「带链路追踪」的导入任务并打开实时面板。
+     * kind: 'external-import'（需 packageName，可选 source）| 'batch-complete'
+     */
+    function startTracedImport(kind, packageName, source) {
+        var body = { kind: kind };
+        if (packageName) body.packageName = packageName;
+        if (source) body.source = source;
+        // 只负责「启动」，立刻返回；真正的耗时过程由 SSE 流实时回传
+        ajax('POST', API + '/import-tasks', body, 15000).done(function (res) {
+            var ref = (res && res.data) || {};
+            if (!ref.taskId) { notify('warn', (res && res.msg) || '启动导入任务失败'); return; }
+            openTraceModal(ref.title || kind, ref.taskId);
+        }).fail(function (xhr) {
+            notify('error', errMsg(xhr, '启动导入任务失败'));
+        });
+    }
+
+    function openTraceModal(title, taskId) {
+        closeTraceStream();
+        traceStartAt = Date.now();
+        $('#traceTitle').text(title);
+        $('#traceStatus').html('<span class="text-primary"><i class="fa fa-spinner fa-spin"></i> 进行中…</span>');
+        $('#traceSteps').html('<div class="trace-step trace-placeholder"><span class="ts-body text-muted">已启动，等待后端推送链路…</span></div>');
+        // 允许随时关闭（批量补全可能持续 1~2 分钟，不强制等待）；任务在后台继续跑
+        $('#btnTraceDone').prop('disabled', false);
+        $('#traceElapsed').text('');
+        traceFinished = false;
+        $('#importTraceModal').modal('show');
+        $('#importTraceModal').off('hidden.bs.modal.trace').on('hidden.bs.modal.trace', function () {
+            closeTraceStream();
+            if (!traceFinished) notify('warn', '导入任务仍在后台执行，稍后刷新列表查看结果');
+        });
+
+        var src = new EventSource(API + '/import-tasks/' + encodeURIComponent(taskId) + '/stream');
+        traceSource = src;
+
+        // 首帧：回放订阅前已产生的步骤（避免「半路才订阅」丢步骤）
+        src.addEventListener('snapshot', function (e) {
+            renderTraceSteps(JSON.parse(e.data).steps);
+        });
+        // 增量：每完成一步推一条
+        src.addEventListener('step', function (e) {
+            $('#traceSteps').children('.trace-placeholder').remove();
+            $('#traceSteps').append(traceStepRow(JSON.parse(e.data)));
+            scrollTraceToBottom();
+        });
+        // 结束：渲染最终快照、给出成功/失败结论、刷新列表
+        src.addEventListener('end', function (e) {
+            var snap = JSON.parse(e.data);
+            renderTraceSteps(snap.steps);
+            traceFinished = true;
+            var ok = snap.status === 'DONE';
+            $('#traceStatus').html(ok
+                ? '<span class="text-success"><i class="fa fa-check-circle"></i> 完成：<b>' + esc(snap.message || '') + '</b></span>'
+                : '<span class="text-danger"><i class="fa fa-times-circle"></i> 失败：<b>' + esc(snap.message || '') + '</b></span>');
+            $('#btnTraceDone').prop('disabled', false);
+            var sec = Math.round((Date.now() - traceStartAt) / 1000);
+            $('#traceElapsed').text('共耗时 ' + sec + 's');
+            closeTraceStream();
+            if (ok) {
+                loadApps();
+                if (snap.kind === 'external-import') $('#externalModal').modal('hide');
+            }
+        });
+        src.onerror = function () {
+            // EventSource 自带重连；end 后我们已主动 close，此处的 error 多为正常断连，不打扰用户
+            if (!traceSource) return;
+            $('#traceElapsed').append(' <span class="text-muted">（连接中断，重连中…）</span>');
+        };
+
+        traceTimer = setInterval(function () {
+            $('#traceElapsed').text('已耗时 ' + Math.round((Date.now() - traceStartAt) / 1000) + 's');
+        }, 1000);
+    }
+
     function importExternal(packageName, source) {
         if (!packageName) return;
-        var url = API + '/external-import?packageName=' + encodeURIComponent(packageName);
-        if (source) url += '&source=' + encodeURIComponent(source);
-        // 导入需从上游拉取元数据/索引，比只读查询更耗时，给 30s（服务端单次请求上限 10s/Izzy 15s）
-        ajax('POST', url, null, 30000).done(function (res) {
-            if (res && res.data) {
-                notify('ok', '已导入：' + (res.data.name || packageName));
-                $('#externalModal').modal('hide');
-                loadApps();
-            } else {
-                notify('warn', (res && res.msg) || '导入失败');
-            }
-        }).fail(function (xhr) {
-            notify('error', errMsg(xhr, '导入失败'));
-        });
+        // 不再同步等待 30s：改为启动任务 + SSE 实时展示完整链路
+        startTracedImport('external-import', packageName, source);
     }
 
     // ------------------------------------------------------------ 从 APK 导入
@@ -648,7 +796,6 @@
     window.Admin = {
         refresh: loadApps,
         collect: collect,
-        syncStoreSources: syncStoreSources,
         batchCompleteMyapp: batchCompleteMyapp,
         openAppModal: openAppModal,
         saveApp: saveApp,

@@ -7,7 +7,6 @@ import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
 import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
-import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
 import com.zaze.server.feature.appmarket.model.asVo
 import com.zaze.server.feature.appmarket.pojo.App
@@ -164,11 +163,6 @@ class AppMarketAdminServiceImpl(
     @CacheEvict(allEntries = true)
     override fun collect(): CollectResultVo {
         return collector.collect()
-    }
-
-    @CacheEvict(allEntries = true)
-    override fun syncStoreSources(): SyncStoreResultVo {
-        return collector.syncStoreSources()
     }
 
     @CacheEvict(allEntries = true)

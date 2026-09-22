@@ -51,14 +51,6 @@ data class CollectResultVo(
 )
 
 /**
- * 第三方商店源同步结果统计（应用宝）
- */
-data class SyncStoreResultVo(
-    val appsProcessed: Int = 0,
-    val sourcesAdded: Int = 0
-)
-
-/**
  * 批量补全应用宝元数据的结果统计。
  *
  * @param appsProcessed 遍历到的应用总数
@@ -93,7 +85,9 @@ data class ExternalAppPreview(
     val apkUrl: String? = null,
     val sourceUrl: String? = null,
     /** 结果来自哪个搜索上游（F-Droid / IzzyOnDroid），用于前台按源展示与导入溯源 */
-    val source: String? = null
+    val source: String? = null,
+    /** 结果来自哪一组上游（国内源 / 国外备选源），用于界面分区渲染。缺省为国内源 */
+    val group: SourceGroup = SourceGroup.DOMESTIC
 )
 
 /**

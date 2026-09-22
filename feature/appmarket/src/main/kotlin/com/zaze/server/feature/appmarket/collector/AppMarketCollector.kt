@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName
 import com.zaze.server.common.ext.jsonToList
 import com.zaze.server.common.utils.FileUtil
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
-import com.zaze.server.feature.appmarket.dto.SyncStoreResultVo
+import com.zaze.server.feature.appmarket.dto.StepStatus
+import com.zaze.server.feature.appmarket.service.ImportTracer
 import com.zaze.server.feature.appmarket.pojo.App
 import com.zaze.server.feature.appmarket.pojo.AppVersion
 import com.zaze.server.feature.appmarket.pojo.DownloadSource
@@ -32,7 +33,7 @@ import java.util.concurrent.TimeUnit
  * 数据访问层与上层 Service / VO 无需改动。
  *
  * 第三方应用商店（应用宝）的详情页 URL 可由 packageName 确定性推导，无需联网抓取，
- * 因此统一在 [ensureStoreSources] 中按 version 幂等补源；[collect] 与 [syncStoreSources] 都会复用它。
+ * 因此统一在 [ensureStoreSources] 中按 version 幂等补源；[collect] 与 [batchCompleteFromMyApp] 都会复用它。
  */
 @Service
 class AppMarketCollector(
@@ -172,10 +173,14 @@ class AppMarketCollector(
      */
     fun ensureStoreSources(app: App): Int {
         var added = 0
+        var skipped = 0
         for (version in versionRepository.findByAppId(app.id)) {
             for (spec in STORE_SPECS) {
                 val url = spec.prefix + app.packageName
-                if (sourceRepository.findByVersionIdAndDownloadUrl(version.id, url) != null) continue
+                if (sourceRepository.findByVersionIdAndDownloadUrl(version.id, url) != null) {
+                    skipped++
+                    continue
+                }
                 sourceRepository.save(
                     DownloadSource(
                         versionId = version.id,
@@ -189,21 +194,14 @@ class AppMarketCollector(
                 added++
             }
         }
+        // 离线补源（URL 由包名推导、不联网），记一步便于看清「补了几条、跳过了几条」
+        ImportTracer.step(
+            "补商店源",
+            "应用宝详情页链接：新增 $added 条、已存在跳过 $skipped 条（离线推导，无网络开销）",
+            if (added > 0) StepStatus.OK else StepStatus.SKIP,
+            "应用宝"
+        )
         return added
-    }
-
-    /**
-     * 全量同步所有应用的第三方商店源（应用宝）。
-     * 覆盖采集器不处理的纯种子应用（如国内主流 app），可由管理后台按需触发。
-     */
-    fun syncStoreSources(): SyncStoreResultVo {
-        var appsProcessed = 0
-        var sourcesAdded = 0
-        for (app in appRepository.findAll()) {
-            appsProcessed++
-            sourcesAdded += ensureStoreSources(app)
-        }
-        return SyncStoreResultVo(appsProcessed = appsProcessed, sourcesAdded = sourcesAdded)
     }
 
     // ---------------------------------------------------------------- helpers
