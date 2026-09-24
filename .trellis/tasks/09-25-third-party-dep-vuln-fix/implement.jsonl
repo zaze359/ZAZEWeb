@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "项目入口规范：构建方式、依赖现状（含 Spring Boot 2.7.18 / MySQL 新坐标）、H2 冒烟用法"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "构建命令与禁止模式（JDK 11、显式版本声明要求、禁止引入兼容开关）"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "模块依赖规则：哪些模块声明哪些依赖（okhttp 在多模块声明、h2 在 core:database）"}

@@ -67,3 +67,46 @@
 
 - 可选：修复远程基线遗留的 Thymeleaf 模板问题（admin/showcase 模板已删但控制器残留导致 /admin 500）
 - 可选：评估应用市场按名搜索时国外源降级触发条件（应用宝模糊匹配恒返回 3 条，使「国内未命中」难成立）
+
+
+## Session 3: 第三方依赖漏洞修复（gson/h2/snakeyaml/logback/spring-security-crypto）
+<!-- trellis-session: v=2 fp=c112acc20f590c56 -->
+
+**Date**: 2026-09-25
+**Task**: 第三方依赖漏洞修复（gson/h2/snakeyaml/logback/spring-security-crypto）
+**Branch**: `feature_app_market`
+
+### Summary
+
+用 OSV 漏洞库全量扫描依赖树（116 包 / 129 条命中），在 Spring Boot 2.7 兼容范围内把能单独升级的第三方库升到安全版本，OSV 命中由 118 降到 108；okhttp 因 Kotlin 1.6.21 编译器天花板无法升级。
+
+### Main Changes
+
+- gson 2.8.6→2.13.2、h2 2.1.214→2.3.232、snakeyaml 1.30→1.33、logback 1.2.12→1.2.13、spring-security-crypto 5.3.3.RELEASE→5.7.14，共修掉 10 条 CVE
+- 发现并绕过一个隐蔽陷阱：子模块声明的版本对根 project 是传递依赖，会被 dependency-management 的 BOM 重新覆盖，必须在根 build.gradle.kts 再声明一遍
+- okhttp 试升 4.12.0 失败（Kotlin metadata 1.8.0 vs 编译器 1.6.21），按回退方案停在 4.10.0，okio CVE-2023-3635 残留
+- 同步更新 spec：Spring Boot 2.7.18、MySQL 新坐标、BOM 覆盖规则、okhttp Kotlin 天花板、应用宝按名搜索结论修正
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a997b3d` | fix(deps): 升级第三方依赖修复已知漏洞（OSV 扫描 118 → 108） |
+| `f9e6f0b` | docs(spec): 同步 Spring Boot 2.7.18 与依赖版本覆盖规则 |
+
+### Testing
+
+- [OK] JDK 11 下 bootJar BUILD SUCCESSFUL（feature_app_market 与 master 各一次）
+- [OK] unzip 校验 boot jar 实际打包版本：gson 2.13.2 / h2 2.3.232 / snakeyaml 1.33 / logback 1.2.13 / spring-security-crypto 5.7.14
+- [OK] H2 冒烟起服（Started in 8.381 seconds）；登录 200、/api/v1/auth/me 200、/api/v1/app/all 200、/api/v1/appmarket/apps 200、/api/v1/appmarket/apps/1 200
+- [OK] OSV 复扫 118 → 108 条，零新增风险
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 可选：升 Kotlin 编译器到 1.9 后再升 okhttp 4.12.0 / okio，清掉最后一项可修残留
+- 可选：将根 build.gradle.kts 的重复声明改为 dependencyManagement 覆盖或 extra["xxx.version"] 属性，消除根与子模块的版本漂移风险
+- 可选：评估 Spring Boot 3.x 迁移（JDK 17 + jakarta），这是 EOL 漏洞的唯一根治路径
