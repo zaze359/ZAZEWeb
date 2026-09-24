@@ -59,7 +59,12 @@ npm run build        # 产物输出到 ../src/main/resources/static/vue
 
 ## 5. 已知范围与限制
 
-- **后台「外部导入 / APK 解析 / SSE 实时链路」尚未移植**：遗留 `static/js/appmarket-admin.js` 相关逻辑较重，本期 POC 仅含核心 CRUD + 触发采集（`POST /appmarket/admin/collect`）。
+- **后台「外部导入 / 应用宝元数据补全 / SSE 实时链路」已移植**（任务 #11）：
+  - `components/admin/ExternalImportModal.vue`：输入包名 / 链接 / 应用名 → 自动分流精确查询（`external-lookup`）或模糊搜索（`external-search`），展示预览 / 按来源分区的候选列表，以及逐上游探测明细（国内源 / 国外备选源分组）；点「一键导入」启动带 SSE 链路的导入任务。
+  - `components/admin/TraceModal.vue`：订阅 `/api/v1/appmarket/admin/import-tasks/:id/stream`，实时渲染 `snapshot` / `step` / `end` 三步事件，步骤状态 `OK/WARN/FAIL/SKIP/RUNNING/INFO` 着色，可随时关闭（后台继续）。
+  - 工具栏新增「导入外部资源」「联网补全应用宝元数据」两个按钮（`batch-complete` 任务）。
+  - APK 解析（`Appmarket-admin.js` 的 `import-from-apk`）已在 #7 末段完成（`ApkImportModal.vue`）。
+  - 这些能力依赖后端 `feature/appmarket` 的 `import-tasks` 与 `external-*` 接口；接口契约与遗留脚本一致，本工作区无 feature 源码，不可直接改后端。
 - **分类 / 排序 / 热度**：
   - 列表「分类」字段后端已返回（`AppVo.category`，门户与后台均在用）；
   - 「排序 / 热度」在门户端按 `versionCount` 派生（见 `src/utils/appMeta.ts`），待后端 feature 源码可用时可补真实字段。
@@ -67,5 +72,5 @@ npm run build        # 产物输出到 ../src/main/resources/static/vue
 
 ## 6. 任务进度
 
-- 已完成：#1 #2 #4 #5 #6 #7 #8 #9 #3（install / build）
+- 已完成：#1 #2 #4 #5 #6 #7 #8 #9 #3（install / build）#11（外部导入 / 应用宝补全 / SSE）
 - 待执行（需用户放行）：#10（实际联调，本文档已先备好）

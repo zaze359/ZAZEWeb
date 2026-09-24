@@ -84,6 +84,59 @@ export interface CollectResult {
   messages?: string[]
 }
 
+// ---------- 后台：外部导入 / 应用宝元数据补全（import-tasks + SSE） ----------
+export interface ImportTaskRef {
+  taskId: string
+  title?: string
+  kind?: string
+}
+export interface TraceStep {
+  seq?: number
+  phase?: string
+  upstream?: string
+  detail?: string
+  durationMs?: number
+  status?: string
+}
+export interface ImportSource {
+  id?: string
+  name?: string
+  searchUrl?: string
+  enabled?: boolean
+}
+export interface ExternalPreview {
+  packageName?: string
+  name?: string
+  source?: string
+  iconSrc?: string
+  category?: string
+  developer?: string
+  summary?: string
+  latestVersionName?: string
+  sizeMb?: number
+  apkUrl?: string
+}
+export interface TraceProbe {
+  source?: string
+  status?: string
+  elapsedMs?: number
+  message?: string
+  url?: string
+  group?: string
+}
+export interface ExternalLookupResult {
+  preview?: ExternalPreview
+  probes?: TraceProbe[]
+  overseasQueried?: boolean
+  messages?: string[]
+}
+export interface ExternalSearchResult {
+  items?: ExternalPreview[]
+  probes?: TraceProbe[]
+  overseasQueried?: boolean
+  messages?: string[]
+}
+
 // 统一响应信封 Response<T>{ code, data, msg }
 export interface ApiResponse<T> {
   code: number

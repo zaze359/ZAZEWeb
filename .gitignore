@@ -42,3 +42,4 @@ local.properties
 .cursor/
 .workbuddy/
 .gradle/
+/frontend/node_modules/

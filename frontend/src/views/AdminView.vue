@@ -5,6 +5,8 @@ import type { AppVo, AppInput } from '@/types'
 import AppFormModal from '@/components/admin/AppFormModal.vue'
 import VersionManagerModal from '@/components/admin/VersionManagerModal.vue'
 import ApkImportModal from '@/components/admin/ApkImportModal.vue'
+import ExternalImportModal from '@/components/admin/ExternalImportModal.vue'
+import TraceModal from '@/components/admin/TraceModal.vue'
 
 const apps = ref<AppVo[]>([])
 const keyword = ref('')
@@ -17,6 +19,9 @@ const editing = ref<AppVo | null>(null)
 const verOpen = ref(false)
 const verAppId = ref<string>('')
 const apkOpen = ref(false)
+const extOpen = ref(false)
+// SSE 实时链路面板状态：{ open, title, kind, packageName?, source? }
+const trace = ref({ open: false, title: '', kind: '', packageName: '', source: '' })
 
 const filtered = computed(() => {
   const kw = keyword.value.trim().toLowerCase()
@@ -100,6 +105,38 @@ function onApkImported() {
   load()
 }
 
+// 外部资源导入：来自 ExternalImportModal 的点选，启动带 SSE 链路的导入任务
+function onImportExternal(p: { packageName: string; source: string }) {
+  trace.value = {
+    open: true,
+    title: '导入外部资源 · ' + (p.packageName || ''),
+    kind: 'external-import',
+    packageName: p.packageName,
+    source: p.source
+  }
+}
+
+// 批量补全应用宝元数据：逐个应用「补链接 → 抓元数据」，结果实时出现在链路面板
+function startBatchComplete() {
+  trace.value = {
+    open: true,
+    title: '批量补全应用宝元数据',
+    kind: 'batch-complete',
+    packageName: '',
+    source: ''
+  }
+}
+
+// SSE 链路结束：按任务类型回写结果提示并刷新列表
+function onTraceFinished(payload: { status: string; message?: string; kind?: string }) {
+  if (payload.status === 'DONE') {
+    show('ok', payload.kind === 'batch-complete' ? '应用宝元数据补全完成' : '外部资源导入成功')
+  } else {
+    show('error', (payload.message || '导入链路异常'))
+  }
+  load()
+}
+
 onMounted(load)
 </script>
 
@@ -134,6 +171,18 @@ onMounted(load)
           @click="apkOpen = true"
         >
           <i class="fas fa-android"></i> 从 APK 导入
+        </button>
+        <button
+          class="rounded-lg border border-admin-border px-3 py-1.5 text-sm text-admin-muted transition hover:text-admin-text"
+          @click="extOpen = true"
+        >
+          <i class="fas fa-globe"></i> 导入外部资源
+        </button>
+        <button
+          class="rounded-lg border border-admin-border px-3 py-1.5 text-sm text-admin-muted transition hover:text-admin-text"
+          @click="startBatchComplete"
+        >
+          <i class="fas fa-magic"></i> 联网补全应用宝元数据
         </button>
       </div>
     </div>
@@ -240,5 +289,15 @@ onMounted(load)
       @changed="load"
     />
     <ApkImportModal :open="apkOpen" @cancel="apkOpen = false" @imported="onApkImported" />
+    <ExternalImportModal :open="extOpen" @cancel="extOpen = false" @import-external="onImportExternal" />
+    <TraceModal
+      :open="trace.open"
+      :title="trace.title"
+      :kind="trace.kind"
+      :package-name="trace.packageName"
+      :source="trace.source"
+      @cancel="trace.open = false"
+      @finished="onTraceFinished"
+    />
   </div>
 </template>
