@@ -12,4 +12,33 @@ body {
   margin: 0;
   font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  background: #16171b;
+  color: #f0f1f5;
+}
+
+/* 低饱和滚动条：避免系统默认亮色破坏整体冷调 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #16171b;
+}
+::-webkit-scrollbar-thumb {
+  background: #35363f;
+  border: 2px solid #16171b;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #464757;
+}
+
+::selection {
+  background: rgba(52, 216, 160, 0.28);
+}
+
+/* 去掉搜索框原生装饰，统一由容器描边表达状态 */
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button {
+  -webkit-appearance: none;
 }

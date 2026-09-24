@@ -7,7 +7,7 @@ const failed = ref(false)
 
 <template>
   <div
-    class="flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-portal-border bg-portal-surface2"
+    class="flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-portal-border bg-portal-surface2"
     :style="{ width: (size ?? 56) + 'px', height: (size ?? 56) + 'px' }"
   >
     <img

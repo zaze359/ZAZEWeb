@@ -38,27 +38,42 @@ onMounted(load)
 
 <template>
   <div>
-    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <p class="text-sm text-portal-neon2">// APP CODEDEX</p>
-        <h1 class="font-display text-2xl font-bold text-portal-text">应用图鉴</h1>
+        <span class="inline-flex items-center gap-2 text-xs tracking-wide text-portal-mint">
+          <i class="fas fa-circle text-[6px]"></i> APP CODEDEX
+        </span>
+        <h1 class="mt-2 font-display text-2xl font-bold text-portal-text">应用图鉴</h1>
       </div>
-      <input
-        type="search"
-        v-model="keyword"
-        @input="onSearch"
-        placeholder="搜索名称 / 开发者…"
-        class="w-64 rounded-xl border border-portal-border bg-portal-surface2 px-3 py-2 text-sm text-portal-text outline-none placeholder-portal-muted focus:border-portal-neon/60"
-      />
+
+      <div
+        class="flex items-center gap-2 rounded-full border border-portal-border bg-portal-surface px-4 py-2 transition focus-within:border-portal-mint/50"
+      >
+        <i class="fas fa-search text-xs text-portal-muted"></i>
+        <input
+          v-model="keyword"
+          type="search"
+          @input="onSearch"
+          placeholder="搜索名称 / 开发者…"
+          class="w-44 bg-transparent text-sm text-portal-text outline-none placeholder-portal-muted sm:w-60"
+        />
+      </div>
     </div>
 
-    <div class="mb-4 flex items-center justify-between">
-      <span class="text-sm text-portal-muted">共 {{ sorted.length }} 个应用</span>
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-portal-border pb-4">
+      <span class="text-sm text-portal-muted">
+        共 <span class="font-medium text-portal-text">{{ sorted.length }}</span> 个应用
+      </span>
       <SortBar v-model="sort" />
     </div>
 
-    <div v-if="loading" class="py-16 text-center text-portal-muted">加载中…</div>
-    <div v-else-if="!sorted.length" class="py-16 text-center text-portal-muted">暂无应用数据。</div>
+    <div v-if="loading" class="py-16 text-center text-sm text-portal-muted">加载中…</div>
+    <div
+      v-else-if="!sorted.length"
+      class="rounded-2xl border border-dashed border-portal-border py-16 text-center text-sm text-portal-muted"
+    >
+      暂无应用数据。
+    </div>
     <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <AppCard v-for="app in sorted" :key="app.id" :app="app" class="animate-fade-up" />
     </div>

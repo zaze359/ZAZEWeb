@@ -19,10 +19,11 @@ export function deriveHeat(app: AppVo): number {
   return Math.max(8, Math.min(100, v * 11 + 8))
 }
 
+// 等级色沿用门户冷调：琥珀（顶级）→ 薄荷 → 天蓝 → 灰蓝 → 深灰，共 4 个冷色 + 1 个暖点缀。
 export const GRADE_COLOR: Record<Grade, string> = {
-  S: '#ff4ecd',
-  A: '#2ce8ff',
-  B: '#9b5cff',
-  C: '#fde24a',
-  D: '#a99fd6'
+  S: '#ffd24d', // 琥珀金：最高档，唯一暖色点缀
+  A: '#34d8a0', // 薄荷：主色
+  B: '#4c8df6', // 天蓝：辅助
+  C: '#8b93a1', // 灰蓝
+  D: '#5f6673' // 深灰
 }

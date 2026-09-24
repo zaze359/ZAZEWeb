@@ -12,15 +12,16 @@ const options: { key: SortKey; label: string }[] = [
 </script>
 
 <template>
-  <div class="inline-flex gap-1 rounded-xl border border-portal-border bg-portal-surface p-1">
+  <!-- 胶囊分段控件：选中态用实心主色块表达，不靠发光 -->
+  <div class="inline-flex items-center gap-1 rounded-full border border-portal-border bg-portal-surface p-1">
     <button
       v-for="o in options"
       :key="o.key"
-      class="rounded-lg px-3 py-1 text-sm transition"
+      class="rounded-full px-3.5 py-1.5 text-sm transition"
       :class="
         modelValue === o.key
-          ? 'bg-portal-neon/20 text-portal-neon'
-          : 'text-portal-muted hover:text-portal-text'
+          ? 'bg-portal-mint font-semibold text-portal-bg shadow-mint'
+          : 'text-portal-muted hover:bg-portal-surface2 hover:text-portal-text'
       "
       @click="emit('update:modelValue', o.key)"
     >

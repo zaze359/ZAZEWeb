@@ -6,7 +6,7 @@ import AdminView from '@/views/AdminView.vue'
 import LoginView from '@/views/LoginView.vue'
 
 // history 模式，根部署（完全迁移后 Vue 即站点本体）。
-// meta.theme 控制整体皮肤：门户=portal（暗色霓虹），后台=admin（现代实用浅色）。
+// meta.theme 控制整体皮肤：门户=portal（清爽冷调暗色：中性灰黑底 + 薄荷绿主色），后台=admin（现代实用浅色）。
 const router = createRouter({
   history: createWebHistory('/'),
   routes: [
