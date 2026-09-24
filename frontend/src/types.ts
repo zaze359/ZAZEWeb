@@ -115,6 +115,7 @@ export interface ExternalPreview {
   latestVersionName?: string
   sizeMb?: number
   apkUrl?: string
+  group?: string // 上游分组：DOMESTIC / OVERSEAS（搜索结果按来源分区用）
 }
 export interface TraceProbe {
   source?: string

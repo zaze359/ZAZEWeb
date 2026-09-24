@@ -69,7 +69,7 @@ export const api = {
       request<unknown>(`/appmarket/admin/sources/${id}`, { method: 'DELETE' }),
     collect: () => request<CollectResult>('/appmarket/admin/collect', { method: 'POST' }),
     importFromApk: (body: ApkImportInput) =>
-      json<unknown>('/appmarket/admin/import-from-apk', body),
+      json<unknown>('POST', '/appmarket/admin/import-from-apk', body),
     // 外部导入 / 应用宝元数据补全（import-tasks + SSE 实时链路）
     externalSources: () => request<ImportSource[]>('/appmarket/admin/external-sources'),
     externalLookup: (raw: string) =>
