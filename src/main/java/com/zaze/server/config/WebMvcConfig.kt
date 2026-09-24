@@ -33,6 +33,8 @@ class WebMvcConfig(
             "/api/v1/auth/**",
             "/error",
             "/favicon.ico",
+            "/index.html",
+            "/assets/**",
             "/css/**",
             "/js/**",
             "/images/**",

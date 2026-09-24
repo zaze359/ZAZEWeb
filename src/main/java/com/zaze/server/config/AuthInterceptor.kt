@@ -92,10 +92,7 @@ class AuthInterceptor(
             "/",
             "/appmarket",
             "/appmarket/**",
-            "/api/v1/appmarket/**",
-            // 试点 POC：Vue3 应用挂在 /vue 前缀下，与门户同语义（登录即可）
-            "/vue",
-            "/vue/**"
+            "/api/v1/appmarket/**"
         )
     }
 }

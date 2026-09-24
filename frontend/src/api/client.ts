@@ -23,9 +23,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     ...init
   })
 
-  // 未登录：后端 /api/** 返回 401，前端直接跳登录页（真正的边界仍在后端）。
+  // 未登录：后端 /api/** 返回 401。已在 /login 时不重复跳转，避免重定向死循环。
   if (res.status === 401) {
-    window.location.href = '/login'
+    if (window.location.pathname !== '/login') window.location.href = '/login'
     throw new Error('UNAUTHORIZED')
   }
 
@@ -43,6 +43,8 @@ async function json<T>(method: string, path: string, data?: unknown): Promise<T>
 
 export const api = {
   me: () => request<UserVo | null>('/auth/me'),
+  login: (username: string, password: string) =>
+    json<UserVo>('POST', '/auth/login', { username, password }),
   logout: () => request<void>('/auth/logout', { method: 'POST' }),
   apps: (keyword?: string) =>
     request<AppVo[]>(

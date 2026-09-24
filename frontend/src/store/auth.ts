@@ -22,5 +22,9 @@ export const auth = reactive({
     } finally {
       window.location.href = '/login'
     }
+  },
+  async login(username: string, password: string) {
+    this.user = await api.login(username, password)
+    return this.user
   }
 })

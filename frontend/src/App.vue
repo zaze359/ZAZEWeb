@@ -15,7 +15,7 @@ const theme = computed(() => (route.meta.theme === 'admin' ? 'admin' : 'portal')
     class="min-h-screen"
     :class="theme === 'admin' ? 'bg-admin-bg text-admin-text' : 'bg-portal-bg text-portal-text'"
   >
-    <NavBar :variant="theme" />
+    <NavBar v-if="route.name !== 'login'" :variant="theme" />
     <main class="mx-auto max-w-5xl px-4 py-6">
       <router-view />
     </main>
