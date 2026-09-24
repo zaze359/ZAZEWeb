@@ -4,6 +4,7 @@ import { api } from '@/api/client'
 import type { AppVo, AppInput } from '@/types'
 import AppFormModal from '@/components/admin/AppFormModal.vue'
 import VersionManagerModal from '@/components/admin/VersionManagerModal.vue'
+import ApkImportModal from '@/components/admin/ApkImportModal.vue'
 
 const apps = ref<AppVo[]>([])
 const keyword = ref('')
@@ -15,6 +16,7 @@ const formOpen = ref(false)
 const editing = ref<AppVo | null>(null)
 const verOpen = ref(false)
 const verAppId = ref<string>('')
+const apkOpen = ref(false)
 
 const filtered = computed(() => {
   const kw = keyword.value.trim().toLowerCase()
@@ -93,6 +95,10 @@ async function onCollect() {
     show('error', (e as Error).message || '采集失败')
   }
 }
+function onApkImported() {
+  show('ok', 'APK 导入成功')
+  load()
+}
 
 onMounted(load)
 </script>
@@ -122,6 +128,12 @@ onMounted(load)
           @click="openNew"
         >
           <i class="fas fa-plus"></i> 新增应用
+        </button>
+        <button
+          class="rounded-lg border border-admin-border px-3 py-1.5 text-sm text-admin-muted transition hover:text-admin-text"
+          @click="apkOpen = true"
+        >
+          <i class="fas fa-android"></i> 从 APK 导入
         </button>
       </div>
     </div>
@@ -227,5 +239,6 @@ onMounted(load)
       @cancel="verOpen = false"
       @changed="load"
     />
+    <ApkImportModal :open="apkOpen" @cancel="apkOpen = false" @imported="onApkImported" />
   </div>
 </template>

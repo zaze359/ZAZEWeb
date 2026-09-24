@@ -4,6 +4,7 @@ import type {
   AppInput,
   VersionInput,
   SourceInput,
+  ApkImportInput,
   CollectResult,
   UserVo
 } from '@/types'
@@ -62,6 +63,8 @@ export const api = {
       json<unknown>('POST', `/appmarket/admin/versions/${versionId}/sources`, body),
     deleteSource: (id: string) =>
       request<unknown>(`/appmarket/admin/sources/${id}`, { method: 'DELETE' }),
-    collect: () => request<CollectResult>('/appmarket/admin/collect', { method: 'POST' })
+    collect: () => request<CollectResult>('/appmarket/admin/collect', { method: 'POST' }),
+    importFromApk: (body: ApkImportInput) =>
+      json<unknown>('/appmarket/admin/import-from-apk', body)
   }
 }

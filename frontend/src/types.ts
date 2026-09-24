@@ -66,6 +66,16 @@ export interface SourceInput {
   note?: string
 }
 
+// 从 APK 导入：浏览器本地解析后提交解析出的元数据（APK 本身不上传）
+export interface ApkImportInput {
+  packageName: string
+  name: string
+  versionName?: string | null
+  versionCode?: number | null
+  iconDataUri?: string | null
+  sizeMb?: number | null
+}
+
 export interface CollectResult {
   targets?: number
   appsCreated?: number
