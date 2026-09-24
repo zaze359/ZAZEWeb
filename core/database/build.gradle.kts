@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "2.3.1.RELEASE"
+    id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
@@ -22,7 +22,10 @@ dependencies {
     // h2
     runtimeOnly("com.h2database:h2:2.1.214")
     // 使用 mysql
-    api("mysql:mysql-connector-java")
+    // Spring Boot 2.7 起 BOM 管理的 MySQL 坐标改为 com.mysql:mysql-connector-j（旧坐标
+    // mysql:mysql-connector-java 不再有托管版本，会导致 "Could not find mysql:mysql-connector-java:"）。
+    // 版本仍由 BOM 管理（2.7.18 → 8.0.33），此处不写死。
+    api("com.mysql:mysql-connector-j")
     // joda money
     implementation("org.joda:joda-money:1.0.3")
     implementation("org.jadira.usertype:usertype.core:6.0.1.GA")
