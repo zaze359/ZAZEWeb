@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "后端入口规范，含开发前检查清单与质量门禁"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "升级后的编译/验证需满足质量准则（无暗桩、无遗留开关）"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "统一响应 Response 规范，验证回归时需核对结构未变"}
