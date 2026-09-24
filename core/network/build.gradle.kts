@@ -17,6 +17,11 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     api("org.springframework.boot:spring-boot-starter-web")
+    // okhttp 必须显式写死版本，否则会被 BOM 2.7.18 降级到 4.9.3。
+    // 停在 4.10.0：okhttp 4.11+ 由 Kotlin 1.8 编译（metadata 1.8.0），而本项目 Kotlin 编译器是 1.6.21，
+    // 编译会报 "Class 'okhttp3.Request' was compiled with an incompatible version of Kotlin"。
+    // 要升到 4.12.0 必须先升 Kotlin 编译器（另立任务）。
+    // 残留：okio 3.0.0 的 CVE-2023-3635（MODERATE，有符号/无符号转换错误），修复版本 3.4.0 同样需 Kotlin 1.9。
     api("com.squareup.okhttp3:okhttp:4.10.0")
 }
 

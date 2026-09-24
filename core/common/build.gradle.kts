@@ -16,7 +16,9 @@ dependencies {
     // spring boot 基础依赖
     api("org.springframework.boot:spring-boot-starter-web")
 //    api("org.springframework.boot:spring-boot-starter-json")
-    api("com.google.code.gson:gson:2.8.6")
+    // gson 必须显式写死版本：BOM 2.7.18 托管的是 2.9.1，但 2.8.6 曾因显式声明被降级过；
+    // 2.13.2 修 CVE-2022-25647（HIGH，反序列化不可信数据）。
+    api("com.google.code.gson:gson:2.13.2")
 
     api("org.aspectj:aspectjweaver:1.9.19")
 
