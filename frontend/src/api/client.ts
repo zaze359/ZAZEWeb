@@ -86,7 +86,12 @@ export const api = {
           '&keyword=' +
           encodeURIComponent(raw)
       ),
-    startImportTask: (body: { kind: string; packageName?: string; source?: string }) =>
-      json<ImportTaskRef>('POST', '/appmarket/admin/import-tasks', body)
+    startImportTask: (body: { kind: string; packageName?: string; source?: string }) => {
+      // 对齐遗留脚本：仅当字段为真时才发送（batch-complete 不传 packageName/source）
+      const payload: { kind: string; packageName?: string; source?: string } = { kind: body.kind }
+      if (body.packageName) payload.packageName = body.packageName
+      if (body.source) payload.source = body.source
+      return json<ImportTaskRef>('POST', '/appmarket/admin/import-tasks', payload)
+    }
   }
 }
