@@ -20,7 +20,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     // 密码哈希：只引入 crypto 这个独立小依赖，不引入完整 Spring Security
-    implementation("org.springframework.security:spring-security-crypto:5.3.3.RELEASE")
+    // 只做 BCrypt 加解密。5.7.14 是 5.7 线公开仓库的最高版本（BOM 2.7.18 托管 5.7.11）。
+    // 注：CVE-2025-22228 的修复版本是 5.7.16/5.8.18，前者未公开发布、后者与 Boot 2.7 不兼容 → 残留。
+    implementation("org.springframework.security:spring-security-crypto:5.7.14")
 
     implementation(project(":core:common"))
     implementation(project(":core:database"))

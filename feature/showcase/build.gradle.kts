@@ -34,7 +34,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
-//    runtimeOnly("com.h2database:h2:2.1.214")
+//    runtimeOnly("com.h2database:h2:2.3.232")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")

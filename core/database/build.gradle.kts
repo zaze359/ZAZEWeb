@@ -20,7 +20,9 @@ dependencies {
 //    implementation("org.springframework.boot:spring-boot-starter-web")
 //    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     // h2
-    runtimeOnly("com.h2database:h2:2.1.214")
+    // h2 2.2.220 起修 CVE-2022-45868（HIGH，密码泄露）；此处取 2.3.232。
+    // 仅 runtimeOnly（本地冒烟/测试用），生产走 MySQL。
+    runtimeOnly("com.h2database:h2:2.3.232")
     // 使用 mysql
     // Spring Boot 2.7 起 BOM 管理的 MySQL 坐标改为 com.mysql:mysql-connector-j（旧坐标
     // mysql:mysql-connector-java 不再有托管版本，会导致 "Could not find mysql:mysql-connector-java:"）。
