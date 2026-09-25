@@ -37,8 +37,8 @@ bin/
 local.properties
 
 .claude/
-.trae/
-.codebuddy/
+# .trae/
+# .codebuddy/
 .cursor/
 .workbuddy/
 .gradle/
