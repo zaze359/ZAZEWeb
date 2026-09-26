@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { api } from '@/api/client'
 import type { AppVo } from '@/types'
 import { deriveHeat } from '@/utils/appMeta'
@@ -55,7 +55,58 @@ function onSearch() {
   timer = setTimeout(load, 250)
 }
 
-onMounted(load)
+// —— 滚动加载更多（门户主打「炫酷」体验）——
+// 数据已全量在前端，用 IntersectionObserver 触发逐批 reveal，并加 450ms 过渡手感
+const PAGE_SIZE = 9
+const INITIAL = 12
+const visibleCount = ref(INITIAL)
+const visibleApps = computed(() => sorted.value.slice(0, visibleCount.value))
+const hasMore = computed(() => visibleCount.value < sorted.value.length)
+const loadingMore = ref(false)
+const sentinel = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+let observedEl: Element | null = null
+
+function attachObserver() {
+  if (!observer || !sentinel.value || observedEl === sentinel.value) return
+  if (observedEl) observer.unobserve(observedEl)
+  observer.observe(sentinel.value)
+  observedEl = sentinel.value
+}
+
+function loadMore() {
+  if (loadingMore.value || !hasMore.value) return
+  loadingMore.value = true
+  setTimeout(() => {
+    visibleCount.value += PAGE_SIZE
+    loadingMore.value = false
+  }, 450)
+}
+
+onMounted(() => {
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting) loadMore()
+    },
+    { rootMargin: '120px' }
+  )
+  load()
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  observer = null
+  observedEl = null
+})
+
+// 分类 / 搜索 / 排序变化导致结果集变了，回到首屏可见量并重新挂观察哨
+watch(sorted, () => {
+  visibleCount.value = INITIAL
+  loadingMore.value = false
+})
+watch(loading, () => {
+  if (!loading.value) nextTick(attachObserver)
+})
 </script>
 
 <template>
@@ -104,8 +155,22 @@ onMounted(load)
         >
           暂无应用数据。
         </div>
-        <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <AppCard v-for="app in sorted" :key="app.id" :app="app" class="animate-fade-up" />
+        <div v-else>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <AppCard v-for="app in visibleApps" :key="app.id" :app="app" class="animate-fade-up" />
+          </div>
+          <div v-if="hasMore" ref="sentinel" class="flex justify-center py-8">
+            <div v-if="loadingMore" class="flex items-center gap-2 text-xs text-portal-muted">
+              <span
+                class="h-4 w-4 animate-spin rounded-full border-2 border-portal-mint/40 border-t-portal-mint"
+              ></span>
+              正在加载更多…
+            </div>
+            <span v-else class="text-xs text-portal-muted/70">下滑加载更多</span>
+          </div>
+          <div v-else class="py-8 text-center text-xs text-portal-muted/70">
+            已经到底啦 · 共 {{ sorted.length }} 个应用
+          </div>
         </div>
       </div>
     </div>

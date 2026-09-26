@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { api } from '@/api/client'
 import type { AppVo, AppInput } from '@/types'
 import AppFormModal from '@/components/admin/AppFormModal.vue'
@@ -29,6 +29,36 @@ const filtered = computed(() => {
   return apps.value.filter((a) =>
     [a.name, a.packageName, a.developer, a.category].some((f) => f && String(f).toLowerCase().includes(kw))
   )
+})
+
+// —— 分页（后台主打「简洁方便」）——
+const PAGE_SIZE = 10
+const page = ref(1)
+const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / PAGE_SIZE)))
+const paged = computed(() => {
+  const start = (page.value - 1) * PAGE_SIZE
+  return filtered.value.slice(start, start + PAGE_SIZE)
+})
+// 当前页附近的页码窗口（最多 5 个），避免页码过多
+const pageList = computed(() => {
+  const tp = totalPages.value
+  const cur = page.value
+  let from = Math.max(1, cur - 2)
+  let to = Math.min(tp, cur + 2)
+  if (to - from < 4) {
+    if (from === 1) to = Math.min(tp, from + 4)
+    else if (to === tp) from = Math.max(1, to - 4)
+  }
+  const list: number[] = []
+  for (let i = from; i <= to; i++) list.push(i)
+  return list
+})
+function goPage(p: number) {
+  page.value = Math.min(Math.max(1, p), totalPages.value)
+}
+// 搜索 / 刷新导致结果集变化，回到第 1 页
+watch(filtered, () => {
+  page.value = 1
 })
 
 const alertCls = computed(() => {
@@ -227,7 +257,7 @@ onMounted(load)
             </td>
           </tr>
           <tr
-            v-for="a in filtered"
+            v-for="a in paged"
             :key="a.id"
             class="border-t border-admin-border hover:bg-admin-bg/60"
           >
@@ -279,6 +309,43 @@ onMounted(load)
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- 分页器：简洁方便，不滚动加载 -->
+    <div
+      v-if="totalPages > 1"
+      class="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-admin-muted"
+    >
+      <span>共 {{ filtered.length }} 条 · 第 {{ page }} / {{ totalPages }} 页</span>
+      <div class="flex items-center gap-1">
+        <button
+          class="rounded-md border border-admin-border px-2.5 py-1 transition hover:text-admin-text disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="page <= 1"
+          @click="goPage(page - 1)"
+        >
+          上一页
+        </button>
+        <button
+          v-for="p in pageList"
+          :key="p"
+          class="min-w-[32px] rounded-md border px-2.5 py-1 transition"
+          :class="
+            p === page
+              ? 'border-admin-accent bg-admin-accent text-white'
+              : 'border-admin-border hover:text-admin-text'
+          "
+          @click="goPage(p)"
+        >
+          {{ p }}
+        </button>
+        <button
+          class="rounded-md border border-admin-border px-2.5 py-1 transition hover:text-admin-text disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="page >= totalPages"
+          @click="goPage(page + 1)"
+        >
+          下一页
+        </button>
+      </div>
     </div>
 
     <AppFormModal :open="formOpen" :app="editing" @cancel="formOpen = false" @save="onSave" />
