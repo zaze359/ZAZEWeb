@@ -10,28 +10,23 @@ pluginManagement {
     properties.load(java.io.DataInputStream(localPropertiesFile.inputStream()))
     extra["useLocalMaven"] = properties.getProperty("useLocalMaven", "false").toBoolean()
     repositories {
+        mavenLocal()
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        gradlePluginPortal()
+        mavenCentral()
+        // 本地私服放最后：它不可达时先走公共镜像，不会卡在首位死等（useLocalMaven=true 才启用）
         if (extra["useLocalMaven"] == true) {
             maven {
                 isAllowInsecureProtocol = true
                 url = uri("http://localhost:8081/repository/maven-public")
             }
         }
-        mavenLocal()
-        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-        gradlePluginPortal()
-        mavenCentral()
     }
 }
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        if (extra["useLocalMaven"] == true) {
-            maven {
-                isAllowInsecureProtocol = true
-                url = uri("http://localhost:8081/repository/maven-public")
-            }
-        }
         mavenLocal()
         maven { url = uri("https://maven.aliyun.com/repository/public") }
         maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
@@ -39,6 +34,13 @@ dependencyResolutionManagement {
         maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
         maven { url = uri("https://jitpack.io") }
         mavenCentral()
+        // 本地私服放最后（useLocalMaven=true 才启用）
+        if (extra["useLocalMaven"] == true) {
+            maven {
+                isAllowInsecureProtocol = true
+                url = uri("http://localhost:8081/repository/maven-public")
+            }
+        }
     }
 }
 
