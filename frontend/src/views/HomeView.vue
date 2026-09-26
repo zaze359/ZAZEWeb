@@ -8,13 +8,22 @@ import AppCard from '@/components/portal/AppCard.vue'
 const name = computed(() => auth.user?.displayName || auth.user?.username || '旅人')
 const isAdmin = computed(() => auth.user?.role === 'ADMIN')
 
-// 首页「最近收录」预览：直接拉最新 6 个，复用 AppCard，不新增接口
+// 首页「最近收录」预览：拉全量列表，取前 6 个复用 AppCard；同时派生 hero 概览数据，不新增接口
+const allApps = ref<AppVo[]>([])
 const recent = ref<AppVo[]>([])
 const loadingRecent = ref(false)
+const stats = computed(() => {
+  const apps = allApps.value
+  const versions = apps.reduce((s, a) => s + (a.versionCount ?? 0), 0)
+  const categories = new Set(apps.map((a) => a.category).filter(Boolean)).size
+  return { apps: apps.length, versions, categories }
+})
 onMounted(async () => {
   loadingRecent.value = true
   try {
-    recent.value = (await api.apps()).slice(0, 6)
+    const list = await api.apps()
+    allApps.value = list
+    recent.value = list.slice(0, 6)
   } catch {
     recent.value = []
   } finally {
@@ -50,7 +59,7 @@ onMounted(async () => {
         欢迎回来，<span class="text-portal-mint">{{ name }}</span>
       </h1>
       <p class="mt-3 max-w-xl text-sm leading-relaxed text-portal-muted">
-        这里收集了开源应用的下载图谱。挑一个，开启你的获取之旅。
+        一个开源应用的下载图谱：应用、版本、多来源地址，一图收尽。挑一个，开启你的获取之旅。
       </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-2.5">
@@ -67,6 +76,21 @@ onMounted(async () => {
         >
           <i class="fas fa-sliders"></i> 管理后台
         </router-link>
+      </div>
+
+      <div class="mt-7 flex flex-wrap gap-x-8 gap-y-3 border-t border-portal-border/70 pt-5">
+        <div>
+          <div class="font-display text-xl font-bold leading-none text-portal-text">{{ stats.apps }}</div>
+          <div class="mt-1 text-xs text-portal-muted">收录应用</div>
+        </div>
+        <div>
+          <div class="font-display text-xl font-bold leading-none text-portal-text">{{ stats.versions }}</div>
+          <div class="mt-1 text-xs text-portal-muted">版本总数</div>
+        </div>
+        <div>
+          <div class="font-display text-xl font-bold leading-none text-portal-text">{{ stats.categories }}</div>
+          <div class="mt-1 text-xs text-portal-muted">应用分类</div>
+        </div>
       </div>
     </div>
   </section>
