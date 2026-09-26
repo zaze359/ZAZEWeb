@@ -1,9 +1,26 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { auth } from '@/store/auth'
+import { api } from '@/api/client'
+import type { AppVo } from '@/types'
+import AppCard from '@/components/portal/AppCard.vue'
 
 const name = computed(() => auth.user?.displayName || auth.user?.username || '旅人')
 const isAdmin = computed(() => auth.user?.role === 'ADMIN')
+
+// 首页「最近收录」预览：直接拉最新 6 个，复用 AppCard，不新增接口
+const recent = ref<AppVo[]>([])
+const loadingRecent = ref(false)
+onMounted(async () => {
+  loadingRecent.value = true
+  try {
+    recent.value = (await api.apps()).slice(0, 6)
+  } catch {
+    recent.value = []
+  } finally {
+    loadingRecent.value = false
+  }
+})
 </script>
 
 <template>
@@ -109,4 +126,29 @@ const isAdmin = computed(() => auth.user?.role === 'ADMIN')
       </div>
     </template>
   </div>
+
+  <section class="mt-9">
+    <div class="mb-4 flex items-end justify-between gap-3">
+      <div>
+        <span class="inline-flex items-center gap-2 text-xs tracking-wide text-portal-mint">
+          <i class="fas fa-circle text-[6px]"></i> LATEST
+        </span>
+        <h2 class="mt-1.5 font-display text-lg font-semibold text-portal-text">最近收录</h2>
+      </div>
+      <router-link to="/appmarket" class="text-sm text-portal-mint transition hover:text-portal-mint2">
+        查看全部 <i class="fas fa-arrow-right text-xs"></i>
+      </router-link>
+    </div>
+
+    <div v-if="loadingRecent" class="py-10 text-center text-sm text-portal-muted">加载中…</div>
+    <div
+      v-else-if="!recent.length"
+      class="rounded-2xl border border-dashed border-portal-border py-10 text-center text-sm text-portal-muted"
+    >
+      暂无数据。
+    </div>
+    <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <AppCard v-for="a in recent" :key="a.id" :app="a" class="animate-fade-up" />
+    </div>
+  </section>
 </template>
