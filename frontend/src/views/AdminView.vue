@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { api } from '@/api/client'
 import type { AppVo, AppInput } from '@/types'
 import AppFormModal from '@/components/admin/AppFormModal.vue'
@@ -23,22 +23,10 @@ const extOpen = ref(false)
 // SSE 实时链路面板状态：{ open, title, kind, packageName?, source? }
 const trace = ref({ open: false, title: '', kind: '', packageName: '', source: '' })
 
-const filtered = computed(() => {
-  const kw = keyword.value.trim().toLowerCase()
-  if (!kw) return apps.value
-  return apps.value.filter((a) =>
-    [a.name, a.packageName, a.developer, a.category].some((f) => f && String(f).toLowerCase().includes(kw))
-  )
-})
-
-// —— 分页（后台主打「简洁方便」）——
+const total = ref(0)
 const PAGE_SIZE = 10
 const page = ref(1)
-const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / PAGE_SIZE)))
-const paged = computed(() => {
-  const start = (page.value - 1) * PAGE_SIZE
-  return filtered.value.slice(start, start + PAGE_SIZE)
-})
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / PAGE_SIZE)))
 // 当前页附近的页码窗口（最多 5 个），避免页码过多
 const pageList = computed(() => {
   const tp = totalPages.value
@@ -53,13 +41,15 @@ const pageList = computed(() => {
   for (let i = from; i <= to; i++) list.push(i)
   return list
 })
-function goPage(p: number) {
-  page.value = Math.min(Math.max(1, p), totalPages.value)
+let timer: ReturnType<typeof setTimeout> | undefined
+function onSearch() {
+  clearTimeout(timer)
+  timer = setTimeout(() => load(1), 250)
 }
-// 搜索 / 刷新导致结果集变化，回到第 1 页
-watch(filtered, () => {
-  page.value = 1
-})
+function goPage(p: number) {
+  if (p === page.value) return
+  load(p)
+}
 
 const alertCls = computed(() => {
   const t = alert.value?.type
@@ -69,15 +59,20 @@ const alertCls = computed(() => {
   return ''
 })
 
-async function load() {
+// 服务端分页：拉指定页（page/size/keyword），数据全在后端切片，前端只渲染当前页
+function load(p = 1) {
   loading.value = true
-  try {
-    apps.value = await api.admin.listApps()
-  } catch (e) {
-    show('error', (e as Error).message || '加载失败')
-  } finally {
-    loading.value = false
-  }
+  page.value = p
+  api.admin
+    .listApps({ page: p, size: PAGE_SIZE, keyword: keyword.value.trim() || undefined })
+    .then((res) => {
+      apps.value = res.list
+      total.value = res.total
+    })
+    .catch((e) => show('error', (e as Error).message || '加载失败'))
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 function show(type: 'ok' | 'warn' | 'error', msg: string) {
@@ -180,7 +175,7 @@ onMounted(load)
       <div class="flex gap-2">
         <button
           class="rounded-lg border border-admin-border px-3 py-1.5 text-sm text-admin-muted transition hover:text-admin-text"
-          @click="load"
+          @click="load()"
         >
           <i class="fas fa-sync"></i> 刷新
         </button>
@@ -229,6 +224,7 @@ onMounted(load)
       <input
         v-model="keyword"
         type="search"
+        @input="onSearch"
         placeholder="搜索名称 / 包名 / 开发者 / 分类"
         class="w-full rounded-lg border border-admin-border bg-admin-surface px-3 py-2 text-sm text-admin-text outline-none focus:border-admin-accent"
       />
@@ -251,13 +247,13 @@ onMounted(load)
           <tr v-if="loading">
             <td colspan="7" class="px-3 py-8 text-center text-admin-muted">加载中…</td>
           </tr>
-          <tr v-else-if="!filtered.length">
+          <tr v-else-if="!total">
             <td colspan="7" class="px-3 py-8 text-center text-admin-muted">
               暂无应用，点击右上角「新增应用」或「从 GitHub 采集开源应用」。
             </td>
           </tr>
           <tr
-            v-for="a in paged"
+            v-for="a in apps"
             :key="a.id"
             class="border-t border-admin-border hover:bg-admin-bg/60"
           >
@@ -316,7 +312,7 @@ onMounted(load)
       v-if="totalPages > 1"
       class="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-admin-muted"
     >
-      <span>共 {{ filtered.length }} 条 · 第 {{ page }} / {{ totalPages }} 页</span>
+      <span>共 {{ total }} 条 · 第 {{ page }} / {{ totalPages }} 页</span>
       <div class="flex items-center gap-1">
         <button
           class="rounded-md border border-admin-border px-2.5 py-1 transition hover:text-admin-text disabled:cursor-not-allowed disabled:opacity-40"

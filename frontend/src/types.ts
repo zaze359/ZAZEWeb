@@ -39,6 +39,20 @@ export interface AppVo {
   versions?: AppVersion[]
 }
 
+// 后端分页信封：列表 + 总量 + 当前页 + 每页大小（门户滚动加载 / 后台分页共用）
+export interface PageResult<T> {
+  list: T[]
+  total: number
+  page: number
+  size: number
+}
+
+// 分类计数（门户左侧 rail 用），对齐后端 CategoryCountVo { label, count }
+export interface CategoryCount {
+  label: string
+  count: number
+}
+
 // 后台写入用的入参类型（与 VO 对齐，字段可缺省）
 export interface AppInput {
   name: string

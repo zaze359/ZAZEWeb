@@ -1,68 +1,81 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { api } from '@/api/client'
-import type { AppVo } from '@/types'
-import { deriveHeat } from '@/utils/appMeta'
+import type { AppVo, CategoryCount } from '@/types'
 import AppCard from '@/components/portal/AppCard.vue'
 import SortBar, { type SortKey } from '@/components/portal/SortBar.vue'
 import CategoryRail, { type CatItem } from '@/components/portal/CategoryRail.vue'
 
-const apps = ref<AppVo[]>([])
+const apps = ref<AppVo[]>([]) // 滚动累积分页结果
+const total = ref(0)
+const page = ref(1)
+const PAGE_SIZE = 9
 const keyword = ref('')
 const loading = ref(false)
+const loadingMore = ref(false)
 const sort = ref<SortKey>('latest')
 const activeCat = ref('全部')
+const catCounts = ref<CategoryCount[]>([])
 let timer: ReturnType<typeof setTimeout> | undefined
 
-async function load() {
+// 分类 rail：从独立接口拉计数，前端补「全部」（count = 各分类之和）
+const categories = computed<CatItem[]>(() => {
+  const list = catCounts.value.map((c) => ({ label: c.label, count: c.count }))
+  const all = catCounts.value.reduce((s, c) => s + c.count, 0)
+  return [{ label: '全部', count: all }, ...list]
+})
+
+async function fetchPage(p: number) {
+  return api.apps({
+    keyword: keyword.value.trim() || undefined,
+    category: activeCat.value !== '全部' ? activeCat.value : undefined,
+    sort: sort.value,
+    page: p,
+    size: PAGE_SIZE
+  })
+}
+
+// 首屏 / 筛选变化：重置到第 1 页（服务端分页，过滤也在后端做）
+async function loadInitial() {
   loading.value = true
+  page.value = 1
   try {
-    apps.value = await api.apps(keyword.value.trim() || undefined)
-    // 关键词变化时结果集变了，分类筛选回「全部」避免选中项落到空结果
-    activeCat.value = '全部'
+    const res = await fetchPage(1)
+    apps.value = res.list
+    total.value = res.total
   } finally {
     loading.value = false
   }
 }
 
-// 从已加载应用的 category 派生分类与计数（参考站左侧 rail 的同款组织方式）
-const categories = computed<CatItem[]>(() => {
-  const map = new Map<string, number>()
-  for (const a of apps.value) {
-    const c = a.category || '未分类'
-    map.set(c, (map.get(c) ?? 0) + 1)
-  }
-  const list = [...map.entries()]
-    .map(([label, count]) => ({ label, count }))
-    .sort((x, y) => y.count - x.count)
-  return [{ label: '全部', count: apps.value.length }, ...list]
-})
+const hasMore = computed(() => apps.value.length < total.value)
 
-// 先按分类客户端过滤，再按排序键排
-const sorted = computed(() => {
-  let list = apps.value
-  if (activeCat.value !== '全部') {
-    list = list.filter((a) => (a.category || '未分类') === activeCat.value)
-  }
-  list = [...list]
-  if (sort.value === 'hot') list.sort((a, b) => deriveHeat(b) - deriveHeat(a))
-  else if (sort.value === 'name') list.sort((a, b) => a.name.localeCompare(b.name, 'zh'))
-  return list
-})
+// 滚动到底：拉下一页并追加（门户主打「炫酷」的无限流手感）
+function loadMore() {
+  if (loadingMore.value || loading.value || !hasMore.value) return
+  loadingMore.value = true
+  const next = page.value + 1
+  fetchPage(next)
+    .then((res) => {
+      apps.value = [...apps.value, ...res.list]
+      total.value = res.total
+      page.value = next
+    })
+    .catch(() => {})
+    .finally(() => {
+      loadingMore.value = false
+    })
+}
 
 function onSearch() {
   clearTimeout(timer)
-  timer = setTimeout(load, 250)
+  timer = setTimeout(loadInitial, 250)
 }
 
-// —— 滚动加载更多（门户主打「炫酷」体验）——
-// 数据已全量在前端，用 IntersectionObserver 触发逐批 reveal，并加 450ms 过渡手感
-const PAGE_SIZE = 9
-const INITIAL = 12
-const visibleCount = ref(INITIAL)
-const visibleApps = computed(() => sorted.value.slice(0, visibleCount.value))
-const hasMore = computed(() => visibleCount.value < sorted.value.length)
-const loadingMore = ref(false)
+// 分类 / 排序变化 → 重新拉第 1 页
+watch([activeCat, sort], loadInitial)
+
+// —— 滚动观察哨（IntersectionObserver）——
 const sentinel = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 let observedEl: Element | null = null
@@ -74,23 +87,19 @@ function attachObserver() {
   observedEl = sentinel.value
 }
 
-function loadMore() {
-  if (loadingMore.value || !hasMore.value) return
-  loadingMore.value = true
-  setTimeout(() => {
-    visibleCount.value += PAGE_SIZE
-    loadingMore.value = false
-  }, 450)
-}
-
-onMounted(() => {
+onMounted(async () => {
   observer = new IntersectionObserver(
     (entries) => {
       if (entries[0]?.isIntersecting) loadMore()
     },
     { rootMargin: '120px' }
   )
-  load()
+  try {
+    catCounts.value = await api.appCategories()
+  } catch {
+    catCounts.value = []
+  }
+  await loadInitial()
 })
 
 onUnmounted(() => {
@@ -99,11 +108,7 @@ onUnmounted(() => {
   observedEl = null
 })
 
-// 分类 / 搜索 / 排序变化导致结果集变了，回到首屏可见量并重新挂观察哨
-watch(sorted, () => {
-  visibleCount.value = INITIAL
-  loadingMore.value = false
-})
+// 列表刷新后哨兵元素重建，重新挂载观察哨
 watch(loading, () => {
   if (!loading.value) nextTick(attachObserver)
 })
@@ -142,7 +147,7 @@ watch(loading, () => {
       <div class="min-w-0 flex-1">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-portal-border pb-4">
           <span class="text-sm text-portal-muted">
-            共 <span class="font-medium text-portal-text">{{ sorted.length }}</span> 个应用
+            共 <span class="font-medium text-portal-text">{{ total }}</span> 个应用
             <span v-if="activeCat !== '全部'" class="text-portal-mint"> · {{ activeCat }}</span>
           </span>
           <SortBar v-model="sort" />
@@ -150,14 +155,14 @@ watch(loading, () => {
 
         <div v-if="loading" class="py-16 text-center text-sm text-portal-muted">加载中…</div>
         <div
-          v-else-if="!sorted.length"
+          v-else-if="!total"
           class="rounded-2xl border border-dashed border-portal-border py-16 text-center text-sm text-portal-muted"
         >
           暂无应用数据。
         </div>
         <div v-else>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <AppCard v-for="app in visibleApps" :key="app.id" :app="app" class="animate-fade-up" />
+            <AppCard v-for="app in apps" :key="app.id" :app="app" class="animate-fade-up" />
           </div>
           <div v-if="hasMore" ref="sentinel" class="flex justify-center py-8">
             <div v-if="loadingMore" class="flex items-center gap-2 text-xs text-portal-muted">
@@ -169,7 +174,7 @@ watch(loading, () => {
             <span v-else class="text-xs text-portal-muted/70">下滑加载更多</span>
           </div>
           <div v-else class="py-8 text-center text-xs text-portal-muted/70">
-            已经到底啦 · 共 {{ sorted.length }} 个应用
+            已经到底啦 · 共 {{ total }} 个应用
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ import com.zaze.server.feature.appmarket.dto.ExternalSearchVo
 import com.zaze.server.feature.appmarket.dto.ImportTaskRef
 import com.zaze.server.feature.appmarket.dto.ImportTaskRequest
 import com.zaze.server.feature.appmarket.dto.ImportTaskSnapshot
+import com.zaze.server.feature.appmarket.dto.PageResult
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
 import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
@@ -53,9 +54,13 @@ class AppMarketAdminApiController(
     }
 
     @GetMapping("/apps")
-    @LoggerManage(description = "管理端-应用列表")
-    fun listApps(): Response<List<AppVo>> {
-        return Response(adminService.listApps())
+    @LoggerManage(description = "管理端-应用列表（服务端分页）")
+    fun listApps(
+        @RequestParam(required = false, defaultValue = "1") page: Int,
+        @RequestParam(required = false, defaultValue = "10") size: Int,
+        @RequestParam(required = false) keyword: String?
+    ): Response<PageResult<AppVo>> {
+        return Response(adminService.listAppsPaged(page, size, keyword))
     }
 
     @GetMapping("/apps/{id}")

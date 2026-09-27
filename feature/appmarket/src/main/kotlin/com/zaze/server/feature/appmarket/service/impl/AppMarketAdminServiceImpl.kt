@@ -5,6 +5,7 @@ import com.zaze.server.feature.appmarket.dto.ApkImportRequest
 import com.zaze.server.feature.appmarket.dto.ApkImportResultVo
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
+import com.zaze.server.feature.appmarket.dto.PageResult
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
 import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
@@ -43,6 +44,18 @@ class AppMarketAdminServiceImpl(
         return appRepository.findAll().map { app ->
             app.asVo(versionRepository.countByAppId(app.id).toInt())
         }
+    }
+
+    override fun listAppsPaged(page: Int, size: Int, keyword: String?): PageResult<AppVo> {
+        val base: List<App> = if (keyword.isNullOrBlank()) appRepository.findAll()
+        else appRepository.search(keyword)
+        val sorted = base.sortedByDescending { it.createTime }
+        val vos = sorted.map { it.asVo(versionRepository.countByAppId(it.id).toInt()) }
+        val total = vos.size
+        val from = ((page - 1).coerceAtLeast(0)) * size
+        val to = minOf(from + size, total)
+        val slice = if (from < total) vos.subList(from, to) else emptyList()
+        return PageResult(list = slice, total = total, page = page, size = size)
     }
 
     override fun getAppDetail(appId: Long): AppDetailVo? {

@@ -10,7 +10,9 @@ import type {
   ExternalSearchResult,
   ImportSource,
   ImportTaskRef,
-  UserVo
+  UserVo,
+  PageResult,
+  CategoryCount
 } from '@/types'
 
 // 同源调用后端已有 /api/v1/* 接口；Session Cookie 由浏览器自动携带，无需手动处理鉴权头。
@@ -46,15 +48,39 @@ export const api = {
   login: (username: string, password: string) =>
     json<UserVo>('POST', '/auth/login', { username, password }),
   logout: () => request<void>('/auth/logout', { method: 'POST' }),
-  apps: (keyword?: string) =>
-    request<AppVo[]>(
-      '/appmarket/apps' + (keyword ? `?keyword=${encodeURIComponent(keyword)}` : '')
-    ),
+  // 门户应用列表：服务端分页。支持 keyword / category / sort / page / size。
+  // 返回 PageResult<AppVo>（list + total + page + size），门户据此做滚动加载更多。
+  apps: (opts?: {
+    keyword?: string
+    category?: string
+    sort?: string
+    page?: number
+    size?: number
+  }) => {
+    const q = new URLSearchParams()
+    if (opts?.keyword) q.set('keyword', opts.keyword)
+    if (opts?.category) q.set('category', opts.category)
+    if (opts?.sort) q.set('sort', opts.sort)
+    if (opts?.page != null) q.set('page', String(opts.page))
+    if (opts?.size != null) q.set('size', String(opts.size))
+    const qs = q.toString()
+    return request<PageResult<AppVo>>('/appmarket/apps' + (qs ? `?${qs}` : ''))
+  },
+  // 门户分类计数（左侧 rail 用），独立接口、一次性拉取
+  appCategories: () => request<CategoryCount[]>('/appmarket/apps/categories'),
   appDetail: (id: string) => request<AppVo>('/appmarket/apps/' + id),
 
   // 后台管理接口（base: /api/v1/appmarket/admin）
-  admin: {
-    listApps: () => request<AppVo[]>('/appmarket/admin/apps'),
+    admin: {
+    // 管理端应用列表：服务端分页（page / size / keyword）
+    listApps: (opts?: { page?: number; size?: number; keyword?: string }) => {
+      const q = new URLSearchParams()
+      if (opts?.page != null) q.set('page', String(opts.page))
+      if (opts?.size != null) q.set('size', String(opts.size))
+      if (opts?.keyword) q.set('keyword', opts.keyword)
+      const qs = q.toString()
+      return request<PageResult<AppVo>>('/appmarket/admin/apps' + (qs ? `?${qs}` : ''))
+    },
     getApp: (id: string) => request<AppVo>('/appmarket/admin/apps/' + id),
     createApp: (body: AppInput) => json<unknown>('POST', '/appmarket/admin/apps', body),
     updateApp: (id: string, body: AppInput) =>

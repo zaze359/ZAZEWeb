@@ -9,6 +9,9 @@ interface AppRepository : BaseRepository<App, Long> {
     /** 按包名查找应用（采集时用于幂等 upsert） */
     fun findByPackageName(packageName: String): App?
 
+    /** 按分类精确匹配（门户分类筛选用） */
+    fun findByCategory(category: String): List<App>
+
     /**
      * 按关键词搜索：名称 / 包名 / 开发者 / 分类 / 简介，忽略大小写。
      */

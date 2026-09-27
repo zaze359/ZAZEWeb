@@ -4,6 +4,7 @@ import com.zaze.server.feature.appmarket.dto.ApkImportRequest
 import com.zaze.server.feature.appmarket.dto.ApkImportResultVo
 import com.zaze.server.feature.appmarket.dto.AppFormDto
 import com.zaze.server.feature.appmarket.dto.CollectResultVo
+import com.zaze.server.feature.appmarket.dto.PageResult
 import com.zaze.server.feature.appmarket.dto.SourceFormDto
 import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.VersionFormDto
@@ -20,6 +21,9 @@ import com.zaze.server.feature.appmarket.vo.DownloadSourceVo
 interface AppMarketAdminService {
 
     fun listApps(): List<AppVo>
+
+    /** 管理端分页列表（服务端分页）：关键词过滤 + 分页切片，按创建时间倒序 */
+    fun listAppsPaged(page: Int, size: Int, keyword: String?): PageResult<AppVo>
 
     fun getAppDetail(appId: Long): AppDetailVo?
 

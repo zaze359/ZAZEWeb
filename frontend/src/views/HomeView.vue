@@ -8,7 +8,8 @@ import AppCard from '@/components/portal/AppCard.vue'
 const name = computed(() => auth.user?.displayName || auth.user?.username || '旅人')
 const isAdmin = computed(() => auth.user?.role === 'ADMIN')
 
-// 首页「最近收录」预览：拉全量列表，取前 6 个复用 AppCard；同时派生 hero 概览数据，不新增接口
+// 首页「最近收录」预览：复用门户分页接口拉一页（size 足够覆盖全量），取前 6 个复用 AppCard；
+// 同时派生 hero 概览数据（total 为真实总量），不新增接口
 const allApps = ref<AppVo[]>([])
 const recent = ref<AppVo[]>([])
 const loadingRecent = ref(false)
@@ -21,9 +22,9 @@ const stats = computed(() => {
 onMounted(async () => {
   loadingRecent.value = true
   try {
-    const list = await api.apps()
-    allApps.value = list
-    recent.value = list.slice(0, 6)
+    const res = await api.apps({ page: 1, size: 100, sort: 'latest' })
+    allApps.value = res.list
+    recent.value = res.list.slice(0, 6)
   } catch {
     recent.value = []
   } finally {
