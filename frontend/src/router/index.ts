@@ -4,6 +4,7 @@ import AppMarketView from '@/views/AppMarketView.vue'
 import AppDetailView from '@/views/AppDetailView.vue'
 import AdminView from '@/views/AdminView.vue'
 import LoginView from '@/views/LoginView.vue'
+import ApkAnalyzerView from '@/views/ApkAnalyzerView.vue'
 
 // history 模式，根部署（完全迁移后 Vue 即站点本体）。
 // meta.theme 控制整体皮肤：门户=portal（清爽冷调暗色：中性灰黑底 + 薄荷绿主色），后台=admin（现代实用浅色）。
@@ -14,7 +15,8 @@ const router = createRouter({
     { path: '/login', name: 'login', component: LoginView, meta: { theme: 'portal' } },
     { path: '/appmarket', name: 'appmarket', component: AppMarketView, meta: { theme: 'portal' } },
     { path: '/appmarket/:id', name: 'app-detail', component: AppDetailView, props: true, meta: { theme: 'portal' } },
-    { path: '/admin', name: 'admin', component: AdminView, meta: { theme: 'admin' } }
+    { path: '/admin', name: 'admin', component: AdminView, meta: { theme: 'admin' } },
+    { path: '/admin/apk', name: 'apk-analyzer', component: ApkAnalyzerView, meta: { theme: 'admin' } }
   ]
 })
 

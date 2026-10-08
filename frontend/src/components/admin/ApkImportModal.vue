@@ -2,13 +2,13 @@
 import { ref, watch } from 'vue'
 import { api } from '@/api/client'
 import type { ApkImportInput } from '@/types'
+import { loadManifestParser } from '@/utils/apk'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ (e: 'cancel'): void; (e: 'imported'): void }>()
 
 const APK_MAX_BYTES = 200 * 1024 * 1024
 const ICON_MAX_BYTES = 100 * 1024
-const PARSER_SRC = '/vendor/app-info-parser/app-info-parser.min.js'
 
 const file = ref<File | null>(null)
 const status = ref<'idle' | 'loading' | 'parsing' | 'done' | 'error'>('idle')
@@ -22,17 +22,6 @@ const btnGhost =
   'rounded-lg border border-admin-border px-3 py-1.5 text-sm text-admin-muted transition hover:text-admin-text'
 const btnPrimary =
   'rounded-lg bg-admin-accent px-3 py-1.5 text-sm text-white transition hover:opacity-90 disabled:opacity-50'
-
-function loadParser(): Promise<void> {
-  if ((window as any).AppInfoParser) return Promise.resolve()
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script')
-    s.src = PARSER_SRC
-    s.onload = () => resolve()
-    s.onerror = () => reject(new Error('解析库加载失败，请检查网络或联系管理员'))
-    document.head.appendChild(s)
-  })
-}
 
 watch(
   () => props.open,
@@ -59,7 +48,7 @@ async function onFile(e: Event) {
   }
   status.value = 'loading'
   try {
-    await loadParser()
+    await loadManifestParser()
     status.value = 'parsing'
     const r = await new (window as any).AppInfoParser(f).parse()
     const pkg = r && r.package

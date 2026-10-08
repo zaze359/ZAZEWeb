@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/guides/index.md", "reason": "收口自检清单（复用/跨层触发条件），用于确认弹窗改动没有引入重复实现或第二份数据映射"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "验收时核对「解析结果 → 表单 → 请求体」的往返一致性（AC3），防止字段在映射中被静默改写"}

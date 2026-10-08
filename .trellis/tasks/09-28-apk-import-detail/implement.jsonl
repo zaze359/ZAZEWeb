@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "本任务要求复用 core 的解析内核与面板组件、不得另写渲染或解析；该指南给出「先搜索再新建」「不要复制映射」的判据"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "弹窗是 ApkAnalysis → 表单字段 → import-from-apk 请求体 的边界；提交字段必须与改动前逐字段一致，需在编码前固定契约"}

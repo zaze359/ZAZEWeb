@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/guides/index.md", "reason": "收口自检：确认二进制解析没有重复实现、降级路径覆盖边界输入"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "验收时核对「证书 → 展示」链路没有把「未校验」表述成「已验证」（R5/R7 的语义边界）"}

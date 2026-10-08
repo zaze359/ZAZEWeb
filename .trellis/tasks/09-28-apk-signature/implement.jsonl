@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "签名分析要复用 core 的 zipReader/类型/面板组件，并新增通用 DER 工具；该指南给出「先搜索再新建」「通用工具与特性工具分层」的判据"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "证书 DER → ApkSignerCert → ApkSignatureSummary → UI 是跨层契约，且必须保证「未校验有效性」的语义不被上浮改写"}
+{"file": ".trellis/spec/guides/index.md", "reason": "畸形二进制输入是典型「没想到的边界」；该索引给出跨层与健壮性触发条件，用于设计自测清单"}

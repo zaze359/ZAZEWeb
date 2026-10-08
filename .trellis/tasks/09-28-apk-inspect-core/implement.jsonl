@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "本任务要复用 app-info-parser 资产与既有 utils，并抽取 ApkImportModal 的解析器加载逻辑；该指南给出先搜索再新建、避免复制解析/映射的判据"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "ApkAnalysis 是跨越「解析内核 → 面板组件 → 两个宿主」的契约，需在编码前定清每个边界的输入输出与失败模式"}

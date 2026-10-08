@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '@/api/client'
 import type { AppVo, AppInput } from '@/types'
 import AppFormModal from '@/components/admin/AppFormModal.vue'
@@ -13,6 +14,7 @@ const keyword = ref('')
 const loading = ref(false)
 const alert = ref<{ type: 'ok' | 'warn' | 'error'; msg: string } | null>(null)
 const iconFailed = ref<Record<string, boolean>>({})
+const router = useRouter()
 
 const formOpen = ref(false)
 const editing = ref<AppVo | null>(null)
@@ -196,6 +198,12 @@ onMounted(load)
           @click="apkOpen = true"
         >
           <i class="fas fa-android"></i> 从 APK 导入
+        </button>
+        <button
+          class="rounded-lg border border-admin-border px-3 py-1.5 text-sm text-admin-muted transition hover:text-admin-text"
+          @click="router.push('/admin/apk')"
+        >
+          <i class="fas fa-search-plus"></i> APK 分析
         </button>
         <button
           class="rounded-lg border border-admin-border px-3 py-1.5 text-sm text-admin-muted transition hover:text-admin-text"

@@ -1,0 +1,30 @@
+{
+  "id": "apk-inspector",
+  "name": "apk-inspector",
+  "title": "APK 详情分析能力增强",
+  "description": "后台 APK 导入与分析查看器支持完整 APK 详情（SDK/权限/文件构成/签名）",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "zaze",
+  "assignee": "zaze",
+  "createdAt": "2026-09-28",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "09-28-apk-inspect-core",
+    "09-28-apk-import-detail",
+    "09-28-apk-signature"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

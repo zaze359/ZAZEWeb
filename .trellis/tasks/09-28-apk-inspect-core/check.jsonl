@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "检查是否重复实现了已有的格式化/派生工具，以及 vendor 库能力是否被绕过或复制"}
+{"file": ".trellis/spec/guides/index.md", "reason": "收口检查清单（跨层/复用触发条件），用于 P9 自检与提交前判定"}
