@@ -154,3 +154,25 @@ Session summary was not supplied.
 ### Status
 
 [OK] **Completed**
+
+
+## Session 6: APK 签名与完整性分析（09-28-apk-signature）
+<!-- trellis-session: v=2 fp=9075ddf358e63d11 -->
+
+**Date**: 2026-10-09
+**Task**: APK 签名与完整性分析（09-28-apk-signature）
+**Branch**: `feature_app_market`
+
+### Summary
+
+Session summary was not supplied.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c746f78` | feat: 完善 APK 分析能力（解析内核 + 独立查看器 + 签名分析） |
+
+### Status
+
+[OK] **Completed**

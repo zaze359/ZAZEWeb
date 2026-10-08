@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 5
+- **Total Sessions**: 6
 - **Last Active**: 2026-10-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~156 | Active |
+| `journal-1.md` | ~178 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 6 | 2026-10-09 | APK 签名与完整性分析（09-28-apk-signature） | `c746f78` | `feature_app_market` |
 | 5 | 2026-10-09 | APK 解析内核 + 独立分析查看器（09-28-apk-inspect-core） | `c746f78` | `feature_app_market` |
 | 4 | 2026-10-08 | 升级第三方依赖修复已知漏洞（gson/h2/okhttp/snakeyaml/logback/spring-security-crypto） | `a997b3d` | `feature_app_market` |
 | 3 | 2026-09-25 | 第三方依赖漏洞修复（gson/h2/snakeyaml/logback/spring-security-crypto） | `a997b3d`, `f9e6f0b` | `feature_app_market` |
