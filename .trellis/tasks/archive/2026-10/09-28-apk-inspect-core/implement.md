@@ -13,6 +13,33 @@
   条目数与 `unzip -l` 一致（23），DEX/ABI/密度/Top 分组均正确（AC4 逻辑已验证）。
 - 待用户侧人工验证（见 P0 / P9）：真实样本 APK 的清单字段、`aapt2`/`shasum` 对照、UI 实际跑通、鉴权行为。
 
+## 复验记录（2026-10-08，/trellis:continue）
+
+代码自 `c746f78 feat: 完善 APK 分析能力` 提交后未改动；本轮在干净工作区重跑门禁并用真实样本做内核级验证。
+
+- **AC9 门禁（新鲜会话重跑）**：`frontend/node_modules` 缺失 → 先 `npm install`（Node 22.22.2）；
+  `npm run typecheck`（vue-tsc --noEmit）无报错；`npm run build`（vite build）15.24s 通过，
+  产物落到 `src/main/resources/static/`（index.html + assets/index-*.{css,js}）。✅
+- **AC4 文件构成（真实样本，内核级验证，非合成 zip）**：用 esbuild 把 `zipReader.ts` +
+  `fileStats.ts` 打包后在 Node 对真实 APK 跑 `readCentralDirectory` + `summarizeFiles`，对照 `unzip -l`：
+  - 微信 `9.3.60_*.apk`（≈861MB / 40516 条目）：内核 entryCount **40516** = unzip 40516 ✅；
+    DEX **41**（classes.dex…classes41.dex）= unzip 41 ✅；ABI `arm64-v8a`（200 个 .so）✅；
+    （unzip `lib/` 计 203 是把路径中含 `lib/` 的非原生库条目也算入，内核精确统计 `lib/<abi>/` 下 .so = 200，更准确）
+  - NewPipe `v0.27.2.apk`：内核 entryCount **1611** = unzip 1611 ✅；DEX **3** = unzip 3 ✅；无原生库 ✅
+  → 自定义 ZIP 中央目录读取器在真实大包（含超大条目数）上正确，ABI/DEX/密度/Top 分组逻辑成立。✅
+- **AC5 文件指纹真值基准**：`shasum -a 256` 已记录
+  （微信 `645f702f…c0c30`、NewPipe `6eca47f1…a4041`）；内核用标准 `crypto.subtle.digest('SHA-256')`，
+  确定性等价于 shasum，浏览器内预期一致。
+- **AC2 / AC3 清单字段**：依赖 vendor `AppInfoParser`（浏览器动态 `<script>` 加载 + `File`/`Blob` API），
+  无法在 Node headless 跑；`aapt2` 本机缺失 → 按 plan 回退到 Android Studio 对照。
+  实现已对字段做宽容读取（缺失即「未声明」），真实 APK 字段一致性待用户在浏览器实测确认。
+- **AC1 / AC6 / AC7 / AC8 / AC11 / AC12**：实现已完成且构建通过；UI 实际跑通、导出 JSON 一致性、
+  破坏性输入降级、compact/full 复用、图标透出、鉴权重定向行为均需在浏览器由用户实测确认
+  （样本已在 `~/Downloads`，无需重新准备）。
+
+**结论**：代码完整且已提交，可自动化验证项（AC9 构建门禁、AC4 文件构成内核）本轮复验通过；
+AC1–AC3 / AC5–AC8 / AC11 / AC12 中依赖浏览器的项按 plan 为「用户侧人工验证」，非实现未完成。
+
 ## P0 前置（开始编码前必须闭环）
 
 - [x] **入口方案已定稿**：独立查看器 = 管理后台专属路由 `/admin/apk`，仅管理员；
