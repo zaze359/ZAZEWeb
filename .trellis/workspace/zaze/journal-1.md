@@ -110,3 +110,25 @@
 - 可选：升 Kotlin 编译器到 1.9 后再升 okhttp 4.12.0 / okio，清掉最后一项可修残留
 - 可选：将根 build.gradle.kts 的重复声明改为 dependencyManagement 覆盖或 extra["xxx.version"] 属性，消除根与子模块的版本漂移风险
 - 可选：评估 Spring Boot 3.x 迁移（JDK 17 + jakarta），这是 EOL 漏洞的唯一根治路径
+
+
+## Session 4: 升级第三方依赖修复已知漏洞（gson/h2/okhttp/snakeyaml/logback/spring-security-crypto）
+<!-- trellis-session: v=2 fp=72aedbea0d6317cf -->
+
+**Date**: 2026-10-08
+**Task**: 升级第三方依赖修复已知漏洞（gson/h2/okhttp/snakeyaml/logback/spring-security-crypto）
+**Branch**: `feature_app_market`
+
+### Summary
+
+Session summary was not supplied.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a997b3d` | fix(deps): 升级第三方依赖修复已知漏洞（OSV 扫描 118 → 108） |
+
+### Status
+
+[OK] **Completed**
