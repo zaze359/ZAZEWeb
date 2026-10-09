@@ -176,3 +176,25 @@ Session summary was not supplied.
 ### Status
 
 [OK] **Completed**
+
+
+## Session 7: 导入弹窗内嵌 APK 详情（09-28-apk-import-detail）
+<!-- trellis-session: v=2 fp=0d0de3e4d1e1da5f -->
+
+**Date**: 2026-10-09
+**Task**: 导入弹窗内嵌 APK 详情（09-28-apk-import-detail）
+**Branch**: `feature_app_market`
+
+### Summary
+
+Session summary was not supplied.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b82a6ba` | feat(apk): 导入弹窗内嵌 APK 详情并接入解析内核 |
+
+### Status
+
+[OK] **Completed**
