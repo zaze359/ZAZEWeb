@@ -2,7 +2,9 @@
 import { ref, watch } from 'vue'
 import { api } from '@/api/client'
 import type { ApkImportInput } from '@/types'
-import { loadManifestParser } from '@/utils/apk'
+import type { ApkAnalysis } from '@/utils/apk'
+import { analyzeApk } from '@/utils/apk'
+import ApkAnalysisPanel from '@/components/apk/ApkAnalysisPanel.vue'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ (e: 'cancel'): void; (e: 'imported'): void }>()
@@ -14,7 +16,10 @@ const file = ref<File | null>(null)
 const status = ref<'idle' | 'loading' | 'parsing' | 'done' | 'error'>('idle')
 const errMsg = ref('')
 const parsed = ref<ApkImportInput | null>(null)
+const analysis = ref<ApkAnalysis | null>(null)
 const iconTooLarge = ref(false)
+const expanded = ref(false)
+const progressMsg = ref('')
 
 const inputCls =
   'w-full rounded-lg border border-admin-border bg-admin-surface px-3 py-2 text-sm text-admin-text outline-none focus:border-admin-accent'
@@ -31,7 +36,10 @@ watch(
     status.value = 'idle'
     errMsg.value = ''
     parsed.value = null
+    analysis.value = null
     iconTooLarge.value = false
+    expanded.value = false
+    progressMsg.value = ''
   }
 )
 
@@ -39,34 +47,34 @@ async function onFile(e: Event) {
   const input = e.target as HTMLInputElement
   const f = input.files?.[0] ?? null
   parsed.value = null
+  analysis.value = null
   iconTooLarge.value = false
+  progressMsg.value = ''
   errMsg.value = ''
   if (!f) return
   if (f.size > APK_MAX_BYTES) {
     errMsg.value = '文件过大（超过 200MB），请选择更小的 APK'
     return
   }
-  status.value = 'loading'
+  status.value = 'parsing'
   try {
-    await loadManifestParser()
-    status.value = 'parsing'
-    const r = await new (window as any).AppInfoParser(f).parse()
-    const pkg = r && r.package
-    if (!pkg) {
+    const a = await analyzeApk(f, { onProgress: (p) => (progressMsg.value = p.message ?? '') })
+    if (!a.basic.packageName) {
       errMsg.value = '未能解析出包名，无法导入'
       status.value = 'error'
       return
     }
-    const icon = r.icon || ''
+    const icon = a.basic.iconDataUri || ''
     iconTooLarge.value = !!icon && icon.length > ICON_MAX_BYTES
     parsed.value = {
-      packageName: pkg,
-      name: (r.application && r.application.label) || pkg,
-      versionName: r.versionName || null,
-      versionCode: r.versionCode != null ? Number(r.versionCode) : null,
+      packageName: a.basic.packageName,
+      name: a.basic.label,
+      versionName: a.basic.versionName ?? null,
+      versionCode: a.basic.versionCode != null ? Number(a.basic.versionCode) : null,
       iconDataUri: iconTooLarge.value ? null : icon || null,
       sizeMb: f.size ? Math.round(f.size / 1024 / 1024) : null
     }
+    analysis.value = a
     status.value = 'done'
   } catch {
     errMsg.value = 'APK 解析失败：文件可能损坏或经过加固'
@@ -93,46 +101,93 @@ async function confirmImport() {
       class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
       @click.self="emit('cancel')"
     >
-      <div class="w-full max-w-md rounded-2xl border border-admin-border bg-admin-surface p-5 shadow-xl">
-        <h3 class="mb-1 font-display text-lg font-semibold text-admin-text">从 APK 导入</h3>
-        <p class="mb-4 text-xs text-admin-muted">
-          浏览器本地解析 APK，仅提交解析出的元数据；APK 不会上传到服务器。
-        </p>
-
-        <input type="file" accept=".apk" :class="[inputCls, 'mb-3']" @change="onFile" />
-
-        <div v-if="status === 'loading'" class="text-sm text-admin-muted">
-          <i class="fas fa-spinner fa-spin"></i> 正在加载解析库…
-        </div>
-        <div v-else-if="status === 'parsing'" class="text-sm text-admin-muted">
-          <i class="fas fa-spinner fa-spin"></i> 正在解析 APK…
-        </div>
-        <div v-else-if="errMsg" class="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {{ errMsg }}
+      <div
+        class="flex w-full flex-col rounded-2xl border border-admin-border bg-admin-surface shadow-xl"
+        :class="expanded ? 'max-w-5xl' : 'max-w-2xl'"
+        style="max-height: 85vh"
+      >
+        <!-- 头部（固定） -->
+        <div class="border-b border-admin-border p-5">
+          <h3 class="font-display text-lg font-semibibold text-admin-text">从 APK 导入</h3>
+          <p class="mt-1 text-xs text-admin-muted">
+            浏览器本地解析 APK，仅提交解析出的元数据；APK 不会上传到服务器。
+          </p>
         </div>
 
-        <div v-if="parsed" class="rounded-xl border border-admin-border p-3">
-          <div class="flex items-center gap-3">
-            <img v-if="parsed.iconDataUri" :src="parsed.iconDataUri" class="h-12 w-12 rounded object-cover" alt="" />
-            <span
-              v-else
-              class="flex h-12 w-12 items-center justify-center rounded bg-admin-border text-admin-muted"
+        <!-- 中部（可滚动） -->
+        <div class="min-h-0 flex-1 overflow-y-auto p-5">
+          <input type="file" accept=".apk" :class="[inputCls, 'mb-3']" @change="onFile" />
+
+          <div v-if="status === 'loading'" class="text-sm text-admin-muted">
+            <i class="fas fa-spinner fa-spin"></i> 正在加载解析库…
+          </div>
+          <div v-else-if="status === 'parsing'" class="text-sm text-admin-muted">
+            <i class="fas fa-spinner fa-spin"></i> 正在解析 APK…<span
+              v-if="progressMsg"
+              class="ml-1 text-admin-muted/80"
+              >{{ progressMsg }}</span
             >
-              <i class="fa fa-cube"></i>
-            </span>
-            <div class="min-w-0">
-              <div class="truncate font-medium text-admin-text">{{ parsed.name }}</div>
-              <div class="text-xs text-admin-muted"><code>{{ parsed.packageName }}</code></div>
+          </div>
+          <div
+            v-else-if="errMsg"
+            class="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {{ errMsg }}
+          </div>
+
+          <div v-if="parsed && analysis" class="rounded-xl border border-admin-border p-3">
+            <div class="flex items-center gap-3">
+              <img
+                v-if="parsed.iconDataUri"
+                :src="parsed.iconDataUri"
+                class="h-12 w-12 rounded object-cover"
+                alt=""
+              />
+              <span
+                v-else
+                class="flex h-12 w-12 items-center justify-center rounded bg-admin-border text-admin-muted"
+              >
+                <i class="fa fa-cube"></i>
+              </span>
+              <div class="min-w-0">
+                <div class="truncate font-medium text-admin-text">{{ parsed.name }}</div>
+                <div class="text-xs text-admin-muted"><code>{{ parsed.packageName }}</code></div>
+              </div>
+            </div>
+            <div class="mt-2 space-y-0.5 text-xs text-admin-muted">
+              <div>
+                版本：{{ parsed.versionName || '-'
+                }}<template v-if="parsed.versionCode != null">（{{ parsed.versionCode }}）</template>
+              </div>
+              <div v-if="parsed.sizeMb != null">大小：{{ parsed.sizeMb }} MB</div>
+            </div>
+            <div v-if="iconTooLarge" class="mt-1 text-xs text-yellow-600">
+              图标过大（超过 100KB），仅预览不入库
+            </div>
+
+            <!-- 内嵌详情面板 -->
+            <div class="mt-3 border-t border-admin-border pt-3">
+              <ApkAnalysisPanel :analysis="analysis" :variant="expanded ? 'full' : 'compact'" />
+              <button
+                v-if="!expanded"
+                class="mt-3 text-xs text-admin-accent hover:underline"
+                @click="expanded = true"
+              >
+                查看完整分析 →
+              </button>
+              <button
+                v-else
+                class="mt-3 text-xs text-admin-accent hover:underline"
+                @click="expanded = false"
+              >
+                ← 收起
+              </button>
             </div>
           </div>
-          <div class="mt-2 space-y-0.5 text-xs text-admin-muted">
-            <div>版本：{{ parsed.versionName || '-' }}<template v-if="parsed.versionCode != null">（{{ parsed.versionCode }}）</template></div>
-            <div v-if="parsed.sizeMb != null">大小：{{ parsed.sizeMb }} MB</div>
-          </div>
-          <div v-if="iconTooLarge" class="mt-1 text-xs text-yellow-600">图标过大（超过 100KB），仅预览不入库</div>
         </div>
 
-        <div class="mt-5 flex justify-end gap-2">
+        <!-- 底部按钮（固定） -->
+        <div class="flex justify-end gap-2 border-t border-admin-border p-5">
           <button :class="btnGhost" @click="emit('cancel')">取消</button>
           <button :class="btnPrimary" :disabled="status !== 'done'" @click="confirmImport">
             确认导入

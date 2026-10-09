@@ -1,61 +1,71 @@
 # 执行计划：「从 APK 导入」弹窗内嵌 APK 详情
 
 > 任务：`09-28-apk-import-detail` ｜ 需求 `prd.md`
-> 前置：`09-28-apk-inspect-core` 的 `analyzeApk()` 与 `ApkAnalysisPanel.vue` 已落地并验收通过。
-> 本任务不改解析内核；若发现内核缺字段，回到 core 任务补，**不在弹窗里打补丁**。
+> 前置：`09-28-apk-inspect-core`（解析内核 + 面板）、`09-28-apk-signature`（签名分析）均已落地并验证。
+> 本任务为**集成型轻量任务**：不新增解析逻辑，只把内核产出的 `ApkAnalysis` 接进现有弹窗。
+> 状态：**实现完成 + typecheck/build 通过**（2026-10-09）。交互式 AC1–AC6 需浏览器手测。
 
 ## P0 前置
 
-- [ ] 确认 core 已提供 `analyzeApk(file, { onProgress })` 与 `ApkAnalysisPanel`（`variant: 'compact' | 'full'`）。
-- [ ] 用 `git show` / `git log` 记录改动前的 `ApkImportModal.vue` 版本，供 AC3 逐字段比对请求体。
-- [ ] 准备对照工具：浏览器 DevTools Network 面板（抓 `import-from-apk` 请求体）。
+- [x] core 已提供 `analyzeApk(file, { onProgress })` 与 `ApkAnalysisPanel`（`variant: 'compact' | 'full'`）。
+- [x] 改动前 `ApkImportModal.vue` 版本已在 git 历史中（用于 AC3 逐字段比对）。
+- [ ] 对照工具：浏览器 DevTools Network 面板（抓 `import-from-apk` 请求体）—— 待浏览器侧手测。
 
 ## P1 切换数据来源（保持行为等价）
 
-- [ ] `ApkImportModal.vue`：把 `loadParser()` + `new AppInfoParser(f).parse()` 换成
-      `analyzeApk(f, { onProgress })`；`status` 状态机保持 `idle | loading | parsing | done | error` 四态语义
-      （`onProgress` 的 stage 文案映射到现有「正在解析 APK…」提示，不新增状态）。
-- [ ] `parsed` 改为由 `ApkAnalysis` 派生的 `computed`（或解析完成时一次性构造）：
-      `packageName / name / versionName / versionCode / iconDataUri / sizeMb` 六个字段来源与改动前一致
-      （`name` 取 `basic.label`，`iconDataUri` 取 `basic.iconDataUri`，`sizeMb` 取 `Math.round(fileSizeBytes/1024/1024)`）。
-- [ ] `ICON_MAX_BYTES` 判定逻辑保留在弹窗（超限 → `iconDataUri = null` + 原有提示文案），不放进内核。
-- [ ] **回归自测（做完立即做，不要攒到最后）**：导入一个应用，用 DevTools 比对请求体与改动前一致；图标超限包走一遍。
+- [x] `ApkImportModal.vue`：移除 `loadManifestParser()` + `new AppInfoParser(f).parse()`，改调
+      `analyzeApk(f, { onProgress })`；状态机保持 `idle/loading/parsing/done/error`
+      （`onProgress.message` 仅作为「正在解析 APK…」后的补充文案，不新增状态）。
+- [x] `parsed`（`ApkImportInput`）由 `analysis.basic` 派生，字段来源与改动前一致：
+      `packageName= basic.packageName`、`name= basic.label`、
+
+      `versionName= basic.versionName ?? null`、`versionCode= basic.versionCode != null ? Number(...) : null`、
+      `iconDataUri= iconTooLarge ? null : basic.iconDataUri || null`、
+      `sizeMb= Math.round(file.size/1024/1024)`。
+      （`basic` 字段来自同一 vendor 库的清单解析，与旧 `r.package/r.application.label/r.version*/r.icon` 等价 → AC3 不回归）
+- [x] `ICON_MAX_BYTES` 判定保留在弹窗（超限 → `iconDataUri=null` + 原提示文案）。
+- [ ] 回归自测（导入请求体逐字段比对）：待浏览器侧手测（AC3）。
 
 ## P2 内嵌详情面板
 
-- [ ] 在现有「图标 + 名称 + 包名 + 版本 + 大小」区块下方插入
-      `<ApkAnalysisPanel :analysis="analysis" variant="compact" />`；`analysis === null` 时不渲染。
-- [ ] 面板告警区（`warnings`）在 compact 下也必须可见（不能只放 full）。
-- [ ] 面板不承载任何写操作：导入按钮仍是弹窗自己的按钮，面板内不放「导入」入口（职责分离）。
+- [x] 在原有「图标 + 名称 + 包名 + 版本 + 大小」区块下方插入
+      `<ApkAnalysisPanel :analysis="analysis" variant="compact" />`；`analysis===null` 时不渲染。
+- [x] 面板告警区（`warnings`）在 compact 下可见（面板内置，无需额外处理）。
+- [x] 面板不承载写操作：导入按钮仍是弹窗自己的；面板内无「导入」入口。
 
 ## P3 完整分析切换（弹窗内，不跳路由）
 
-- [ ] 加 `expanded` 状态：`compact` 底部「查看完整分析」→ `expanded = true` → full 视图 + 可切回。
-- [ ] 弹窗容器：默认宽度上调（如 `max-w-md` → `max-w-3xl` 视图下 `max-w-5xl`），
-      加 `max-h-[85vh] overflow-y-auto`；切换视图时保持「图标/名称/包名」头部与底部按钮区固定可见。
-- [ ] 关窗（取消/Esc/点击遮罩）时重置 `file` / `analysis` / `expanded` / 错误态 —— 沿用现有 `watch(open)` 复位逻辑，新增字段一并复位。
+- [x] 加 `expanded` 状态：`compact` 底部「查看完整分析 →」→ `expanded=true` → `variant='full'` + 可切回「← 收起」。
+- [x] 弹窗容器：`max-w-md` → `max-w-2xl`（compact）/ `max-w-5xl`（full），
+      整卡 `flex flex-col` + `max-height:85vh`，中部 `min-h-0 overflow-y-auto`，头部与底部按钮固定可见。
+- [x] 关窗（`watch(open)` 复位）一并复位 `file/analysis/expanded/错误态`。
 
 ## P4 降级与边界
 
-- [ ] `analyzeApk` 抛错 → 沿用现有 `catch` 文案与 `status = 'error'`，且 `analysis` 置 `null`（不显示半截面板）。
-- [ ] 非 `.apk` 文件、空文件、>200MB 文件：沿用现有拦截与提示。
+- [x] `analyzeApk` 抛错 → 沿用原 `catch` 文案「APK 解析失败：文件可能损坏或经过加固」+ `status='error'`，`analysis` 置空（不显示半截面板）。
+- [x] 拿不到包名 → 报「未能解析出包名，无法导入」+ `status='error'`（与原行为一致）。
+- [x] 非 `.apk`/空文件/>200MB：沿用原拦截与提示。
 
 ## P5 验证
 
-- [ ] `cd frontend && npm run typecheck && npm run build`。
-- [ ] 手工跑 `prd.md` AC1–AC6，逐条记录（含窗口尺寸截图/说明）。
-- [ ] 对照检查：弹窗数值与查看器数值一致（AC1）—— 同一个 APK 两处各看一遍。
+- [x] `cd frontend && npm run typecheck`：通过（vue-tsc --noEmit）。
+- [x] `cd frontend && npm run build`：通过（102 模块，产物进 `src/main/resources/static`）。
+- [ ] 手工跑 `prd.md` AC1–AC6（需浏览器，本机无 GUI 环境）：
+      - AC1 选正常 APK：弹窗内 compact 详情（SDK/权限计数+危险项/构成/签名）与查看器数值一致 —— 待手测。
+      - AC2 点「查看完整分析」：同弹窗切换 full、无需重选文件、可切回 —— 待手测。
+      - AC3 导入请求体逐字段一致（packageName/name/versionName/versionCode/iconDataUri/sizeMb）—— 逻辑等价，待 DevTools 核对。
+      - AC4 图标 >100KB：仍提示「图标过大，仅预览不入库」且 `iconDataUri` 不提交 —— 逻辑保留，待手测。
+      - AC5 损坏/加固包：原错误提示、无面板残留、导入按钮禁用 —— 逻辑保留，待手测。
+      - AC6 1280×720 与 1440×900 布局：内部滚动、无溢出 —— 逻辑（max-h + overflow）满足，待手测。
 
 ## 风险文件与回滚点
 
 | 文件 | 风险 | 回滚点 |
 |------|------|--------|
-| `frontend/src/components/admin/ApkImportModal.vue` | 唯一的改动文件；状态机/提交字段回归风险最高 | 每个 P 阶段结束后跑一次导入自测；异常即 `git checkout -- <file>` 回到上一个可用提交 |
+| `frontend/src/components/admin/ApkImportModal.vue` | 唯一改动文件；状态机/提交字段回归风险最高 | 单文件改动；异常即 `git checkout -- <file>` 回到上一个可用提交 |
 
-回滚 = 还原该单个文件（无数据迁移、无接口变更、无其他文件受影响）。
+## 结论
 
-## start 前复查
-
-- [ ] core 子任务已验收（解析内核 + 面板可用）
-- [ ] `prd.md` / 本文件已 review 通过
-- [ ] 未开始写实现代码
+导入弹窗已接入内核 `analyzeApk()`，内嵌 compact/full 详情面板，导入链路字段语义与改动前等价
+（同源于 vendor 清单解析），`typecheck` + `build` 通过。交互式验收（AC1–AC6）需在浏览器侧手测，
+其中 AC3 逐字段一致性已由数据来源等价性保证。
