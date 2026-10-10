@@ -10,7 +10,7 @@ import { androidVersionName } from './androidVersions'
 import { analyzeSignature } from './signature'
 import type { ApkAnalysis, ApkPermission, AnalyzeOptions } from './types'
 
-const HASH_MAX_BYTES = 100 * 1024 * 1024
+const HASH_MAX_BYTES = 1024 * 1024 * 1024
 
 /** 计算整体分析的对外入口。失败时（清单解析异常）抛出，交由调用方展示错误。 */
 export async function analyzeApk(file: File | Blob, opts: AnalyzeOptions = {}): Promise<ApkAnalysis> {
@@ -60,7 +60,7 @@ export async function analyzeApk(file: File | Blob, opts: AnalyzeOptions = {}): 
   if (opts.computeHash !== false) {
     onProgress?.({ stage: 'hash', percent: 80, message: '计算文件指纹…' })
     if (file.size > HASH_MAX_BYTES) {
-      sha256SkippedReason = '文件超过 100MB，已跳过指纹计算'
+      sha256SkippedReason = '文件超过 1GB，已跳过指纹计算'
     } else if (typeof crypto !== 'undefined' && crypto.subtle) {
       try {
         const buf = await file.arrayBuffer()

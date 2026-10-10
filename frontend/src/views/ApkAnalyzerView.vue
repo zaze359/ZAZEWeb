@@ -6,7 +6,7 @@ import type { ApkAnalysis, AnalyzeProgress } from '@/utils/apk'
 import ApkAnalysisPanel from '@/components/apk/ApkAnalysisPanel.vue'
 
 const router = useRouter()
-const APK_MAX_BYTES = 200 * 1024 * 1024
+const APK_MAX_BYTES = 1024 * 1024 * 1024
 
 const file = ref<File | null>(null)
 const state = ref<'idle' | 'analyzing' | 'done' | 'error'>('idle')
@@ -50,7 +50,7 @@ async function startAnalysis(f: File) {
     return
   }
   if (f.size > APK_MAX_BYTES) {
-    errMsg.value = '文件过大（超过 200MB），请选择更小的 APK'
+    errMsg.value = '文件过大（超过 1GB），请选择更小的 APK'
     state.value = 'error'
     return
   }
@@ -130,7 +130,7 @@ function downloadJson() {
       >
         <i class="fas fa-file-archive text-3xl text-admin-accent"></i>
         <p class="mt-3 text-sm text-admin-text">拖拽 APK 到此处，或点击选择文件</p>
-        <p class="mt-1 text-xs text-admin-muted">支持最大 200MB；分析全过程在本地完成</p>
+        <p class="mt-1 text-xs text-admin-muted">支持最大 1GB；分析全过程在本地完成</p>
         <label
           class="mt-4 cursor-pointer rounded-lg bg-admin-accent px-4 py-2 text-sm text-white transition hover:opacity-90"
         >

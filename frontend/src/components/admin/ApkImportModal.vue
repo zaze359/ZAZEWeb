@@ -9,7 +9,7 @@ import ApkAnalysisPanel from '@/components/apk/ApkAnalysisPanel.vue'
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ (e: 'cancel'): void; (e: 'imported'): void }>()
 
-const APK_MAX_BYTES = 200 * 1024 * 1024
+const APK_MAX_BYTES = 1024 * 1024 * 1024
 const ICON_MAX_BYTES = 100 * 1024
 
 const file = ref<File | null>(null)
@@ -53,7 +53,7 @@ async function onFile(e: Event) {
   errMsg.value = ''
   if (!f) return
   if (f.size > APK_MAX_BYTES) {
-    errMsg.value = '文件过大（超过 200MB），请选择更小的 APK'
+    errMsg.value = '文件过大（超过 1GB），请选择更小的 APK'
     return
   }
   status.value = 'parsing'
