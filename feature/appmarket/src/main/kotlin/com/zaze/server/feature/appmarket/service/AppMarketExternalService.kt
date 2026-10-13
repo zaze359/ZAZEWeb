@@ -7,6 +7,7 @@ import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import com.zaze.server.common.utils.JsonUtil
 import com.zaze.server.feature.appmarket.collector.AppMarketCollector
+import com.zaze.server.feature.appmarket.collector.UpstreamLoggingInterceptor
 import com.zaze.server.feature.appmarket.dto.BatchCompleteResultVo
 import com.zaze.server.feature.appmarket.dto.ExternalAppPreview
 import com.zaze.server.feature.appmarket.dto.ExternalLookupVo
@@ -98,17 +99,28 @@ class AppMarketExternalService(
     private val izzyLock = Any()
     private val IZZY_CACHE_TTL_MS = 60 * 60 * 1000L
 
+    /**
+     * 所有外部客户端的**公共父客户端**：统一挂上 [UpstreamLoggingInterceptor]，
+     * 让每个上游请求的方法 / URL / 状态码 / 耗时都出现在日志里。
+     *
+     * 派生客户端都用 `loggedClient.newBuilder()`，OkHttp 的 `newBuilder()` 会**继承拦截器**，
+     * 因此无需逐个添加（含间接派生的 myappApkClient）。
+     */
+    private val loggedClient = okHttpClient.newBuilder()
+        .addInterceptor(UpstreamLoggingInterceptor)
+        .build()
+
     /** 外部请求超时：上游不可达/极慢时快速失败，避免查询接口长时间挂起。
      *  在注入的 OkHttpClient 基础上显式覆盖 connect/read/write/call 四类超时（双保险，
      *  避免仅设置 callTimeout 时仍被底层 readTimeout 接管导致无法快速失败）。 */
-    private val extClient = okHttpClient.newBuilder()
+    private val extClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
         .callTimeout(10, TimeUnit.SECONDS)
         .build()
     /** IzzyOnDroid 索引较大（数 MB），首次拉取给稍长超时；成功后内存缓存 1h */
-    private val izzyClient = okHttpClient.newBuilder()
+    private val izzyClient = loggedClient.newBuilder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .writeTimeout(15, TimeUnit.SECONDS)
@@ -163,7 +175,7 @@ class AppMarketExternalService(
     private val myappEnabled = (System.getProperty("appmarket.myapp.enabled") ?: "true").toBoolean()
 
     /** 应用宝详情页约 300KB，比 F-Droid 响应大得多，给更长超时（四类超时都要显式覆盖） */
-    private val myappClient = okHttpClient.newBuilder()
+    private val myappClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .writeTimeout(15, TimeUnit.SECONDS)
@@ -183,7 +195,7 @@ class AppMarketExternalService(
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 
     /** Bing 发现客户端（结果页较大，read 给 12s；其余沿用 extClient 形态，四类超时全显式覆盖） */
-    private val bingClient = okHttpClient.newBuilder()
+    private val bingClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(12, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -202,7 +214,7 @@ class AppMarketExternalService(
     private val htmlEnabled = (System.getProperty("appmarket.html.enabled") ?: "true").toBoolean()
 
     /** Uptodown 抓取客户端：按包名下载页 + HMAC 握手 + 直链解析（四类超时全显式覆盖，12s 快速失败） */
-    private val uptodownClient = okHttpClient.newBuilder()
+    private val uptodownClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(12, TimeUnit.SECONDS)
         .writeTimeout(12, TimeUnit.SECONDS)
@@ -210,7 +222,7 @@ class AppMarketExternalService(
         .build()
 
     /** APKMirror RSS 客户端：UA 必须含 `APKUpdater-v3.5.9` 令牌（否则 403，见 design §10.4） */
-    private val apkmirrorClient = okHttpClient.newBuilder()
+    private val apkmirrorClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(12, TimeUnit.SECONDS)
         .writeTimeout(12, TimeUnit.SECONDS)
@@ -218,7 +230,7 @@ class AppMarketExternalService(
         .build()
 
     /** 通用 HTML 爬虫客户端（12s 超时；四类超时全显式覆盖） */
-    private val htmlClient = okHttpClient.newBuilder()
+    private val htmlClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(12, TimeUnit.SECONDS)
         .writeTimeout(12, TimeUnit.SECONDS)
@@ -417,7 +429,7 @@ class AppMarketExternalService(
     private val apkpureBase = System.getProperty("appmarket.apkpure.base") ?: "https://apkpure.com"
 
     /** APKPure 抓取客户端（四类超时显式覆盖，10s 快速失败） */
-    private val apkpureClient = okHttpClient.newBuilder()
+    private val apkpureClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -437,7 +449,7 @@ class AppMarketExternalService(
     private val aptoideBase = System.getProperty("appmarket.aptoide.base") ?: "https://api.aptoide.com"
 
     /** Aptoide API 客户端（四类超时显式覆盖，10s 快速失败） */
-    private val aptoideClient = okHttpClient.newBuilder()
+    private val aptoideClient = loggedClient.newBuilder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)

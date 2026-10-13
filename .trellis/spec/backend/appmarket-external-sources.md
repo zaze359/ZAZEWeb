@@ -74,6 +74,11 @@ The `a.app.qq.com` response is ~355KB and **already carries the metadata**, so a
 - Searching **by package name via the search API does not work** — it returns unrelated apps
   (verified: `com.larus.nova` → 星驰加速器 / 大谷云 / 机大侠助手). Never substitute search for a
   package-name lookup.
+- **Observability**: every outgoing upstream request is logged by `UpstreamLoggingInterceptor` as
+  `[上游] GET <url> -> HTTP <code> (<ms>, <bytes>)` (or `-> 请求失败 (<ms>): <exception>`).
+  It is attached **once** to the shared parent client (`loggedClient`); all derived clients inherit it
+  via `newBuilder()`. It logs **metadata only** — never response bodies (each 应用宝 response is
+  350~400KB, and reading the body would break downstream streaming).
 
 ## 4. Validation & Error Matrix
 
