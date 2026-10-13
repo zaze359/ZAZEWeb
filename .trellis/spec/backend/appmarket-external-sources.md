@@ -66,6 +66,18 @@
 | Uptodown handshake fails | return `null` / `Response(200,null,...)` | graceful degradation, never throw to caller |
 | Any upstream timeout | per-source `SourceProbeVo(status=TIMEOUT)`; overall still returns non-null envelope | resilient discovery |
 | HTML crawler | returns candidate list only; never writes DB | avoid unverified auto-import |
+| **Upstream network failure** (fetch swallows the exception → `null`) | probe lands on `MISS`, and the message **must not claim "已连通"** — it must stay honest and expose `elapsedMs` | see warning below |
+
+> **Warning — `MISS` does NOT mean "the source is reachable".**
+> Every `fetchXxx` swallows network/parse exceptions and returns `null`, so a source that was never
+> reached is indistinguishable from one that genuinely has no such package — both surface as `MISS`.
+> Therefore `SourceProbe.toVo()` must never print "已连通，但该源无此包名".
+> Current wording rules (`SUSPECT_UNREACHED_MS = 100`):
+> - `elapsedMs < 100` → "未取到数据（耗时仅 Xms，极可能是请求未连通/被拒，而非该源没有此包名）"
+> - otherwise → "未匹配到该包名（耗时 Xms；注：请求失败时同样表现为未命中）"
+> - `TIMEOUT` / `ERROR` keep their own messages; an exception whose `message` is `null` must fall back
+>   to the class simple name, otherwise it would be misreported as `MISS`.
+> The local dictionary builds its `SourceProbeVo` directly (not via `toVo()`), so it is unaffected.
 
 ## 5. Good / Base / Bad Cases
 

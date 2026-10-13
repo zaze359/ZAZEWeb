@@ -306,6 +306,13 @@ class AppMarketExternalService(
      *  它不会让快源被慢源抢走预算，且已完成的源即使超过安全帽也照常收结果。 */
     private val PROBE_SLACK_MS = 2_000L
 
+    /**
+     * 「疑似未连通」耗时阈值：真实上游往返通常上百 ms，若一次探测在 100ms 内就空手而归，
+     * 基本可判定为请求压根没发出去/被拒（网络不可达、代理错误、DNS 失败等），而不是该源没有此包名。
+     * 仅用于**措辞提示**，不改变命中判定；本地词典不走 [SourceProbe.toVo]，不受此阈值影响。
+     */
+    private val SUSPECT_UNREACHED_MS = 100L
+
     /** 单上游任务：自带**自己的**超时预算、请求 URL 与所属分组 */
     private data class SourceTask<T>(
         val name: String,
@@ -352,7 +359,12 @@ class AppMarketExternalService(
             if (got == null) SourceProbe(t, null, t.timeoutMs, null, aborted = true)
             else {
                 val (ns, run) = got
-                SourceProbe(t, run.getOrNull(), ns / 1_000_000, run.exceptionOrNull()?.message, aborted = false)
+                // 异常描述回退到类名：否则 message 为 null 的异常会被误判成「未命中」
+                SourceProbe(
+                    t, run.getOrNull(), ns / 1_000_000,
+                    run.exceptionOrNull()?.let { e -> e.message ?: e.javaClass.simpleName },
+                    aborted = false
+                )
             }
         }
     }
@@ -371,11 +383,16 @@ class AppMarketExternalService(
             hit -> ProbeStatus.HIT
             else -> ProbeStatus.MISS
         }
+        // 措辞务必诚实：各上游 fetch 会把网络/解析异常吞成 null，因此「未命中」既可能是
+        // 真的没有此包名，也可能是请求根本没连通——绝不能像早期那样断言「已连通」。
+        // 把 elapsedMs 一并给出，便于运维按耗时判断（真实请求通常上百 ms，个位数 ms 多为失败）。
         val msg = when {
             aborted -> "超过该源自身超时 ${task.timeoutMs}ms 未返回，已放弃（不影响其它源）"
-            error != null -> "异常：$error"
+            error != null -> "请求失败/未连通：$error"
             hit -> null
-            else -> "已连通，但该源无此包名 / 无匹配项"
+            elapsedMs < SUSPECT_UNREACHED_MS ->
+                "未取到数据（耗时仅 ${elapsedMs}ms，极可能是请求未连通/被拒，而非该源没有此包名）"
+            else -> "未匹配到该包名（耗时 ${elapsedMs}ms；注：请求失败时同样表现为未命中）"
         }
         return SourceProbeVo(task.name, status, elapsedMs, task.url, msg, task.group)
     }
