@@ -198,3 +198,38 @@ Session summary was not supplied.
 ### Status
 
 [OK] **Completed**
+
+
+## Session 8: bsdiff 差分包生成 + 应用市场外部 APK 直链化
+<!-- trellis-session: v=2 fp=a1d96e8ba377d6e1 -->
+
+**Date**: 2026-10-14
+**Task**: bsdiff 差分包生成 + 应用市场外部 APK 直链化
+**Branch**: `feature_app_market`
+
+### Summary
+
+Session summary was not supplied.
+
+### Main Changes
+
+- bsdiff diff/patch/verify 管线 + APK/补丁缓存 + 限时 diff + 服务端 SHA 自校验；应用宝真实 APK 直链（a.app.sj.qq.com）替换污染详情页链接；新增 Uptodown(HMAC)/APKMirror(仅元数据)/通用 HTML 爬虫；回收 STORE_SPECS，清理 38+ 条污染种子
+- 新增 code-spec：appmarket-external-sources（downloadUrl 必须是真·APK 文件 URL）
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `90df2df` | feat(appmarket): external APK direct-link + bsdiff incremental update |
+
+### Testing
+
+- [OK] BsdiffServiceTest round-trip 通过（JDK11）；:feature:appmarket:compileKotlin 通过
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 有网环境 H2 冒烟：lookup?packageName=com.tencent.mm 验证 MYAPP 直链、Uptodown 真包、APKMirror 降级；真实相邻版本 APK 跑 diff→patch→SHA 闭环（P7/P8.6）

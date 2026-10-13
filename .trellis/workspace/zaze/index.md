@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 7
-- **Last Active**: 2026-10-09
+- **Total Sessions**: 8
+- **Last Active**: 2026-10-14
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~200 | Active |
+| `journal-1.md` | ~235 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 8 | 2026-10-14 | bsdiff 差分包生成 + 应用市场外部 APK 直链化 | `90df2df` | `feature_app_market` |
 | 7 | 2026-10-09 | 导入弹窗内嵌 APK 详情（09-28-apk-import-detail） | `b82a6ba` | `feature_app_market` |
 | 6 | 2026-10-09 | APK 签名与完整性分析（09-28-apk-signature） | `c746f78` | `feature_app_market` |
 | 5 | 2026-10-09 | APK 解析内核 + 独立分析查看器（09-28-apk-inspect-core） | `c746f78` | `feature_app_market` |
