@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "项目入口规范：Spring Boot 2.7.18 / JDK 11 / 多模块 Gradle、Response 信封、appmarket 作为更完整特性示例；确认模块边界与构建方式"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "模块依赖规则：依赖声明位置（okhttp 多模块声明、h2 在 core:database）；新增 jbsdiff/commons-compress 依赖需落在 feature:appmarket 且显式钉版本"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "构建命令与禁止模式：必须用 JDK 11、被 BOM 管理且直接使用的库要显式声明版本（commons-compress 不在 BOM 内需钉版）"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Response 信封与异常行为；本任务要求体积超阈/超时/上游不可达一律优雅降级为 Response(200,null,原因)，不得透传 500"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "先搜索再新建：复用 AppVersion/DownloadSource 仓库、collector 的 extClient+FileUtil、core/common 的 Response，避免重复实现"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "跨层契约：BsdiffService（纯文件操作）→ Service 编排 → Controller 信封的边界，保证 patch 字节流与 X-* 哈希头的契约不被上浮改写"}

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "收口自检：构建命令（JDK 11）、显式版本声明（jbsdiff/commons-compress 钉版）、禁止模式未被引入"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "验收时核对降级路径：超阈/超时/上游不可达是否都走 Response(200,null,原因) 而非 500，信封语义未被破坏"}
+{"file": ".trellis/spec/backend/index.md", "reason": "确认 bootJar（JDK11）通过、模块接线正确、未改动 AuthInterceptor 与既有 appmarket 接口"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "核对 BsdiffService→Service→Controller 链路：patch 字节流与 X-Old/X-New-Sha256 头契约、服务端自校验 SHA 断言未被上浮改写或绕过"}
