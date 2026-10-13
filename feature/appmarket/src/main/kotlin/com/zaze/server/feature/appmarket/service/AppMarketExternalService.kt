@@ -460,12 +460,11 @@ class AppMarketExternalService(
         // 与 searchByName 同理：国外源国内基本不可达，先查国内源，未命中才降级查国外备选组。
         val domesticTasks = mutableListOf<SourceTask<ExternalAppPreview>>()
         if (myappEnabled) domesticTasks += SourceTask(
-            MYAPP_SOURCE, myappBase + pkgName, MYAPP_TIMEOUT_MS, SourceGroup.DOMESTIC
+            MYAPP_SOURCE, "$myappApkUrl?pkgname=$pkgName", MYAPP_TIMEOUT_MS, SourceGroup.DOMESTIC
         ) {
-            // 详情页（元数据）+ 真实 APK 直链一起取，让预览直接带 apkUrl（而非详情页链接）
-            val detail = fetchMyAppDetail(pkgName)
-            val apk = fetchMyAppApk(pkgName)
-            detail?.let { toMyAppPreview(it, apk?.downloadUrl) }
+            // 元数据与真实 APK 直链**同出自 APK 接口**：该接口的 appDetail 已带
+            // name/summary/iconUrl/developer/sizeMb，不必再额外打一次 391KB 详情页。
+            fetchMyAppApk(pkgName)?.toPreview(pkgName)
         }
         val probes = mutableListOf<SourceProbeVo>()
         var preview: ExternalAppPreview? = null
@@ -851,9 +850,37 @@ class AppMarketExternalService(
      *
      * 应用宝不提供 `versionCode`，因此版本判重按**版本名**进行。
      */
-    private fun importFromMyApp(pkgName: String, existing: App?): AppVo {
-        val d = fetchMyAppDetail(pkgName)
+    private fun importFromMyApp(pkgName: String, existing: App?, withDetail: Boolean = false): AppVo {
+        // 元数据主源改为 APK 接口：它与真实直链是**同一份响应**，不必再额外打一次 391KB 详情页。
+        val apk = fetchMyAppApk(pkgName)
             ?: throw IllegalArgumentException("应用宝未找到该包名：$pkgName")
+        var d = MyAppDetail(
+            packageName = pkgName,
+            name = apk.name,
+            summary = apk.summary,
+            iconUrl = apk.iconUrl,
+            developer = apk.developer,
+            category = null,          // APK 接口不返回分类
+            versionName = apk.versionName,
+            sizeMb = apk.sizeMb,
+            updateTimeSec = null,     // APK 接口不返回更新时间
+            sourceUrl = myappBase + pkgName
+        )
+        if (withDetail) {
+            // 仅「批量补全应用宝元数据」走这里：补上 APK 接口给不了的 category / updateTimeSec，
+            // 其余字段仅作兜底（APK 接口已有值时以它为准，避免覆盖）。
+            fetchMyAppDetail(pkgName)?.let { det ->
+                d = d.copy(
+                    category = det.category,
+                    updateTimeSec = det.updateTimeSec,
+                    name = d.name ?: det.name,
+                    summary = d.summary ?: det.summary,
+                    iconUrl = d.iconUrl ?: det.iconUrl,
+                    developer = d.developer ?: det.developer,
+                    sizeMb = d.sizeMb ?: det.sizeMb
+                )
+            }
+        }
         val app = if (existing != null) {
             val icon = existing.iconUrl
             // 只把 favicon 之类占位图标换成应用宝 CDN 图标；已是真实图标（data URI / CDN）则不动
@@ -913,9 +940,9 @@ class AppMarketExternalService(
         )
         // 应用宝真实 APK 直链：仅当真正取到 APK 时才写 MYAPP 下载源。
         // 详情页链接（sj.qq.com/appdetail）不再作为 downloadUrl（否则 bsdiff 会拉到 HTML 而非安装包）。
-        val apk = fetchMyAppApk(pkgName)
-        val apkVer = apk?.versionName ?: vn
-        val apkUrl = apk?.downloadUrl
+        // 上面已取过 APK 直链（元数据与之同源），这里直接复用，不重复请求
+        val apkVer = apk.versionName ?: vn
+        val apkUrl = apk.downloadUrl
         var myAppSourceAdded = false
         if (!apkUrl.isNullOrBlank() && !apkVer.isNullOrBlank()) {
             val targetVersion = version ?: versionRepository.findByAppIdAndVersionName(app.id, apkVer)
@@ -1302,7 +1329,8 @@ class AppMarketExternalService(
             try {
                 val beforeVer = versionRepository.countByAppId(app.id)
                 val beforeIcon = app.iconUrl
-                importFromMyApp(pkg, app)
+                // 批量补全：额外走一次详情页补齐 category / updateTimeSec（热路径不打，省 391KB）
+                importFromMyApp(pkg, app, withDetail = true)
                 val afterVer = versionRepository.countByAppId(app.id)
                 val after = appRepository.findByPackageName(pkg)
                 val changed = afterVer > beforeVer ||
@@ -1358,20 +1386,26 @@ class AppMarketExternalService(
         return !url.contains("favicon", ignoreCase = true) && !url.endsWith(".ico", ignoreCase = true)
     }
 
-    /** 应用宝详情 → 预览（不写库）；[apkUrl] 为真实 APK 直链（来自 [fetchMyAppApk]，不可达时为 null） */
-    private fun toMyAppPreview(d: MyAppDetail, apkUrl: String? = null): ExternalAppPreview = ExternalAppPreview(
-        packageName = d.packageName,
-        name = d.name,
-        summary = d.summary,
-        iconSrc = d.iconUrl,
-        developer = d.developer,
-        officialUrl = d.sourceUrl,
-        category = d.category,
-        latestVersionName = d.versionName,
-        latestVersionCode = null, // 应用宝不提供 versionCode
-        sizeMb = d.sizeMb,
-        apkUrl = apkUrl,         // 真实 APK 直链；不可达时为 null（不报错）
-        sourceUrl = d.sourceUrl,
+    /**
+     * 应用宝 APK 接口结果 → 预览（不写库）；[pkgName] 用于拼 `officialUrl`。
+     *
+     * 热路径的预览一律走本函数（不经详情页），因此分类/更新时间为 null ——
+     * 该接口不返回这两项，它们是「批量补全应用宝元数据」时才补的字段。
+     * （该接口不返回这两项），它们是「批量补全应用宝元数据」时才补的字段。
+     */
+    private fun MyAppApk.toPreview(pkgName: String): ExternalAppPreview = ExternalAppPreview(
+        packageName = pkgName,
+        name = name,
+        summary = summary,
+        iconSrc = iconUrl,
+        developer = developer,
+        officialUrl = myappBase + pkgName,   // 详情页只作官网链接，绝不作 downloadUrl
+        category = null,                     // APK 接口不返回分类，仅批量补全经详情页补
+        latestVersionName = versionName,
+        latestVersionCode = null,            // 应用宝该接口 versionCode 恒为 0，无意义
+        sizeMb = sizeMb,
+        apkUrl = downloadUrl,
+        sourceUrl = myappBase + pkgName,
         source = MYAPP_SOURCE
     )
 
@@ -1592,7 +1626,21 @@ class AppMarketExternalService(
             ?: return null
         val versionName = appDetail["versionName"]?.takeIf { it.isJsonPrimitive }?.asString
             ?.trim()?.takeIf { it.isNotEmpty() }
-        return MyAppApk(downloadUrl = apkUrl, versionName = versionName)
+        // 同一份 appDetail 顺带把元数据取出来（免去再打一次详情页）
+        fun str(key: String): String? =
+            appDetail[key]?.takeIf { it.isJsonPrimitive }?.asString?.trim()?.takeIf { it.isNotEmpty() }
+        val sizeMb = appDetail["fileSize"]?.takeIf { it.isJsonObject }?.asJsonObject
+            ?.get("bytes")?.takeIf { it.isJsonPrimitive }?.asString
+            ?.toLongOrNull()?.let { it / 1024 / 1024 }
+        return MyAppApk(
+            downloadUrl = apkUrl,
+            versionName = versionName,
+            name = str("appName"),
+            summary = str("editorIntro"),
+            iconUrl = str("iconUrl"),
+            developer = str("developer") ?: str("author"),
+            sizeMb = sizeMb
+        )
     }
 
     private fun toPreview(pkg: FdroidPackageDto): ExternalAppPreview {
@@ -1924,8 +1972,25 @@ class AppMarketExternalService(
         val sourceUrl: String? = null
     )
 
-    /** 应用宝 APK 接口返回的真实直链 + 版本名（CDN 直链，非详情页） */
-    private data class MyAppApk(val downloadUrl: String?, val versionName: String? = null)
+    /**
+     * 应用宝 APK 接口返回的真实直链 + **随包附带的元数据**（CDN 直链，非详情页）。
+     *
+     * 该接口的 `appDetail` 共 23 个字段，已包含 name/summary/iconUrl/developer/sizeMb，
+     * 与详情页（`sj.qq.com/appdetail`，391KB）高度重叠。因此**热路径不再额外打详情页**，
+     * 直接用这里的数据，省下一次 ~391KB / ~700ms 的请求。
+     *
+     * 该接口**不返回** `category` 与 `updateTimeSec`（更新时间）——这两项只有详情页有，
+     * 故仅在「批量补全应用宝元数据」时按需补取（见 [importFromMyApp] 的 `withDetail`）。
+     */
+    private data class MyAppApk(
+        val downloadUrl: String?,
+        val versionName: String? = null,
+        val name: String? = null,
+        val summary: String? = null,
+        val iconUrl: String? = null,
+        val developer: String? = null,
+        val sizeMb: Long? = null
+    )
 
     // ------------------------------------------------------------ 上游统一模型（APKPure / Aptoide 共用）
     /** 上游返回的「应用 + 真实下载源」统一结构：解析后映射为 ExternalAppPreview，或写入三张表 */

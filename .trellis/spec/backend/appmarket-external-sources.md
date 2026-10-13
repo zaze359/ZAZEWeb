@@ -37,7 +37,7 @@
 ### 3.2 Per-source facts (verified against Obtainium `lib/app_sources/*.dart`)
 | Source | Real APK? | Endpoint / mechanism | Notes |
 |--------|-----------|----------------------|-------|
-| 应用宝 / Tencent | **YES** | `GET https://a.app.qq.com/o/simple.jsp?pkgname=<pkg>`; parse `window.systemData.appDetail.apkUrl64 ?: apkUrl` + `versionName` | Host is **`a.app.qq.com`**, NOT `a.app.sj.qq.com` (unreachable — connection reset). Derived from Obtainium `tencent.dart`: it takes the **last two labels** of the detail-page host as `baseHost` (`sj.qq.com` → reverse `[com,qq,sj]` → `sublist(0,2)=[com,qq]` → reverse → `qq.com`), then builds `https://a.app.$baseHost/o/simple.jsp`. `sj.qq.com/appdetail/<pkg>` is a **detail page, NOT a download** — never store it as `downloadUrl`. |
+| 应用宝 / Tencent | **YES** | `GET https://a.app.qq.com/o/simple.jsp?pkgname=<pkg>`; parse `window.systemData.appDetail.apkUrl64 ?: apkUrl` + `versionName` | **Single source for both APK and metadata.** The same `appDetail` (23 fields) carries `appName`/`editorIntro`/`iconUrl`/`developer`/`fileSize.bytes` → the 391KB detail page is **NOT** needed on the hot path (see §3.4). `sj.qq.com/appdetail/<pkg>` is a **detail page, NOT a download**. |
 | Uptodown | **YES** | Download page → `data-app-id`/`data-file-id` → HMAC-SHA256 handshake `POST /eapi/auth/token` (hardcoded `_hmacKey`) → JWT → `GET /eapi/apps/<appId>/file/<fileId>/downloadUrl` → `data.downloadURL` | Handshake requires the exact hardcoded HMAC key from Obtainium; do not "simplify" it. |
 | APKMirror | **NO** | RSS `https://www.apkmirror.com/apk/<pkg>/feed/` for version metadata | `enforceTrackOnly` upstream — direct download is forbidden. **Keep `downloadUrl = null`**; contributes version number only. |
 | HTML crawler | manual | Fetch page, extract `<a href>` / bare / attribute links matching `.apk` (and container extensions), return absolute URLs | Admin-only candidate list; **never auto-import** — a human confirms. |
@@ -54,6 +54,26 @@
 - Each source has an **independent timeout budget**; the global deadline was removed in favor of
   per-source budgets + a safety cap. `extClient` 10s (call/read/write/connect all set), `izzyClient`
   15s (large index, 1h cache), `uptodown`/`apkmirror`/`html` 12s each with their own client.
+
+### 3.4 Endpoint roles — hot path vs batch complete
+
+The `a.app.qq.com` response is ~355KB and **already carries the metadata**, so also calling the
+`sj.qq.com/appdetail` page (~391KB) doubles the cost for almost no new information.
+
+| | Hot path (`lookup` / `importApp`) | Batch complete (`batchCompleteFromMyApp`) |
+|---|---|---|
+| Endpoints | **APK endpoint only** | APK endpoint **+ detail page** (`withDetail = true`) |
+| Gets | name, version, icon, size, summary, developer, real APK | same, **plus `category` and `updateTimeSec`** |
+| Cost | 1 request (~0.4s / 355KB) | 2 requests |
+
+- The APK endpoint does **not** return `category` or update time — those are the detail page's only
+  unique value, which is why it survives **only** in batch complete.
+- `importFromMyApp(pkgName, existing, withDetail: Boolean = false)` — pass `true` **only** from batch
+  complete. Do not reintroduce the detail-page call into `lookup` / `importApp`.
+- Measured: `lookup` went from ~1.35s to **~0.42s** after dropping the detail page from the hot path.
+- Searching **by package name via the search API does not work** — it returns unrelated apps
+  (verified: `com.larus.nova` → 星驰加速器 / 大谷云 / 机大侠助手). Never substitute search for a
+  package-name lookup.
 
 ## 4. Validation & Error Matrix
 
