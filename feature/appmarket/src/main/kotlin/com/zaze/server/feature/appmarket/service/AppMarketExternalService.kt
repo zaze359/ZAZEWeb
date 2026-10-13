@@ -143,6 +143,22 @@ class AppMarketExternalService(
     private val myappSearchUrl =
         System.getProperty("appmarket.myapp.search") ?: "https://yybadaccess.3g.qq.com/v2/dc_pcyyb_official"
 
+    /**
+     * 应用宝**真实 APK 直链**接口基址（请求时拼 `?pkgname=<包名>`）。
+     * 可用 -Dappmarket.myapp.apk=... 覆盖。
+     *
+     * **域名是 `a.app.qq.com`，不是 `a.app.sj.qq.com`**（后者实测连接重置、不可达）。
+     * 依据 Obtainium `tencent.dart`：它把详情页主机名取**后两段**作为 baseHost
+     * （`sj.qq.com` → 反转 `[com,qq,sj]` → `sublist(0,2)=[com,qq]` → 反转 `[qq,com]` → `qq.com`），
+     * 再拼成 `https://a.app.$baseHost/o/simple.jsp`，即 **`a.app.qq.com`**。
+     * 早期实现误把完整主机名当 baseHost 写成 `a.app.sj.qq.com`，导致该源恒为「未命中」。
+     *
+     * 响应是内嵌 `window.systemData={"head":...,"appDetail":{...}}` 的 JSP 页面（约 355KB），
+     * `appDetail.apkUrl64 ?: apkUrl` 即 CDN 直链。
+     */
+    private val myappApkUrl =
+        System.getProperty("appmarket.myapp.apk") ?: "https://a.app.qq.com/o/simple.jsp"
+
     /** 是否启用应用宝上游（默认 true；可用 -Dappmarket.myapp.enabled=false 关闭） */
     private val myappEnabled = (System.getProperty("appmarket.myapp.enabled") ?: "true").toBoolean()
 
@@ -902,7 +918,7 @@ class AppMarketExternalService(
                         sourceType = "MYAPP",
                         downloadUrl = apkUrl,
                         region = "中国",
-                        note = "从应用宝 APK 接口（a.app.sj.qq.com）直链导入"
+                        note = "从应用宝 APK 接口（a.app.qq.com）直链导入"
                     )
                 )
                 myAppSourceAdded = true
@@ -1513,7 +1529,8 @@ class AppMarketExternalService(
     }
 
     /**
-     * 应用宝真实 APK 直链接口：`GET https://a.app.sj.qq.com/o/simple.jsp?pkgname=<pkg>`（followRedirects=false）。
+     * 应用宝真实 APK 直链接口：`GET https://a.app.qq.com/o/simple.jsp?pkgname=<pkg>`（followRedirects=false）。
+     * 域名必须是 `a.app.qq.com`（由 Obtainium 的 baseHost=qq.com 推导），`a.app.sj.qq.com` 不可达。
      * 响应体是内嵌 `window.systemData=...` 的 JS 文本（非纯 JSON），从中提取 `appDetail`，
      * 取 `apkUrl64 ?: apkUrl`（CDN 直链）+ `versionName`。无需鉴权，服务端可抓取（移植 Obtainium `tencent.dart`）。
      * 返回 null 表示不可达 / 解析失败（不抛，交由调用方降级）。
@@ -1527,7 +1544,7 @@ class AppMarketExternalService(
         myAppApkCache[pkgName]?.let { (ts, d) ->
             if (now - ts < MYAPP_CACHE_TTL_MS) return d
         }
-        val url = "https://a.app.sj.qq.com/o/simple.jsp?pkgname=$pkgName"
+        val url = "$myappApkUrl?pkgname=$pkgName"
         return ImportTracer.measure("请求上游", MYAPP_SOURCE, url) {
             val req = Request.Builder().url(url).header("User-Agent", "zaze-appmarket-external").get().build()
             val body = try {

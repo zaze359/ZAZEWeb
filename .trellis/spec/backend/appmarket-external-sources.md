@@ -37,7 +37,7 @@
 ### 3.2 Per-source facts (verified against Obtainium `lib/app_sources/*.dart`)
 | Source | Real APK? | Endpoint / mechanism | Notes |
 |--------|-----------|----------------------|-------|
-| 应用宝 / Tencent | **YES** | `GET https://a.app.sj.qq.com/o/simple.jsp?pkgname=<pkg>`; parse `window.systemData.appDetail.apkUrl64 ?: apkUrl` + `versionName` | The **only** correct 应用宝 download link. `sj.qq.com/appdetail/<pkg>` is a **detail page, NOT a download** — never store it as `downloadUrl`. |
+| 应用宝 / Tencent | **YES** | `GET https://a.app.qq.com/o/simple.jsp?pkgname=<pkg>`; parse `window.systemData.appDetail.apkUrl64 ?: apkUrl` + `versionName` | Host is **`a.app.qq.com`**, NOT `a.app.sj.qq.com` (unreachable — connection reset). Derived from Obtainium `tencent.dart`: it takes the **last two labels** of the detail-page host as `baseHost` (`sj.qq.com` → reverse `[com,qq,sj]` → `sublist(0,2)=[com,qq]` → reverse → `qq.com`), then builds `https://a.app.$baseHost/o/simple.jsp`. `sj.qq.com/appdetail/<pkg>` is a **detail page, NOT a download** — never store it as `downloadUrl`. |
 | Uptodown | **YES** | Download page → `data-app-id`/`data-file-id` → HMAC-SHA256 handshake `POST /eapi/auth/token` (hardcoded `_hmacKey`) → JWT → `GET /eapi/apps/<appId>/file/<fileId>/downloadUrl` → `data.downloadURL` | Handshake requires the exact hardcoded HMAC key from Obtainium; do not "simplify" it. |
 | APKMirror | **NO** | RSS `https://www.apkmirror.com/apk/<pkg>/feed/` for version metadata | `enforceTrackOnly` upstream — direct download is forbidden. **Keep `downloadUrl = null`**; contributes version number only. |
 | HTML crawler | manual | Fetch page, extract `<a href>` / bare / attribute links matching `.apk` (and container extensions), return absolute URLs | Admin-only candidate list; **never auto-import** — a human confirms. |
@@ -45,6 +45,9 @@
 ### 3.3 Provider config & groups
 - Toggle (default `true`, override with `-D`): `appmarket.uptodown.enabled` / `appmarket.apkmirror.enabled` /
   `appmarket.html.enabled` (plus `fdroid`/`izzy`/`myapp`/`apkpure`/`aptoide` from earlier work).
+- Bases (override with `-D`): `appmarket.myapp.base` (detail page, `https://sj.qq.com/appdetail/`),
+  `appmarket.myapp.search` (name search), **`appmarket.myapp.apk`** (real APK endpoint,
+  `https://a.app.qq.com/o/simple.jsp`).
 - `SourceGroup`: `DOMESTIC` (local dict / 应用宝 / Bing discovery) is probed **first and by default**;
   `OVERSEAS` (F-Droid / Izzy / APKPure / Aptoide / Uptodown / APKMirror) is only a fallback when the
   domestic group fully misses. `UPTODOWN`/`APKMIRROR` are `OVERSEAS`.
@@ -66,7 +69,9 @@
 
 ## 5. Good / Base / Bad Cases
 
-- **Good**: `downloadUrl = "https://a.app.sj.qq.com/.../xxx.apk"` (应用宝 CDN) or Uptodown `downloadURL`.
+- **Good**: `downloadUrl = "http://imtt.dd.qq.com/sjy.00022/.../6542DD39....apk?fsname=com.larus.nova_15.3.0.apk"`
+  — the **CDN link** returned inside `appDetail.apkUrl64` (fetched from `a.app.qq.com`), or Uptodown `downloadURL`.
+  Verified live: `com.larus.nova` → 豆包 15.3.0 → real CDN `.apk`.
 - **Base**: APKMirror import yields version metadata, `downloadUrl = null`, app still importable as metadata-only.
 - **Bad**: `downloadUrl = "https://sj.qq.com/appdetail/com.tencent.mm"` — looks like a link, is actually a page.
 
@@ -92,7 +97,7 @@ DownloadSource(sourceType = "MYAPP",
 
 #### Correct
 ```kotlin
-// 应用宝 real APK (a.app.sj.qq.com), detail page goes to officialUrl
+// 应用宝 real APK (endpoint host a.app.qq.com), detail page goes to officialUrl
 val apk = fetchMyAppApk(packageName)            // apkUrl64 ?: apkUrl from window.systemData.appDetail
 if (apk != null) {
     upsertImport(UpstreamAppDetail(downloadUrl = apk.apkUrl, versionName = apk.versionName),
