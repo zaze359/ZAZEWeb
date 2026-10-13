@@ -25,6 +25,7 @@
 | [Error Handling](./error-handling.md) | Response envelope, exception behavior, known gaps |
 | [Quality Guidelines](./quality-guidelines.md) | Build commands, language mixing rules, forbidden patterns, known tech debt |
 | [Logging Guidelines](./logging-guidelines.md) | @LoggerManage AOP, SLF4J usage, ZLog utility |
+| [AppMarket External APK Sources](./appmarket-external-sources.md) | External lookup/search/import contract; `DownloadSource.downloadUrl` MUST be a real APK file URL (not a store detail page) |
 
 ---
 

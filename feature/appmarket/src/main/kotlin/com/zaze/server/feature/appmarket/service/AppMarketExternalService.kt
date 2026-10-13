@@ -23,6 +23,7 @@ import com.zaze.server.feature.appmarket.repository.AppRepository
 import com.zaze.server.feature.appmarket.repository.AppVersionRepository
 import com.zaze.server.feature.appmarket.repository.DownloadSourceRepository
 import com.zaze.server.feature.appmarket.vo.AppVo
+import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -35,6 +36,8 @@ import java.net.URLEncoder
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * 外部应用查询与一键导入（搜索上游：F-Droid + IzzyOnDroid）。
@@ -171,6 +174,62 @@ class AppMarketExternalService(
         .callTimeout(12, TimeUnit.SECONDS)
         .build()
 
+    // ------------------------------------------------------------ Uptodown / APKMirror / 通用 HTML 爬虫 上游（真实 APK 直链 / 元数据 / 手动工具）
+    /** 是否启用 Uptodown 上游（默认 true；可用 -Dappmarket.uptodown.enabled=false 关闭） */
+    private val uptodownEnabled = (System.getProperty("appmarket.uptodown.enabled") ?: "true").toBoolean()
+
+    /** 是否启用 APKMirror 上游（默认 true；可用 -Dappmarket.apkmirror.enabled=false 关闭）。
+     *  APKMirror 官方禁止直接下载（PR #44），仅贡献版本元数据，downloadUrl 恒为 null。 */
+    private val apkmirrorEnabled = (System.getProperty("appmarket.apkmirror.enabled") ?: "true").toBoolean()
+
+    /** 是否启用通用 HTML 爬虫工具（默认 true；可用 -Dappmarket.html.enabled=false 关闭）。仅管理端手动爬取候选链接，不自动入库 */
+    private val htmlEnabled = (System.getProperty("appmarket.html.enabled") ?: "true").toBoolean()
+
+    /** Uptodown 抓取客户端：按包名下载页 + HMAC 握手 + 直链解析（四类超时全显式覆盖，12s 快速失败） */
+    private val uptodownClient = okHttpClient.newBuilder()
+        .connectTimeout(8, TimeUnit.SECONDS)
+        .readTimeout(12, TimeUnit.SECONDS)
+        .writeTimeout(12, TimeUnit.SECONDS)
+        .callTimeout(12, TimeUnit.SECONDS)
+        .build()
+
+    /** APKMirror RSS 客户端：UA 必须含 `APKUpdater-v3.5.9` 令牌（否则 403，见 design §10.4） */
+    private val apkmirrorClient = okHttpClient.newBuilder()
+        .connectTimeout(8, TimeUnit.SECONDS)
+        .readTimeout(12, TimeUnit.SECONDS)
+        .writeTimeout(12, TimeUnit.SECONDS)
+        .callTimeout(12, TimeUnit.SECONDS)
+        .build()
+
+    /** 通用 HTML 爬虫客户端（12s 超时；四类超时全显式覆盖） */
+    private val htmlClient = okHttpClient.newBuilder()
+        .connectTimeout(8, TimeUnit.SECONDS)
+        .readTimeout(12, TimeUnit.SECONDS)
+        .writeTimeout(12, TimeUnit.SECONDS)
+        .callTimeout(12, TimeUnit.SECONDS)
+        .build()
+
+    /** 应用宝 APK 接口客户端：`followRedirects=false` 拿 200 的 `window.systemData=...` 文本（见 design §10.2） */
+    private val myappApkClient = myappClient.newBuilder()
+        .followRedirects(false)
+        .build()
+
+    /** Uptodown 接口所需的 Android UA（与 Obtainium `uptodown.dart` 对齐） */
+    private val UPTODOWN_UA =
+        "Dalvik/2.1.0 (Linux; U; Android 16; Pixel 8 Pro Build/BP4A.260205.001)"
+
+    /** Uptodown 匿名客户端鉴权 HMAC-SHA256 密钥（硬编码，与官方客户端一致，无泄密风险；可 -D 覆盖） */
+    private val UPTODOWN_HMAC_KEY =
+        System.getProperty("appmarket.uptodown.hmacKey")
+            ?: "MDGMXUMdvHJBG/vjdFgmqX6LUdy7ecfwvYNd0gyfOCs="
+
+    /** APKMirror 反爬 UA 令牌（Cloudflare 白名单，否则 403；详见 design §10.4） */
+    private val APKMIRROR_UA = "APKUpdater-v3.5.9 Obtainium/1.0"
+
+    /** 通用 HTML 爬虫移动端 UA */
+    private val HTML_UA =
+        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36"
+
     /** 商店域名白名单（精确 host 或其后缀）：仅从这些商店域抽取包名，彻底排除 Bing 自身的资源域名
      *  （r.bing.com / th.bing.com）、结果页元素 id（id=SERP.xxxx）以及 qq.com/mi.com 等门户的非商店子域
      *  （如 news.qq.com、img.qq.com 的 `?id=index.html` 跟踪参数）。包名抽取仅在白名单域内执行，
@@ -214,6 +273,9 @@ class AppMarketExternalService(
     private val APTOIDE_TIMEOUT_MS = 10_000L
     private val MYAPP_TIMEOUT_MS = 20_000L
     private val BING_TIMEOUT_MS = 12_000L
+    private val UPTODOWN_TIMEOUT_MS = 12_000L
+    private val APKMIRROR_TIMEOUT_MS = 12_000L
+    private val HTML_TIMEOUT_MS = 12_000L
 
     /**
      * 国外备选源总开关（F-Droid / IzzyOnDroid / APKPure / Aptoide，默认 true）。
@@ -307,6 +369,10 @@ class AppMarketExternalService(
     private var myappCache: MutableMap<String, Pair<Long, MyAppDetail>> = HashMap()
     private val MYAPP_CACHE_TTL_MS = 30 * 60 * 1000L
 
+    /** 应用宝 APK 直链缓存（按包名，TTL 30min）：与详情缓存同生命周期，避免重复打 APK 接口 */
+    @Volatile
+    private var myAppApkCache: MutableMap<String, Pair<Long, MyAppApk>> = HashMap()
+
     // ------------------------------------------------------------ APKPure 上游（无官方 API，按名搜索 + 详情页解析；返回真实 APK/XAPK 直链）
     /** 是否启用 APKPure 上游（默认 true；可用 -Dappmarket.apkpure.enabled=false 关闭） */
     private val apkpureEnabled = (System.getProperty("appmarket.apkpure.enabled") ?: "true").toBoolean()
@@ -363,7 +429,10 @@ class AppMarketExternalService(
         if (myappEnabled) domesticTasks += SourceTask(
             MYAPP_SOURCE, myappBase + pkgName, MYAPP_TIMEOUT_MS, SourceGroup.DOMESTIC
         ) {
-            fetchMyAppDetail(pkgName)?.let { toMyAppPreview(it) }
+            // 详情页（元数据）+ 真实 APK 直链一起取，让预览直接带 apkUrl（而非详情页链接）
+            val detail = fetchMyAppDetail(pkgName)
+            val apk = fetchMyAppApk(pkgName)
+            detail?.let { toMyAppPreview(it, apk?.downloadUrl) }
         }
         val probes = mutableListOf<SourceProbeVo>()
         var preview: ExternalAppPreview? = null
@@ -397,6 +466,18 @@ class AppMarketExternalService(
             APTOIDE_SOURCE, "$aptoideBase/api/7/app/getMeta?package_name=$pkgName", APTOIDE_TIMEOUT_MS, SourceGroup.OVERSEAS
         ) {
             fetchAptoide(pkgName)?.let { toUpstreamPreview(it, APTOIDE_SOURCE) }
+        }
+        // Uptodown：返回真实 APK 直链（HMAC 握手后拿 downloadURL）
+        if (uptodownEnabled) overseasTasks += SourceTask(
+            UPTODOWN_SOURCE, "https://$pkgName.en.uptodown.com/android/download", UPTODOWN_TIMEOUT_MS, SourceGroup.OVERSEAS
+        ) {
+            fetchUptodown(pkgName)?.let { toUpstreamPreview(it, UPTODOWN_SOURCE) }
+        }
+        // APKMirror：仅贡献版本号/发行说明（官方禁止直链下载），downloadUrl 恒为 null，不写脏下载源
+        if (apkmirrorEnabled) overseasTasks += SourceTask(
+            APKMIRROR_SOURCE, "https://www.apkmirror.com/apk/$pkgName/feed/", APKMIRROR_TIMEOUT_MS, SourceGroup.OVERSEAS
+        ) {
+            fetchApkMirror(pkgName)?.let { toUpstreamPreview(it, APKMIRROR_SOURCE) }
         }
         if (overseasTasks.isEmpty()) return ExternalLookupVo(null, probes, overseasQueried = false)
         // 按优先级（任务顺序）取首个命中
@@ -497,6 +578,10 @@ class AppMarketExternalService(
         if (aptoideEnabled) overseasTasks += SourceTask(
             APTOIDE_SOURCE, "$aptoideBase/api/2.1/search/apps", APTOIDE_TIMEOUT_MS, SourceGroup.OVERSEAS
         ) { searchAptoide(kw, lower) }
+        // Uptodown 按名搜索（官方接口，返回 url + name）；APKMirror 无按名搜索能力，仅参与按包名 lookup
+        if (uptodownEnabled) overseasTasks += SourceTask(
+            UPTODOWN_SOURCE, "https://en.uptodown.com/android/en/s", UPTODOWN_TIMEOUT_MS, SourceGroup.OVERSEAS
+        ) { searchUptodown(kw) }
         probeSources(overseasTasks).forEach { p ->
             // 国外组结果统一打上分组标记，供界面分区展示（默认 DOMESTIC，此处必须显式覆盖）
             all += p.result.orEmpty().map { it.copy(group = SourceGroup.OVERSEAS) }
@@ -620,9 +705,10 @@ class AppMarketExternalService(
             // （补全元数据 + 追加版本，可修复 seed 中的占位版本与 favicon 图标）；
             // F-Droid / Izzy 维持「已存在即拒绝」的原语义不变。
             isMyAppSource(source) -> importFromMyApp(pkgName, existing)
-            // 新上游（APKPure/Aptoide）走 upsert：已存在同包名应用时仅补下载源，不重建、不拒绝
+            // 新上游（APKPure/Aptoide/Uptodown）走 upsert：已存在同包名应用时仅补下载源，不重建、不拒绝
             source == APKPURE_SOURCE -> importFromApkPure(pkgName)
             source == APTOIDE_SOURCE -> importFromAptoide(pkgName)
+            source == UPTODOWN_SOURCE -> importFromUptodown(pkgName)
             existing != null -> throw IllegalArgumentException("包名 $pkgName 已存在，无需重复导入")
             source == "IzzyOnDroid" -> importFromIzzy(pkgName)
             else -> importFromFdroid(pkgName)
@@ -770,17 +856,19 @@ class AppMarketExternalService(
         )
         val vn = d.versionName
         var versionAdded = false
-        if (!vn.isNullOrBlank() && versionRepository.findByAppIdAndVersionName(app.id, vn) == null) {
-            versionRepository.save(
-                AppVersion(
-                    appId = app.id,
-                    versionName = vn,
-                    sizeMb = d.sizeMb,
-                    releaseDate = d.updateTimeSec?.let { Date(it * 1000) }
+        val version = if (!vn.isNullOrBlank()) {
+            versionRepository.findByAppIdAndVersionName(app.id, vn) ?: run {
+                versionAdded = true
+                versionRepository.save(
+                    AppVersion(
+                        appId = app.id,
+                        versionName = vn,
+                        sizeMb = d.sizeMb,
+                        releaseDate = d.updateTimeSec?.let { Date(it * 1000) }
+                    )
                 )
-            )
-            versionAdded = true
-        }
+            }
+        } else null
         ImportTracer.step(
             "写库-版本",
             when {
@@ -790,9 +878,331 @@ class AppMarketExternalService(
             },
             if (versionAdded) StepStatus.OK else StepStatus.SKIP
         )
-        // 自动补全应用宝（MyApp）商店源，与现有商店源体系一致（幂等）
-        collector.ensureStoreSources(app)
+        // 应用宝真实 APK 直链：仅当真正取到 APK 时才写 MYAPP 下载源。
+        // 详情页链接（sj.qq.com/appdetail）不再作为 downloadUrl（否则 bsdiff 会拉到 HTML 而非安装包）。
+        val apk = fetchMyAppApk(pkgName)
+        val apkVer = apk?.versionName ?: vn
+        val apkUrl = apk?.downloadUrl
+        var myAppSourceAdded = false
+        if (!apkUrl.isNullOrBlank() && !apkVer.isNullOrBlank()) {
+            val targetVersion = version ?: versionRepository.findByAppIdAndVersionName(app.id, apkVer)
+                ?: versionRepository.save(
+                    AppVersion(
+                        appId = app.id,
+                        versionName = apkVer,
+                        sizeMb = d.sizeMb,
+                        releaseDate = d.updateTimeSec?.let { Date(it * 1000) }
+                    )
+                )
+            if (sourceRepository.findByVersionIdAndDownloadUrl(targetVersion.id, apkUrl) == null) {
+                sourceRepository.save(
+                    DownloadSource(
+                        versionId = targetVersion.id,
+                        sourceName = "应用宝",
+                        sourceType = "MYAPP",
+                        downloadUrl = apkUrl,
+                        region = "中国",
+                        note = "从应用宝 APK 接口（a.app.sj.qq.com）直链导入"
+                    )
+                )
+                myAppSourceAdded = true
+            }
+        }
+        ImportTracer.step(
+            "写库-下载源",
+            when {
+                apkUrl.isNullOrBlank() -> "应用宝未返回真实 APK 直链（接口不可达/限流），跳过 MYAPP 下载源"
+                myAppSourceAdded -> "新增应用宝真实 APK 直链：$apkUrl"
+                else -> "应用宝 APK 直链已存在，跳过（按 downloadUrl 去重）"
+            },
+            if (myAppSourceAdded) StepStatus.OK else StepStatus.SKIP,
+            "应用宝"
+        )
+        // 注：不再调用 collector.ensureStoreSources —— 应用宝详情页链接已改由 App.officialUrl 承载，不再作为下载源写入
         return app.asVo(versionRepository.countByAppId(app.id).toInt())
+    }
+
+    /** 从 Uptodown 导入（upsert）：按包名 HMAC 握手取真实 APK 直链，写入应用 + 最新版本 + UPTODOWN 源；已存在同包名仅补源 */
+    private fun importFromUptodown(pkgName: String): AppVo {
+        val d = fetchUptodown(pkgName)
+            ?: throw IllegalArgumentException("Uptodown 未找到包名：$pkgName")
+        return upsertImport(d, "UPTODOWN", UPTODOWN_SOURCE)
+    }
+
+    // ------------------------------------------------------------ Uptodown / APKMirror / 通用 HTML 爬虫 上游实现（移植 Obtainium）
+    /**
+     * 按包名查 Uptodown：解析下载页拿版本号 + `data-app-id`/`data-file-id`，经 HMAC-SHA256 握手拿 JWT，
+     * 再请求 `/eapi/apps/<appId>/file/<fileId>/downloadUrl` 取真实 APK 直链（移植 Obtainium `uptodown.dart`）。
+     * 返回 null 表示不可达 / 解析失败（不抛，交由调用方降级为 MISS）。
+     */
+    private fun fetchUptodown(pkgName: String): UpstreamAppDetail? {
+        if (!uptodownEnabled) {
+            ImportTracer.step("请求上游", "Uptodown 上游已关闭（-Dappmarket.uptodown.enabled=false），跳过", StepStatus.SKIP, UPTODOWN_SOURCE)
+            return null
+        }
+        val pageUrl = "https://$pkgName.en.uptodown.com/android/download"
+        return ImportTracer.measure("请求上游", UPTODOWN_SOURCE, pageUrl) {
+            try {
+                val html = uptodownClient.newCall(
+                    Request.Builder().url(pageUrl).header("User-Agent", UPTODOWN_UA).get().build()
+                ).execute().use { if (it.isSuccessful) it.body?.string() else null } ?: return@measure null
+                val version = extractUptodownVersion(html)
+                val fileId = extractAttr(html, "data-file-id") ?: return@measure null
+                val appId = extractAttr(html, "data-app-id")
+                    ?: extractTechnicalInfo(html)
+                    ?: pkgName
+                val token = uptodownAuth() ?: return@measure null
+                val downloadUrl = uptodownDownloadUrl(appId, fileId, token) ?: return@measure null
+                UpstreamAppDetail(
+                    packageName = pkgName,
+                    name = extractTagText(html, "title")?.substringBeforeLast(" - ")?.trim()
+                        ?.takeIf { it.isNotBlank() },
+                    versionName = version,
+                    downloadUrl = downloadUrl,
+                    sourceUrl = pageUrl
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    /** Uptodown 匿名鉴权：HMAC-SHA256 握手拿 JWT token；返回 null 表示失败 */
+    private fun uptodownAuth(): String? {
+        val identifier = (1..8).joinToString("") { "%02x".format(Random().nextInt(256)) }
+        val ts = (System.currentTimeMillis() / 1000).toString()
+        val hmac = hmacSha256(UPTODOWN_HMAC_KEY, ts)
+        val body = FormBody.Builder()
+            .add("identifier", identifier)
+            .add("id_plataforma", "13")
+            .add("lang", "en")
+            .add("unixtime", ts)
+            .add("hmac", hmac)
+            .build()
+        val req = Request.Builder()
+            .url("https://www.uptodown.app/eapi/auth/token?identifier=$identifier")
+            .header("User-Agent", UPTODOWN_UA)
+            .header("Identificador", "Uptodown_Android")
+            .header("Identificador-Version", "739")
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .post(body)
+            .build()
+        return try {
+            uptodownClient.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) null
+                else run {
+                    val json = JsonParser.parseString(resp.body?.string() ?: return null).asJsonObject
+                    json["token"]?.takeIf { it.isJsonPrimitive }?.asString
+                        ?.takeIf { it.isNotBlank() && it.split('.').size == 3 }
+                }
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** 用 JWT 请求真实 APK 直链（data.downloadURL）；返回 null 表示失败 */
+    private fun uptodownDownloadUrl(appId: String, fileId: String, token: String): String? {
+        val req = Request.Builder()
+            .url("https://www.uptodown.app/eapi/apps/$appId/file/$fileId/downloadUrl")
+            .header("User-Agent", UPTODOWN_UA)
+            .header("Authorization", "Bearer $token")
+            .get()
+            .build()
+        return try {
+            uptodownClient.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) null
+                else run {
+                    val json = JsonParser.parseString(resp.body?.string() ?: return null).asJsonObject
+                    if (json["success"]?.takeIf { it.isJsonPrimitive }?.asInt != 1) null
+                    else json.getAsJsonObject("data")?.get("downloadURL")
+                        ?.takeIf { it.isJsonPrimitive }?.asString
+                }
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** Uptodown 按名搜索：POST `queryString` 表单，解析 `data.apps[]`（`platformURL=="/android"`）；返回预览列表（不可达返回空） */
+    private fun searchUptodown(keyword: String): List<ExternalAppPreview> {
+        val body = FormBody.Builder().add("queryString", keyword).build()
+        val req = Request.Builder()
+            .url("https://en.uptodown.com/android/en/s")
+            .header("User-Agent", UPTODOWN_UA)
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .post(body)
+            .build()
+        return try {
+            uptodownClient.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) return emptyList()
+                val json = JsonParser.parseString(resp.body?.string() ?: return emptyList()).asJsonObject
+                if (json["success"]?.takeIf { it.isJsonPrimitive }?.asInt != 1) return emptyList()
+                val apps = json.getAsJsonObject("data")?.getAsJsonArray("apps") ?: return emptyList()
+                apps.mapNotNull { node ->
+                    val o = node.asJsonObject
+                    if (o["platformURL"]?.takeIf { it.isJsonPrimitive }?.asString != "/android") return@mapNotNull null
+                    val url = o["url"]?.takeIf { it.isJsonPrimitive }?.asString?.takeIf { it.isNotBlank() }
+                        ?: return@mapNotNull null
+                    val name = o["name"]?.takeIf { it.isJsonPrimitive }?.asString
+                        ?.replace(Regex("<[^>]+>"), "")?.trim()?.takeIf { it.isNotBlank() }
+                        ?: return@mapNotNull null
+                    ExternalAppPreview(
+                        packageName = null,
+                        name = name,
+                        officialUrl = url,
+                        sourceUrl = url,
+                        source = UPTODOWN_SOURCE
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    /**
+     * 按包名查 APKMirror：RSS `<pkg>/feed/` 取最新 `<item>` 的 `<title>`（版本号）+ 发布日期。
+     * User-Agent 必须含 `APKUpdater-v3.5.9` 令牌（否则 403）。**downloadUrl 恒为 null**（官方禁止直链下载，PR #44），
+     * 因此 upsertImport 不会写脏下载源，仅贡献版本元数据（设计 §10.4）。返回 null 表示不可达 / 无版本。
+     */
+    private fun fetchApkMirror(pkgName: String): UpstreamAppDetail? {
+        if (!apkmirrorEnabled) {
+            ImportTracer.step("请求上游", "APKMirror 上游已关闭（-Dappmarket.apkmirror.enabled=false），跳过", StepStatus.SKIP, APKMIRROR_SOURCE)
+            return null
+        }
+        val feedUrl = "https://www.apkmirror.com/apk/$pkgName/feed/"
+        return ImportTracer.measure("请求上游", APKMIRROR_SOURCE, feedUrl) {
+            val xml = try {
+                apkmirrorClient.newCall(
+                    Request.Builder().url(feedUrl).header("User-Agent", APKMIRROR_UA).get().build()
+                ).execute().use { if (it.isSuccessful) it.body?.string() else null } ?: return@measure null
+            } catch (e: Exception) {
+                return@measure null
+            }
+            val item = Regex("<item[\\s\\S]*?</item>", RegexOption.IGNORE_CASE).find(xml)?.value
+                ?: return@measure null
+            val title = Regex("<title[^>]*>([\\s\\S]*?)</title>", RegexOption.IGNORE_CASE).find(item)
+                ?.groupValues?.get(1)?.trim() ?: return@measure null
+            val version = apkMirrorVersionFromTitle(title) ?: return@measure null
+            UpstreamAppDetail(
+                packageName = pkgName,
+                versionName = version,
+                downloadUrl = null,
+                sourceUrl = feedUrl
+            )
+        }
+    }
+
+    /** 从 APKMirror RSS 标题提取版本号（去 `by Author` / `(arm64-v8a)` / `[0]` 等修饰，取首个版本 token） */
+    private fun apkMirrorVersionFromTitle(title: String): String? {
+        var cleaned = title
+        val byIdx = cleaned.lowercase().lastIndexOf(" by ")
+        if (byIdx > 0) cleaned = cleaned.substring(0, byIdx)
+        cleaned = cleaned.replace(Regex("\\([^)]*\\)"), " ")
+            .replace(Regex("\\[[^]]*\\]"), " ")
+            .replace(Regex("\\s+"), " ").trim()
+        val m = Regex("(?:^|\\s)v?(\\d[\\d.\\-+_]*)(\\s|$)").find(cleaned)
+        return m?.groupValues?.get(1)
+    }
+
+    /** 通用 HTML 爬虫（手动工具，移植 Obtainium `html.dart` 的 `grabLinksCommon`）：
+     *  拉取页面，抽取所有 `<a href>` 链接 + 页面裸链接（https?://...）+ 元素属性里的链接，
+     *  过滤出路径/文件名匹配 APK 或容器扩展名（.apk/.apks/.xapk/.zip 中含 apk 语义）的绝对 URL，去重返回候选直链。
+     *  仅返回候选列表，由管理员确认后入库（不自动入库）。 */
+    fun fetchHtmlApkLinks(url: String): List<String> {
+        if (!htmlEnabled) return emptyList()
+        val base = try {
+            java.net.URI(url)
+        } catch (e: Exception) {
+            return emptyList()
+        }
+        val html = try {
+            htmlClient.newCall(
+                Request.Builder().url(url).header("User-Agent", HTML_UA).get().build()
+            ).execute().use { if (it.isSuccessful) it.body?.string() else null } ?: return emptyList()
+        } catch (e: Exception) {
+            return emptyList()
+        }
+        val candidates = LinkedHashSet<String>()
+        // 1) <a href="...">
+        Regex("""<a\b[^>]*\bhref="([^"]*)"""", RegexOption.IGNORE_CASE).findAll(html).forEach { m ->
+            resolveAbs(base, m.groupValues[1])?.takeIf { isApkLike(it) }?.let { candidates.add(it) }
+        }
+        // 2) 裸链接 https?://...（至空白/引号为止）
+        Regex("""https?://[^\s"'<>()\[\]{}]+""", RegexOption.IGNORE_CASE).findAll(html).forEach { m ->
+            val u = m.groupValues[0].trimEnd('.', ',', ';', ':', '!', '?')
+            if (isApkLike(u)) candidates.add(u)
+        }
+        // 3) 属性链接（src / data-*url / data-href / action 等）
+        Regex("""\b(?:src|data-[^=]*url|data-href|action)="([^"]*)"""", RegexOption.IGNORE_CASE).findAll(html).forEach { m ->
+            resolveAbs(base, m.groupValues[1])?.takeIf { isApkLike(it) }?.let { candidates.add(it) }
+        }
+        return candidates.toList()
+    }
+
+    /** 将 href 解析为绝对 URL（仅保留 http/https/ftp 协议；忽略 # / javascript: / mailto: / tel:） */
+    private fun resolveAbs(base: java.net.URI, href: String): String? {
+        val t = href.trim()
+        if (t.isEmpty() || t.startsWith("#") || t.startsWith("javascript:", ignoreCase = true)
+            || t.startsWith("mailto:", ignoreCase = true) || t.startsWith("tel:", ignoreCase = true)
+        ) return null
+        return try {
+            val resolved = base.resolve(t)
+            val scheme = resolved.scheme?.lowercase()
+            if (scheme == "http" || scheme == "https" || scheme == "ftp") resolved.toString() else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** 是否为 APK / 容器扩展名（.apk/.apks/.xapk，或含 apk 语义的 .zip） */
+    private fun isApkLike(url: String): Boolean {
+        val pathPart = url.substringBefore('?').substringBefore('#')
+        val last = pathPart.substringAfterLast('/').lowercase()
+        if (last.isEmpty()) return false
+        return last.endsWith(".apk") || last.endsWith(".apks") || last.endsWith(".xapk")
+            || (last.endsWith(".zip") && last.contains("apk"))
+    }
+
+    // ------------------------------------------------------------ HTML / 通用解析小工具
+    /** 从 HTML 抽取 `<div class="...version...">` 的首个文本（版本号） */
+    private fun extractUptodownVersion(html: String): String? {
+        val m = Regex("""<div[^>]+class="[^"]*\bversion\b[^"]*"[^>]*>([\s\S]*?)</div>""", RegexOption.IGNORE_CASE)
+            .find(html) ?: return null
+        return stripTags(m.groupValues[1]).takeIf { it.isNotBlank() }
+    }
+
+    /** 提取元素指定属性值（如 data-app-id / data-file-id） */
+    private fun extractAttr(html: String, attr: String): String? {
+        val m = Regex("""$attr="([^"]*)"""", RegexOption.IGNORE_CASE).find(html) ?: return null
+        return m.groupValues[1].takeIf { it.isNotBlank() }
+    }
+
+    /** 从 `#technical-information` 取 `Package name` 行对应的 td 文本（即包名） */
+    private fun extractTechnicalInfo(html: String): String? {
+        val m = Regex(
+            """<th[^>]*>\s*package\s+name\s*</th>\s*<td[^>]*>([\s\S]*?)</td>""", RegexOption.IGNORE_CASE
+        ).find(html) ?: return null
+        return stripTags(m.groupValues[1]).takeIf { it.isNotBlank() }
+    }
+
+    /** 提取某个标签（如 title）的 innerText */
+    private fun extractTagText(html: String, tag: String): String? {
+        val m = Regex("""<$tag[^>]*>([\s\S]*?)</$tag>""", RegexOption.IGNORE_CASE).find(html) ?: return null
+        return stripTags(m.groupValues[1]).takeIf { it.isNotBlank() }
+    }
+
+    /** 去标签 + 折叠空白 */
+    private fun stripTags(s: String): String =
+        s.replace(Regex("<[^>]+>"), " ").replace(Regex("\\s+"), " ").trim()
+
+    /** HMAC-SHA256 十六进制签名（与 Obtainium 同算法） */
+    private fun hmacSha256(key: String, data: String): String {
+        val mac = Mac.getInstance("HmacSHA256")
+        mac.init(SecretKeySpec(key.toByteArray(Charsets.UTF_8), "HmacSHA256"))
+        return mac.doFinal(data.toByteArray(Charsets.UTF_8))
+            .joinToString("") { (it.toInt() and 0xFF).toString(16).padStart(2, '0') }
     }
 
     // ------------------------------------------------------------ APKPure / Aptoide 导入（upsert：补下载源，不重建应用）
@@ -915,8 +1325,8 @@ class AppMarketExternalService(
         return !url.contains("favicon", ignoreCase = true) && !url.endsWith(".ico", ignoreCase = true)
     }
 
-    /** 应用宝详情 → 预览（不写库） */
-    private fun toMyAppPreview(d: MyAppDetail): ExternalAppPreview = ExternalAppPreview(
+    /** 应用宝详情 → 预览（不写库）；[apkUrl] 为真实 APK 直链（来自 [fetchMyAppApk]，不可达时为 null） */
+    private fun toMyAppPreview(d: MyAppDetail, apkUrl: String? = null): ExternalAppPreview = ExternalAppPreview(
         packageName = d.packageName,
         name = d.name,
         summary = d.summary,
@@ -927,7 +1337,7 @@ class AppMarketExternalService(
         latestVersionName = d.versionName,
         latestVersionCode = null, // 应用宝不提供 versionCode
         sizeMb = d.sizeMb,
-        apkUrl = null,            // 详情页不提供 APK 直链
+        apkUrl = apkUrl,         // 真实 APK 直链；不可达时为 null（不报错）
         sourceUrl = d.sourceUrl,
         source = MYAPP_SOURCE
     )
@@ -1100,6 +1510,55 @@ class AppMarketExternalService(
             }
         }
         return null
+    }
+
+    /**
+     * 应用宝真实 APK 直链接口：`GET https://a.app.sj.qq.com/o/simple.jsp?pkgname=<pkg>`（followRedirects=false）。
+     * 响应体是内嵌 `window.systemData=...` 的 JS 文本（非纯 JSON），从中提取 `appDetail`，
+     * 取 `apkUrl64 ?: apkUrl`（CDN 直链）+ `versionName`。无需鉴权，服务端可抓取（移植 Obtainium `tencent.dart`）。
+     * 返回 null 表示不可达 / 解析失败（不抛，交由调用方降级）。
+     */
+    private fun fetchMyAppApk(pkgName: String): MyAppApk? {
+        if (!myappEnabled) {
+            ImportTracer.step("请求上游", "应用宝上游已关闭（-Dappmarket.myapp.enabled=false），跳过", StepStatus.SKIP, MYAPP_SOURCE)
+            return null
+        }
+        val now = System.currentTimeMillis()
+        myAppApkCache[pkgName]?.let { (ts, d) ->
+            if (now - ts < MYAPP_CACHE_TTL_MS) return d
+        }
+        val url = "https://a.app.sj.qq.com/o/simple.jsp?pkgname=$pkgName"
+        return ImportTracer.measure("请求上游", MYAPP_SOURCE, url) {
+            val req = Request.Builder().url(url).header("User-Agent", "zaze-appmarket-external").get().build()
+            val body = try {
+                myappApkClient.newCall(req).execute().use { if (it.isSuccessful) it.body?.string() else null }
+                    ?: return@measure null
+            } catch (e: Exception) {
+                return@measure null
+            }
+            val d = parseMyAppApk(body)
+            if (d != null) synchronized(this) { myAppApkCache[pkgName] = now to d }
+            d
+        }
+    }
+
+    /** 从 `window.systemData=...` 文本解析应用宝 APK 直链（CDN）+ 版本名 */
+    private fun parseMyAppApk(body: String): MyAppApk? {
+        val jsVar = "window.systemData="
+        val line = body.lines().map { it.trim() }.firstOrNull { it.startsWith(jsVar) } ?: return null
+        val jsonText = line.substringAfter(jsVar)
+        val root = try {
+            JsonParser.parseString(jsonText).asJsonObject
+        } catch (e: Exception) {
+            return null
+        }
+        val appDetail = root["appDetail"]?.takeIf { it.isJsonObject }?.asJsonObject ?: return null
+        val apkUrl = appDetail["apkUrl64"]?.takeIf { it.isJsonPrimitive }?.asString
+            ?: appDetail["apkUrl"]?.takeIf { it.isJsonPrimitive }?.asString
+            ?: return null
+        val versionName = appDetail["versionName"]?.takeIf { it.isJsonPrimitive }?.asString
+            ?.trim()?.takeIf { it.isNotEmpty() }
+        return MyAppApk(downloadUrl = apkUrl, versionName = versionName)
     }
 
     private fun toPreview(pkg: FdroidPackageDto): ExternalAppPreview {
@@ -1347,6 +1806,9 @@ class AppMarketExternalService(
         ),
         SearchProviderMeta("apkpure", APKPURE_SOURCE, apkpureSearchBase, apkpureEnabled),
         SearchProviderMeta("aptoide", APTOIDE_SOURCE, "$aptoideBase/api/2.1/search/apps", aptoideEnabled),
+        SearchProviderMeta("uptodown", UPTODOWN_SOURCE, "https://en.uptodown.com/android/en/s", uptodownEnabled),
+        SearchProviderMeta("apkmirror", APKMIRROR_SOURCE, "https://www.apkmirror.com/apk/<pkg>/feed/（仅版本元数据，无直链）", apkmirrorEnabled),
+        SearchProviderMeta("html", "通用HTML爬虫", "手动工具：POST /admin/external-html-links", htmlEnabled),
         SearchProviderMeta("bing", BING_SOURCE, bingSearchBase, bingEnabled)
     )
 
@@ -1427,6 +1889,9 @@ class AppMarketExternalService(
         val updateTimeSec: Long? = null,
         val sourceUrl: String? = null
     )
+
+    /** 应用宝 APK 接口返回的真实直链 + 版本名（CDN 直链，非详情页） */
+    private data class MyAppApk(val downloadUrl: String?, val versionName: String? = null)
 
     // ------------------------------------------------------------ 上游统一模型（APKPure / Aptoide 共用）
     /** 上游返回的「应用 + 真实下载源」统一结构：解析后映射为 ExternalAppPreview，或写入三张表 */
@@ -1758,6 +2223,10 @@ class AppMarketExternalService(
         const val APKPURE_SOURCE = "APKPure"
         /** 上游来源标记：Aptoide（官方开放 API + 真实 APK CDN 直链） */
         const val APTOIDE_SOURCE = "Aptoide"
+        /** 上游来源标记：Uptodown（HMAC 握手 + 真实 APK 直链） */
+        const val UPTODOWN_SOURCE = "Uptodown"
+        /** 上游来源标记：APKMirror（仅元数据 / track-only，官方禁止直链下载） */
+        const val APKMIRROR_SOURCE = "APKMirror"
         /** 上游来源标记：Bing 网页搜索（发现渠道：仅抽候选包名，不取 APK、不自动入库） */
         const val BING_SOURCE = "Bing发现"
 

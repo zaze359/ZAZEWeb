@@ -167,9 +167,14 @@ class AppMarketCollector(
     }
 
     /**
-     * 为某个应用的所有版本幂等补上第三方商店详情页下载源（应用宝）。
-     * URL 由 packageName 确定性推导，无需联网；已存在则跳过，避免重复插入。
-     * 返回本次新增的源数量。
+     * 为某个应用的所有版本幂等补上第三方商店下载源。
+     *
+     * **历史修正**：早期把应用宝详情页 `https://sj.qq.com/appdetail/<pkg>` 当 MYAPP 下载源离线写库，
+     * 但它是网页不是 APK，会污染 bsdiff（拉到 HTML 而非安装包）。现回收该逻辑——
+     * 应用宝真实 APK 直链改由 [com.zaze.server.feature.appmarket.service.AppMarketExternalService.importFromMyApp]
+     * 在真正取到 APK 时才写入，详情页链接由 App 的 `officialUrl` 承载。
+     * 因此 [STORE_SPECS] 当前为空，本方法退化为「无需离线补源」的占位（保留 API 兼容与既有调用方）。
+     * 返回本次新增的源数量（当前恒为 0）。
      */
     fun ensureStoreSources(app: App): Int {
         var added = 0
@@ -197,7 +202,8 @@ class AppMarketCollector(
         // 离线补源（URL 由包名推导、不联网），记一步便于看清「补了几条、跳过了几条」
         ImportTracer.step(
             "补商店源",
-            "应用宝详情页链接：新增 $added 条、已存在跳过 $skipped 条（离线推导，无网络开销）",
+            if (STORE_SPECS.isEmpty()) "无第三方商店详情页源需离线补全（应用宝已改由 importFromMyApp 写真实 APK 直链）"
+            else "应用宝详情页链接：新增 $added 条、已存在跳过 $skipped 条（离线推导，无网络开销）",
             if (added > 0) StepStatus.OK else StepStatus.SKIP,
             "应用宝"
         )
@@ -245,10 +251,10 @@ class AppMarketCollector(
         private const val DEFAULT_RELEASE_LIMIT = 3
         private const val CHANGELOG_MAX_LEN = 2000
 
-        /** 第三方应用商店详情页源：由 packageName 推导 URL，随采集/全量同步自动补全（酷安已停止应用市场分发，仅保留应用宝） */
-        private val STORE_SPECS = listOf(
-            StoreSourceSpec("MYAPP", "应用宝", "https://sj.qq.com/appdetail/")
-        )
+        /** 第三方应用商店下载源规格：type=sourceType，name=展示名，prefix=详情页 URL 前缀（后缀为 packageName）。
+         *  历史修正：原含应用宝（MYAPP, `https://sj.qq.com/appdetail/`）详情页，但它是网页而非 APK，会污染 bsdiff；
+         *  现回收——应用宝真实 APK 直链由 [AppMarketExternalService.importFromMyApp] 取到后才写入。当前为空。 */
+        private val STORE_SPECS = listOf<StoreSourceSpec>()
     }
 
     /** 第三方商店源规格：type=sourceType，name=展示名，prefix=详情页 URL 前缀（后缀为 packageName） */

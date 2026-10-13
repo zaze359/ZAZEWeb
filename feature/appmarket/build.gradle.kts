@@ -33,6 +33,11 @@ dependencies {
     // 导致编译期与运行时（jar 内为 4.10.0）版本不一致。
     implementation(project(":core:network"))
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+    // 增量更新：bsdiff 差分包生成/合并（jbsdiff，Apache-2.0，Maven Central）。
+    // commons-compress 不在 Spring Boot BOM 内，显式钉版本（与 jbsdiff 1.0 的 bzip2 调用兼容，且更新以修复历史 CVE）。
+    implementation("io.sigpipe:jbsdiff:1.0")
+    implementation("org.apache.commons:commons-compress:1.26.1")
 }
 
 tasks.getByName<Test>("test") {

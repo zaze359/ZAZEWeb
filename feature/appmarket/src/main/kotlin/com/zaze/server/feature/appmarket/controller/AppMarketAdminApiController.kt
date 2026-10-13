@@ -155,6 +155,16 @@ class AppMarketAdminApiController(
     }
 
     /**
+     * 通用 HTML 爬虫：给定任意商店 / 官网页面 URL，返回页面中抽取的 APK 候选直链列表。
+     * 仅返回候选（不自动入库），由管理员确认后通过其它接口入库，避免误抓噪声链接。
+     */
+    @PostMapping("/external-html-links")
+    @LoggerManage(description = "通用HTML爬取APK候选链接")
+    fun fetchHtmlApkLinks(@RequestParam url: String): Response<List<String>> {
+        return Response(externalService.fetchHtmlApkLinks(url))
+    }
+
+    /**
      * 从 APK 解析结果导入：前端用 app-info-parser 解析**本地** APK 后仅提交元数据，
      * APK 二进制不上传服务端。
      *

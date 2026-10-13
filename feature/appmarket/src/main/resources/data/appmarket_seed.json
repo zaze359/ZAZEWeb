@@ -187,13 +187,6 @@
             "downloadUrl": "https://support.weixin.qq.com/cgi-bin/mmsupport-bin/readtemplate?t=weixin_download_method&sys=android&loc=weixin",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.mm",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -221,13 +214,6 @@
             "downloadUrl": "https://im.qq.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.mobileqq",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -255,13 +241,6 @@
             "downloadUrl": "https://mobile.alipay.com/index.htm",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.eg.android.AlipayGphone",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -289,13 +268,6 @@
             "downloadUrl": "https://www.douyin.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.ss.android.ugc.aweme",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -323,13 +295,6 @@
             "downloadUrl": "https://www.kuaishou.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.smile.gifmaker",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -357,13 +322,6 @@
             "downloadUrl": "https://www.bilibili.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/tv.danmaku.bili",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -391,13 +349,6 @@
             "downloadUrl": "https://www.iqiyi.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.qiyi.video",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -425,13 +376,6 @@
             "downloadUrl": "https://www.taobao.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.taobao.taobao",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -459,13 +403,6 @@
             "downloadUrl": "https://app.jd.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.jingdong.app.mall",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -493,13 +430,6 @@
             "downloadUrl": "https://download.pinduoduo.com/home/download/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.xunmeng.pinduoduo",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -527,13 +457,6 @@
             "downloadUrl": "https://i.meituan.com/mobile/down/meituan",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.dianping.v1",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -561,13 +484,6 @@
             "downloadUrl": "https://www.didiglobal.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.sdu.didi.psnger",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -595,13 +511,6 @@
             "downloadUrl": "https://mobile.amap.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.autonavi.minimap",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -629,13 +538,6 @@
             "downloadUrl": "https://www.baidu.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.baidu.searchbox",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -663,13 +565,6 @@
             "downloadUrl": "https://weibo.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.sina.weibo",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -697,13 +592,6 @@
             "downloadUrl": "https://www.xiaohongshu.com",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.xingin.xhs",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -731,13 +619,6 @@
             "downloadUrl": "https://www.toutiao.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.ss.android.article.news",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -765,13 +646,6 @@
             "downloadUrl": "https://music.163.com/#/download",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.netease.cloudmusic",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -799,13 +673,6 @@
             "downloadUrl": "https://www.wps.cn/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/cn.wps.moffice_eng",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -833,13 +700,6 @@
             "downloadUrl": "https://www.dingtalk.com/download",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.alibaba.android.rimet",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -867,13 +727,6 @@
             "downloadUrl": "https://v.qq.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.qqlive",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -901,13 +754,6 @@
             "downloadUrl": "https://www.youku.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.youku.phone",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -935,13 +781,6 @@
             "downloadUrl": "https://www.ximalaya.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.ximalaya.ting.android",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -969,13 +808,6 @@
             "downloadUrl": "https://www.zhihu.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.zhihu.android",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1003,13 +835,6 @@
             "downloadUrl": "https://www.ctrip.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/ctrip.android.view",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1037,13 +862,6 @@
             "downloadUrl": "https://www.ele.me/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.ele.me",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1071,13 +889,6 @@
             "downloadUrl": "https://www.feishu.cn/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.ss.android.lark",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1105,13 +916,6 @@
             "downloadUrl": "https://meeting.tencent.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.wemeet.app",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1139,13 +943,6 @@
             "downloadUrl": "https://yunshanfu.unionpay.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.unionpay",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1173,13 +970,6 @@
             "downloadUrl": "https://pan.baidu.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.baidu.netdisk",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1207,13 +997,6 @@
             "downloadUrl": "https://news.163.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.netease.newsreader.activity",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1241,13 +1024,6 @@
             "downloadUrl": "https://pvp.qq.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.tmgp.sgame",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1275,13 +1051,6 @@
             "downloadUrl": "https://gp.qq.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.tencent.tmgp.pubgmhd",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1309,13 +1078,6 @@
             "downloadUrl": "https://www.12306.cn/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.MobileTicket",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1343,13 +1105,6 @@
             "downloadUrl": "https://www.cainiao.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.cainiao.wireless",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1377,13 +1132,6 @@
             "downloadUrl": "https://www.freshippo.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.wormpex.bird",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
@@ -1411,13 +1159,6 @@
             "downloadUrl": "https://fanqienovel.com/",
             "region": "中国",
             "note": "官方下载入口；版本与安装包以官网实时显示为准，请勿从第三方镜像获取。"
-          },
-          {
-            "sourceName": "应用宝",
-            "sourceType": "MYAPP",
-            "downloadUrl": "https://sj.qq.com/appdetail/com.dragon.read",
-            "region": "中国",
-            "note": "应用宝（腾讯）应用详情页（第三方应用商店；版本与安装包以页面实时显示为准）"
           }
         ]
       }
