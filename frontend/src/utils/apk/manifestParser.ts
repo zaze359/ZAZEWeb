@@ -3,7 +3,10 @@
 
 import { isResourceRef } from '../format'
 
-const PARSER_SRC = '/vendor/app-info-parser/app-info-parser.min.js'
+// 解析库放在 frontend/public/vendor/：由前端自己的 dev server / 静态托管伺服，
+// 不再依赖后端 src/main/resources/static/vendor/（否则 npm run dev 下必然 404）。
+// 用 BASE_URL 拼接，兼容子路径部署（base=/zaze/ 时同样能取到）。
+const PARSER_SRC = `${import.meta.env.BASE_URL}vendor/app-info-parser/app-info-parser.min.js`
 
 let parserPromise: Promise<void> | null = null
 
@@ -15,7 +18,8 @@ export function loadManifestParser(): Promise<void> {
     const s = document.createElement('script')
     s.src = PARSER_SRC
     s.onload = () => resolve()
-    s.onerror = () => reject(new Error('解析库加载失败，请检查网络或联系管理员'))
+    s.onerror = () =>
+      reject(new Error(`解析库加载失败（${s.src}），请确认该路径可访问后重试`))
     document.head.appendChild(s)
   })
   return parserPromise
