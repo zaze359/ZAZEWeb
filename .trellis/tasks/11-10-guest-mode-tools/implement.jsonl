@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "鉴权与栈边界：AuthInterceptor / WebMvcConfig 的分级鉴权是本次改动核心，需先确认既有约定与「哪些路径必须保护」的原则"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "401/403 语义：游客模式下放行只读接口后，后台与写接口仍须回 401/403，文案与信封不能变"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "目录约定：新增前端 ToolsView 与后端 config 类应落在既有分层里，不新建平行目录"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "跨层边界：访问控制属后端规则、入口与皮肤属前端，避免把「游客可见」判断散进组件"}

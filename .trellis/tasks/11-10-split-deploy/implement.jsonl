@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "栈与契约边界：Spring Boot 2.7 / JDK 11；本次后端只允许新增 CORS 配置，不得改接口契约与鉴权实现"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "错误信封与状态码约定（Response 包装、401/403 语义）：前端把失败翻译成可读文案时以此为据，不能自创语义"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "跨层边界指南：本次重划的是「前端/后端的部署边界」，据此确认接口地址、错误处理、静态资产归属哪一层"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "门禁命令与 JDK 11 强制要求：frontend typecheck/build + 后端离线编译是唯一回归口径"}
+{"file": ".trellis/spec/backend/appmarket-external-sources.md", "reason": "外部源与导入任务（含 SSE 链路）语义：确认 15s 请求超时不会波及长任务，并明确这些能力仍需真后端"}

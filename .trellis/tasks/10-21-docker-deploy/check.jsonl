@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Regression gates after dockerization: ./gradlew :feature:appmarket:compileKotlin --offline and frontend typecheck must stay green"}
+{"file": ".trellis/spec/backend/index.md", "reason": "Check no stack/version drift: image build must keep Boot 2.7.18 / JDK 11 / Gradle 7.5.1 intact"}

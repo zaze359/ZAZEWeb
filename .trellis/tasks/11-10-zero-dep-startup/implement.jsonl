@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "关键约束：H2 已在运行时 classpath 且被允许用于本地 smoke run；业务代码禁止按数据库类型分支。实现时必须遵守，不得新增 DB 分支逻辑"}
+{"file": ".trellis/spec/backend/index.md", "reason": "技术栈与版本边界：Spring Boot 2.7.18 / Kotlin 1.6.21 / JDK 11，数据源与 ddl-auto 归属（properties 管 ddl-auto，yml 管 datasource URL），不得擅自升级版本"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "构建与验证口径：JDK 11 强制、bootRun/离线编译命令、local.properties 的 useLocalMaven 语义、已知相对路径债务（AdController 读 data/ltt_rules.json）"}

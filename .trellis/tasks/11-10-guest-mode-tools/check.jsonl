@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "核对越界：只改放行规则与回退正则，未改鉴权实现、未改接口契约与业务代码"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "核对错误语义：后台与写接口在游客态仍返回 401/403，未因放行只读接口而误开放"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "核对门禁：后端离线编译、feature 模块编译、前端 typecheck/build 全部通过"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "核对分层：游客判定只在后端白名单 + 前端导航展示，组件没有各自判断权限"}

@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Stack constraints: Spring Boot 2.7.18 / JDK 11 / Kotlin 1.6.21, MySQL datasource, ddl-auto=update, module map, root is the only bootJar"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Build commands; JDK 11 mandatory (Lombok breaks on 17); local.properties useLocalMaven semantics; known debt: AdController relative-path read of data/ltt_rules.json"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "DB conventions behind datasource/entity assumptions used by the compose wiring"}

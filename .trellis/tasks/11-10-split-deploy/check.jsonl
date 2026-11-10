@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "核对越界：后端仅新增默认关闭的 CORS 配置类，业务代码、接口契约、鉴权实现零改动"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "核对错误语义：401 仍跳登录、403 独立文案、业务错误沿用后端 msg，未篡改契约"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "核对门禁：frontend typecheck + build、后端 compileJava/compileKotlin 离线编译均通过"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "核对分层：API 地址与错误归类在前端 api 层；CORS 与 cookie 在后端配置层；视图层只消费 message"}
